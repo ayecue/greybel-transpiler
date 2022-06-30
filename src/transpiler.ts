@@ -81,7 +81,8 @@ export default class Transpiler {
 		const target = new Target({
 			target: me.target,
 			resourceHandler: me.resourceHandler,
-			context: me.context
+			context: me.context,
+			environmentVariables: me.environmentVariables
 		});
 		const targetParseResult: TargetParseResult = await target.parse({
 			disableLiteralsOptimization: me.disableLiteralsOptimization,

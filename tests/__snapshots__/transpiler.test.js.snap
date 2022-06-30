@@ -294,6 +294,46 @@ F",
 ]
 `;
 
+exports[`parse default scripts envar.src 1`] = `
+Array [
+  "globals.H=globals
+MODULES={}
+EXPORTED={}
+__REQUIRE=function(r)
+if not MODULES.hasIndex(r) then
+exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+end if
+module=MODULES[r]
+return @module(r).exports
+end function
+MAIN=function()
+myvar=\\"\\"foo\\"\\"
+print(\\"0.2\\")
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts envar.src uglify 1`] = `
+Array [
+  "globals.H=globals
+C={}
+D={}
+E=function(r)
+if not C.hasIndex(r) then
+exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+end if
+G=C[r]
+return @G(r).exports
+end function
+F=function()
+I=\\"\\"foo\\"\\"
+print(\\"0.2\\")
+end function
+F",
+]
+`;
+
 exports[`parse default scripts greybel-utils.src 1`] = `
 Array [
   "globals.H=globals

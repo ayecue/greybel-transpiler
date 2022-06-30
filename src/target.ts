@@ -62,7 +62,9 @@ export default class Target extends EventEmitter {
 
 		me.emit('parse-before', target);
 
-		const parser = new Parser(content);
+		const parser = new Parser(content, {
+			environmentVariables: me.environmentVariables
+		});
 		const chunk = parser.parseChunk() as ASTChunkAdvanced;
 		const namespaces = [].concat(Array.from(chunk.namespaces));
 		const literals = [].concat(chunk.literals);
@@ -71,7 +73,9 @@ export default class Target extends EventEmitter {
 		for (const nativeImport of chunk.nativeImports) {
 			const subTarget = await resourceHandler.getTargetRelativeTo(target, nativeImport);
 			const subContent = await resourceHandler.get(subTarget);
-			const subParser = new Parser(subContent);
+			const subParser = new Parser(subContent, {
+				environmentVariables: me.environmentVariables
+			});
 			const subChunk = subParser.parseChunk() as ASTChunkAdvanced;
 			const subDependency = new Dependency({
 				target: subTarget,

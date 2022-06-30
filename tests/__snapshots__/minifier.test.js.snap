@@ -210,6 +210,18 @@ I
 I(\\"foo\\",false)"
 `;
 
+exports[`parse default scripts envar.src 1`] = `
+"globals.H=globals
+myvar=\\"\\"foo\\"\\"
+print(\\"0.2\\")"
+`;
+
+exports[`parse default scripts envar.src uglify 1`] = `
+"globals.H=globals
+I=\\"\\"foo\\"\\"
+print(\\"0.2\\")"
+`;
+
 exports[`parse default scripts greybel-utils.src 1`] = `
 "globals.H=globals
 foo = __REQUIRE(\\"undefined\\")

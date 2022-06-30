@@ -63,7 +63,9 @@ export default class Minifier extends EventEmitter {
 		const me = this;
 
         const mapFactory = me.getBuildMapFactory();
-		const parser = new Parser(me.code);
+		const parser = new Parser(me.code, {
+			environmentVariables: me.environmentVariables
+		});
 		const chunk = parser.parseChunk() as ASTChunkAdvanced;
 		const namespaces = [].concat(Array.from(chunk.namespaces));
 		const literals = [].concat(chunk.literals);
