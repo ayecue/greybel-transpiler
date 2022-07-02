@@ -307,6 +307,7 @@ module=MODULES[r]
 return @module(r).exports
 end function
 MAIN=function()
+myvar2=\\"\\"foo\\"\\"
 myvar=\\"\\"foo\\"\\"
 print(\\"0.2\\")
 end function
@@ -327,6 +328,7 @@ G=C[r]
 return @G(r).exports
 end function
 F=function()
+J=\\"\\"foo\\"\\"
 I=\\"\\"foo\\"\\"
 print(\\"0.2\\")
 end function
