@@ -16,6 +16,7 @@ export interface DependencyOptions {
 	chunk: ASTChunkAdvanced;
 	isInclude?: boolean;
 	context: Context;
+	environmentVariables?: Map<string, string>;
 }
 
 export default class Dependency extends EventEmitter {
@@ -26,6 +27,7 @@ export default class Dependency extends EventEmitter {
 	dependencies: Dependency[];
 	isInclude: boolean;
 	context: Context;
+	environmentVariables: Map<string, string>;
 
 	constructor(options: DependencyOptions) {
 		super();
@@ -39,6 +41,7 @@ export default class Dependency extends EventEmitter {
 		me.dependencies = [];
 		me.isInclude = options.isInclude || false;
 		me.context = options.context;
+		me.environmentVariables = options.environmentVariables || new Map();;
 
 		if (!me.context.data.has('globalDependencyMap')) {
 			me.context.data.set('globalDependencyMap', new Map<string, Dependency>())
@@ -59,6 +62,7 @@ export default class Dependency extends EventEmitter {
 		const globalDependencyMap: Map<string, Dependency> = me.context.data.get('globalDependencyMap');
 		const resourceHandler = me.resourceHandler;
 		const context = me.context;
+		const environmentVariables = me.environmentVariables;
 		const items = [
 			...me.chunk.imports,
 			...me.chunk.includes
@@ -87,7 +91,8 @@ export default class Dependency extends EventEmitter {
 			const content = await resourceHandler.get(subTarget);
 
 			me.emit('parse-before', subTarget);
-			const parser = new Parser(content);
+
+			const parser = new Parser(content, { environmentVariables });
 			const chunk = parser.parseChunk() as ASTChunkAdvanced;
 
 			namespaces.push(...Array.from(chunk.namespaces));
@@ -98,7 +103,8 @@ export default class Dependency extends EventEmitter {
 				resourceHandler,
 				chunk,
 				isInclude,
-				context
+				context,
+				environmentVariables
 			});
 			await dependency.findDependencies(namespaces);
 

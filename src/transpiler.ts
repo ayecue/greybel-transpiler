@@ -105,7 +105,6 @@ export default class Transpiler {
 			const modules: { [key: string]: string } = {};
 			const iterator = function(item: Dependency) {
 				const moduleName = context.modules.get(item.getId());
-				let dependency;
 
 				if (moduleName in modules) return;
 				if (moduleName != mainNamespace && !item.isInclude) {

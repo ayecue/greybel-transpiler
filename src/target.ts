@@ -51,6 +51,7 @@ export default class Target extends EventEmitter {
 	async parse(options: TargetParseOptions): Promise<TargetParseResult> {
 		const me = this;
 		const resourceHandler = me.resourceHandler;
+		const environmentVariables = me.environmentVariables;
 		const target = await resourceHandler.resolve(me.target);
 
 		if (!await resourceHandler.has(target)) {
@@ -63,7 +64,7 @@ export default class Target extends EventEmitter {
 		me.emit('parse-before', target);
 
 		const parser = new Parser(content, {
-			environmentVariables: me.environmentVariables
+			environmentVariables
 		});
 		const chunk = parser.parseChunk() as ASTChunkAdvanced;
 		const namespaces = [].concat(Array.from(chunk.namespaces));
@@ -74,14 +75,15 @@ export default class Target extends EventEmitter {
 			const subTarget = await resourceHandler.getTargetRelativeTo(target, nativeImport);
 			const subContent = await resourceHandler.get(subTarget);
 			const subParser = new Parser(subContent, {
-				environmentVariables: me.environmentVariables
+				environmentVariables
 			});
 			const subChunk = subParser.parseChunk() as ASTChunkAdvanced;
 			const subDependency = new Dependency({
 				target: subTarget,
 				resourceHandler,
 				chunk: subChunk,
-				context
+				context,
+				environmentVariables
 			});
 			await subDependency.findDependencies(namespaces);
 
@@ -98,7 +100,8 @@ export default class Target extends EventEmitter {
 			target,
 			resourceHandler,
 			chunk,
-			context
+			context,
+			environmentVariables
 		});
 		await dependency.findDependencies(namespaces);
 
