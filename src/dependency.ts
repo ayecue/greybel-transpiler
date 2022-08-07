@@ -1,122 +1,123 @@
-import path from 'path';
-import {
-	ASTChunkAdvanced,
-	Parser,
-	ASTFeatureIncludeExpression,
-	ASTFeatureImportExpression
-} from 'greybel-core';
 import md5 from 'blueimp-md5';
-import Context from './context';
 import EventEmitter from 'events';
+import {
+  ASTChunkAdvanced,
+  ASTFeatureIncludeExpression,
+  Parser
+} from 'greybel-core';
+
+import Context from './context';
 import { ResourceHandler } from './resource';
 
 export interface DependencyOptions {
-	target: string;
-	resourceHandler: ResourceHandler;
-	chunk: ASTChunkAdvanced;
-	isInclude?: boolean;
-	context: Context;
-	environmentVariables?: Map<string, string>;
+  target: string;
+  resourceHandler: ResourceHandler;
+  chunk: ASTChunkAdvanced;
+  isInclude?: boolean;
+  context: Context;
 }
 
 export default class Dependency extends EventEmitter {
-	target: string;
-	id: string;
-	resourceHandler: ResourceHandler;
-	chunk: ASTChunkAdvanced;
-	dependencies: Dependency[];
-	isInclude: boolean;
-	context: Context;
-	environmentVariables: Map<string, string>;
+  target: string;
+  id: string;
+  resourceHandler: ResourceHandler;
+  chunk: ASTChunkAdvanced;
+  /* eslint-disable no-use-before-define */
+  dependencies: Dependency[];
+  isInclude: boolean;
+  context: Context;
 
-	constructor(options: DependencyOptions) {
-		super();
+  constructor(options: DependencyOptions) {
+    super();
 
-		const me = this;
+    const me = this;
 
-		me.target = options.target;
-		me.id = md5(options.target);
-		me.resourceHandler = options.resourceHandler;
-		me.chunk = options.chunk;
-		me.dependencies = [];
-		me.isInclude = options.isInclude || false;
-		me.context = options.context;
-		me.environmentVariables = options.environmentVariables || new Map();;
+    me.target = options.target;
+    me.id = md5(options.target);
+    me.resourceHandler = options.resourceHandler;
+    me.chunk = options.chunk;
+    me.dependencies = [];
+    me.isInclude = options.isInclude || false;
+    me.context = options.context;
 
-		if (!me.context.data.has('globalDependencyMap')) {
-			me.context.data.set('globalDependencyMap', new Map<string, Dependency>())
-		}
+    if (!me.context.data.has('globalDependencyMap')) {
+      me.context.data.set('globalDependencyMap', new Map<string, Dependency>());
+    }
 
-		const namespace = me.context.modules.createNamespace(me.id);
-		const globalDependencyMap: Map<string, Dependency> = me.context.data.get('globalDependencyMap');
+    const namespace = me.context.modules.createNamespace(me.id);
+    const globalDependencyMap: Map<string, Dependency> = me.context.data.get(
+      'globalDependencyMap'
+    );
 
-		globalDependencyMap.set(namespace, me);
-	}
+    globalDependencyMap.set(namespace, me);
+  }
 
-	getId(): string {
-		return this.id;
-	}
+  getId(): string {
+    return this.id;
+  }
 
-	async findDependencies(namespaces: string[]): Promise<Dependency[]> {
-		const me = this;
-		const globalDependencyMap: Map<string, Dependency> = me.context.data.get('globalDependencyMap');
-		const resourceHandler = me.resourceHandler;
-		const context = me.context;
-		const environmentVariables = me.environmentVariables;
-		const items = [
-			...me.chunk.imports,
-			...me.chunk.includes
-		];
-		const result = [];
-		let item;
+  async findDependencies(namespaces: string[]): Promise<Dependency[]> {
+    const me = this;
+    const globalDependencyMap: Map<string, Dependency> = me.context.data.get(
+      'globalDependencyMap'
+    );
+    const resourceHandler = me.resourceHandler;
+    const context = me.context;
+    const items = [...me.chunk.imports, ...me.chunk.includes];
+    const result = [];
+    let item;
 
-		for (item of items) {
-			const subTarget = await resourceHandler.getTargetRelativeTo(me.target, item.path);
-			const id = md5(subTarget);
-			const namespace = context.modules.get(id);
+    for (item of items) {
+      const subTarget = await resourceHandler.getTargetRelativeTo(
+        me.target,
+        item.path
+      );
+      const id = md5(subTarget);
+      const namespace = context.modules.get(id);
 
-			if (globalDependencyMap.has(namespace)) {
-				const dependency = globalDependencyMap.get(namespace);
-				item.chunk = dependency.chunk;
-				item.namespace = namespace;
-				result.push(dependency);
-				continue;
-			}
+      if (globalDependencyMap.has(namespace)) {
+        const dependency = globalDependencyMap.get(namespace);
+        item.chunk = dependency.chunk;
+        item.namespace = namespace;
+        result.push(dependency);
+        continue;
+      }
 
-			if (!await resourceHandler.has(subTarget)) {
-				throw new Error('Dependency ' + subTarget + ' does not exist...');
-			}
+      if (!(await resourceHandler.has(subTarget))) {
+        throw new Error('Dependency ' + subTarget + ' does not exist...');
+      }
 
-			const isInclude = (item as ASTFeatureIncludeExpression).type === 'FeatureIncludeExpression';
-			const content = await resourceHandler.get(subTarget);
+      const isInclude =
+        (item as ASTFeatureIncludeExpression).type ===
+        'FeatureIncludeExpression';
+      const content = await resourceHandler.get(subTarget);
 
-			me.emit('parse-before', subTarget);
+      me.emit('parse-before', subTarget);
 
-			const parser = new Parser(content, { environmentVariables });
-			const chunk = parser.parseChunk() as ASTChunkAdvanced;
+      const parser = new Parser(content);
+      const chunk = parser.parseChunk() as ASTChunkAdvanced;
 
-			namespaces.push(...Array.from(chunk.namespaces));
-			item.chunk = chunk;
+      namespaces.push(...Array.from(chunk.namespaces));
+      item.chunk = chunk;
 
-			const dependency = new Dependency({
-				target: subTarget,
-				resourceHandler,
-				chunk,
-				isInclude,
-				context,
-				environmentVariables
-			});
-			await dependency.findDependencies(namespaces);
+      const dependency = new Dependency({
+        target: subTarget,
+        resourceHandler,
+        chunk,
+        isInclude,
+        context
+      });
+      await dependency.findDependencies(namespaces);
 
-			item.namespace = context.modules.get(id);
+      item.namespace = context.modules.get(id);
 
-			me.emit('parse-after', dependency);
+      me.emit('parse-after', dependency);
 
-			result.push(dependency);
-		}
-		
-		me.dependencies = result;
-		
-		return result;
-	}
+      result.push(dependency);
+    }
+
+    me.dependencies = result;
+
+    return result;
+  }
 }
