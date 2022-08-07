@@ -1,7 +1,7 @@
 import { ASTChunk, Parser } from 'greybel-core';
 
 export const HEADER_BOILERPLATE: ASTChunk = new Parser(
-	`MODULES = {}
+  `MODULES = {}
 	EXPORTED = {}
 	__REQUIRE = function(r)
 	if (not MODULES.hasIndex(r)) then
@@ -13,7 +13,7 @@ export const HEADER_BOILERPLATE: ASTChunk = new Parser(
 ).parseChunk() as ASTChunk;
 
 export const MODULE_BOILERPLATE: ASTChunk = new Parser(
-	`MODULES["$0"] = function(r)
+  `MODULES["$0"] = function(r)
 	module = {}
 	if (EXPORTED.hasIndex(r)) then
 	module = EXPORTED[r]
@@ -27,7 +27,7 @@ export const MODULE_BOILERPLATE: ASTChunk = new Parser(
 ).parseChunk() as ASTChunk;
 
 export const MAIN_BOILERPLATE: ASTChunk = new Parser(
-	`MAIN = function()
+  `MAIN = function()
 	"$0"
 	end function
 	MAIN()`
