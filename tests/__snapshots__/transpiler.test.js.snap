@@ -2,20 +2,7 @@
 
 exports[`parse default scripts ascii.src 1`] = `
 Array [
-  "globals.H=globals
-H.x=\\"||¯|| \\"
-H.w=\\"||_|| \\"
-H.t=\\"|| || \\"
-H.r=\\"||¯ \\"
-H.v=\\"||  \\"
-H.s=\\"||_ \\"
-H.y=\\"||¯\\\\\\\\ \\"
-H.u=\\"|| \\"
-H.z=\\"  \\"
-H._A=\\"<color=#\\"
-H.AC=\\">\\"
-H.AB=\\"</color>\\"
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -87,6 +74,95 @@ r[2]=(([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
 end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
+print(AsciiGen.gen(\\"Hallo\\"))
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts ascii.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	AsciiGen = {}
+map = {}
+map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
+map.b = [\\"||¯/ \\", \\"|| \\\\ \\", \\"||_/ \\"]
+map.c = [\\"||¯ \\", \\"||  \\", \\"||_ \\"]
+map.d = [\\"||¯\\\\\\\\ \\", \\"|| // \\", \\"||//  \\"]
+map.e = [\\"||¯ \\", \\"||- \\", \\"||_ \\"]
+map.f = [\\"||¯ \\", \\"||_ \\", \\"||  \\"]
+map.g = [\\"||¯¯  \\", \\"|| \\\\\\\\ \\", \\"||_|| \\"]
+map.h = [\\"|| || \\", \\"||-|| \\", \\"|| || \\"]
+map.i = [\\"|| \\", \\"|| \\", \\"|| \\"]
+map.j = [\\" ¯||¯ \\", \\"  ||  \\", \\"|_||  \\"]
+map.k = [\\"||  / \\", \\"|| /  \\", \\"||¯\\\\\\\\ \\"]
+map.l = [\\"||  \\", \\"||  \\", \\"||_ \\"]
+map.m = [\\"||\\\\\\\\/|| \\", \\"||   || \\", \\"||   || \\"]
+map.n = [\\"||\\\\\\\\ || \\", \\"|| \\\\\\\\|| \\", \\"||  \\\\|| \\"]
+map.o = [\\"||¯|| \\", \\"|| || \\", \\"||_|| \\"]
+map.p = [\\"||¯|| \\", \\"||_|| \\", \\"||    \\"]
+map.q = [\\"||¯||  \\", \\"|| ||  \\", \\"||_||¬ \\"]
+map.r = [\\"||¯|| \\", \\"||¯\\\\\\\\ \\", \\"|| || \\"]
+map.s = [\\"||¯¯ \\", \\" \\\\\\\\  \\", \\"__|| \\"]
+map.t = [\\"¯||¯ \\", \\" ||  \\", \\" ||  \\"]
+map.u = [\\"|| || \\", \\"|| || \\", \\"||_|| \\"]
+map.v = [\\"\\\\\\\\ || \\", \\" \\\\\\\\|| \\", \\"  \\\\\\\\| \\"]
+map.w = [\\"\\\\\\\\ |\\\\\\\\ | \\", \\" \\\\\\\\| \\\\\\\\| \\", \\"  \\\\\\\\  \\\\\\\\ \\"]
+map.x = [\\"\\\\\\\\  / \\", \\" \\\\\\\\/  \\", \\" //\\\\  \\"]
+map.y = [\\"\\\\\\\\  // \\", \\" \\\\\\\\//  \\", \\"  ||   \\"]
+map.z = [\\"¯// \\", \\"//  \\", \\"||_ \\"]
+map[\\"0\\"] = [\\"||¯|| \\", \\"||x|| \\", \\"||_|| \\"]
+map[\\"1\\"] = [\\"'|| \\", \\" || \\", \\" || \\"]
+map[\\"2\\"] = [\\"¯¯|| \\", \\"||¯  \\", \\"||_  \\"]
+map[\\"3\\"] = [\\"¯|| \\", \\"-|| \\", \\"_|| \\"]
+map[\\"4\\"] = [\\" /|| \\", \\"/_|| \\", \\"  || \\"]
+map[\\"5\\"] = [\\"||¯¯ \\", \\" ¯|| \\", \\" _|| \\"]
+map[\\"6\\"] = [\\"||¯¯  \\", \\"||¯|| \\", \\"||_|| \\"]
+map[\\"7\\"] = [\\"¯¯// \\", \\" //  \\", \\"//   \\"]
+map[\\"8\\"] = [\\"||¯|| \\", \\"||-|| \\", \\"||_|| \\"]
+map[\\"9\\"] = [\\"||¯|| \\", \\"  ¯|| \\", \\"  //  \\"]
+map[\\" \\"] = [\\"  \\", \\"  \\", \\"  \\"]
+AsciiGen.MAP = map
+
+AsciiGen.gen = function(str, colors)
+	r = [[], [], []]
+	signs = self.MAP
+
+	for char in str
+		char = char.lower
+
+		if signs.hasIndex(char) then
+			r[0].push(signs[char][0])
+			r[1].push(signs[char][1])
+			r[2].push(signs[char][2])
+		end if
+	end for
+
+	if (typeof(colors) == \\"string\\") then
+		r[0] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	else if (typeof(colors) == \\"list\\") then
+		r[0] = (([((\\"<color=#\\" + colors[0]) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors[1]) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	end if
+
+	return [r[0].join(\\"\\"), r[1].join(\\"\\"), r[2].join(\\"\\")].join(\\"\\\\n\\")
+end function
+
 print(AsciiGen.gen(\\"Hallo\\"))
 end function
 MAIN()",
@@ -188,8 +264,7 @@ F",
 
 exports[`parse default scripts binary-expressions.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -209,6 +284,38 @@ w=(bitwise(\\">>\\",(bitwise(\\">>>\\",a,(bitwise(\\"<<\\",b,c)))),a))
 (bitwise(\\"|\\",a,b))
 (bitwise(\\"&\\",a,b))
 (bitwise(\\"^\\",a,b))
+(a and b)
+(a or b)
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts binary-expressions.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	a = (a / b)
+a = (a * b)
+a = (a - b)
+a = (a + b)
+(bitwise(\\"<<\\", a, b))
+(bitwise(\\">>\\", a, b))
+w = (bitwise(\\">>\\", (bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c)))), a))
+(bitwise(\\"|\\", a, b))
+(bitwise(\\"&\\", a, b))
+(bitwise(\\"^\\", a, b))
 (a and b)
 (a or b)
 end function
@@ -248,8 +355,7 @@ F",
 
 exports[`parse default scripts default-args.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -265,6 +371,33 @@ print(arg2)
 end function
 test()
 test(\\"foo\\",false)
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts default-args.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	test = function(arg1 = 0, arg2 = \\"test\\")
+	print(arg1)
+	print(arg2)
+end function
+
+test()
+test(\\"foo\\", false)
 end function
 MAIN()",
 ]
@@ -296,8 +429,7 @@ F",
 
 exports[`parse default scripts envar.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -309,6 +441,29 @@ end function
 MAIN=function()
 myvar2=\\"\\"foo\\"\\"
 myvar=\\"\\"foo\\"\\"
+print(\\"0.2\\")
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts envar.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	myvar2 = \\"\\"foo\\"\\"
+myvar = \\"\\"foo\\"\\"
 print(\\"0.2\\")
 end function
 MAIN()",
@@ -338,8 +493,7 @@ F",
 
 exports[`parse default scripts greybel-utils.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -485,6 +639,181 @@ r[2]=(([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
 end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
+print(AsciiGen.gen(\\"Hallo\\"))
+null
+//debugger
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts greybel-utils.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MODULES[\\"B\\"] = function(r)
+	module = {}
+
+	if EXPORTED.hasIndex(r) then
+		module = EXPORTED[r]
+	end if
+
+	if not module.hasIndex(\\"exports\\") then
+		AsciiGen = {}
+map = {}
+map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
+map.b = [\\"||¯/ \\", \\"|| \\\\ \\", \\"||_/ \\"]
+map.c = [\\"||¯ \\", \\"||  \\", \\"||_ \\"]
+map.d = [\\"||¯\\\\\\\\ \\", \\"|| // \\", \\"||//  \\"]
+map.e = [\\"||¯ \\", \\"||- \\", \\"||_ \\"]
+map.f = [\\"||¯ \\", \\"||_ \\", \\"||  \\"]
+map.g = [\\"||¯¯  \\", \\"|| \\\\\\\\ \\", \\"||_|| \\"]
+map.h = [\\"|| || \\", \\"||-|| \\", \\"|| || \\"]
+map.i = [\\"|| \\", \\"|| \\", \\"|| \\"]
+map.j = [\\" ¯||¯ \\", \\"  ||  \\", \\"|_||  \\"]
+map.k = [\\"||  / \\", \\"|| /  \\", \\"||¯\\\\\\\\ \\"]
+map.l = [\\"||  \\", \\"||  \\", \\"||_ \\"]
+map.m = [\\"||\\\\\\\\/|| \\", \\"||   || \\", \\"||   || \\"]
+map.n = [\\"||\\\\\\\\ || \\", \\"|| \\\\\\\\|| \\", \\"||  \\\\|| \\"]
+map.o = [\\"||¯|| \\", \\"|| || \\", \\"||_|| \\"]
+map.p = [\\"||¯|| \\", \\"||_|| \\", \\"||    \\"]
+map.q = [\\"||¯||  \\", \\"|| ||  \\", \\"||_||¬ \\"]
+map.r = [\\"||¯|| \\", \\"||¯\\\\\\\\ \\", \\"|| || \\"]
+map.s = [\\"||¯¯ \\", \\" \\\\\\\\  \\", \\"__|| \\"]
+map.t = [\\"¯||¯ \\", \\" ||  \\", \\" ||  \\"]
+map.u = [\\"|| || \\", \\"|| || \\", \\"||_|| \\"]
+map.v = [\\"\\\\\\\\ || \\", \\" \\\\\\\\|| \\", \\"  \\\\\\\\| \\"]
+map.w = [\\"\\\\\\\\ |\\\\\\\\ | \\", \\" \\\\\\\\| \\\\\\\\| \\", \\"  \\\\\\\\  \\\\\\\\ \\"]
+map.x = [\\"\\\\\\\\  / \\", \\" \\\\\\\\/  \\", \\" //\\\\  \\"]
+map.y = [\\"\\\\\\\\  // \\", \\" \\\\\\\\//  \\", \\"  ||   \\"]
+map.z = [\\"¯// \\", \\"//  \\", \\"||_ \\"]
+map[\\"0\\"] = [\\"||¯|| \\", \\"||x|| \\", \\"||_|| \\"]
+map[\\"1\\"] = [\\"'|| \\", \\" || \\", \\" || \\"]
+map[\\"2\\"] = [\\"¯¯|| \\", \\"||¯  \\", \\"||_  \\"]
+map[\\"3\\"] = [\\"¯|| \\", \\"-|| \\", \\"_|| \\"]
+map[\\"4\\"] = [\\" /|| \\", \\"/_|| \\", \\"  || \\"]
+map[\\"5\\"] = [\\"||¯¯ \\", \\" ¯|| \\", \\" _|| \\"]
+map[\\"6\\"] = [\\"||¯¯  \\", \\"||¯|| \\", \\"||_|| \\"]
+map[\\"7\\"] = [\\"¯¯// \\", \\" //  \\", \\"//   \\"]
+map[\\"8\\"] = [\\"||¯|| \\", \\"||-|| \\", \\"||_|| \\"]
+map[\\"9\\"] = [\\"||¯|| \\", \\"  ¯|| \\", \\"  //  \\"]
+map[\\" \\"] = [\\"  \\", \\"  \\", \\"  \\"]
+AsciiGen.MAP = map
+
+AsciiGen.gen = function(str, colors)
+	r = [[], [], []]
+	signs = self.MAP
+
+	for char in str
+		char = char.lower
+
+		if signs.hasIndex(char) then
+			r[0].push(signs[char][0])
+			r[1].push(signs[char][1])
+			r[2].push(signs[char][2])
+		end if
+	end for
+
+	if (typeof(colors) == \\"string\\") then
+		r[0] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	else if (typeof(colors) == \\"list\\") then
+		r[0] = (([((\\"<color=#\\" + colors[0]) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors[1]) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	end if
+
+	return [r[0].join(\\"\\"), r[1].join(\\"\\"), r[2].join(\\"\\")].join(\\"\\\\n\\")
+end function
+
+print(AsciiGen.gen(\\"Hallo\\"))
+	end if
+
+	EXPORTED[r] = module
+	return EXPORTED[r]
+end function
+
+MAIN = function()
+	foo = __REQUIRE(\\"B\\")
+AsciiGen = {}
+map = {}
+map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
+map.b = [\\"||¯/ \\", \\"|| \\\\ \\", \\"||_/ \\"]
+map.c = [\\"||¯ \\", \\"||  \\", \\"||_ \\"]
+map.d = [\\"||¯\\\\\\\\ \\", \\"|| // \\", \\"||//  \\"]
+map.e = [\\"||¯ \\", \\"||- \\", \\"||_ \\"]
+map.f = [\\"||¯ \\", \\"||_ \\", \\"||  \\"]
+map.g = [\\"||¯¯  \\", \\"|| \\\\\\\\ \\", \\"||_|| \\"]
+map.h = [\\"|| || \\", \\"||-|| \\", \\"|| || \\"]
+map.i = [\\"|| \\", \\"|| \\", \\"|| \\"]
+map.j = [\\" ¯||¯ \\", \\"  ||  \\", \\"|_||  \\"]
+map.k = [\\"||  / \\", \\"|| /  \\", \\"||¯\\\\\\\\ \\"]
+map.l = [\\"||  \\", \\"||  \\", \\"||_ \\"]
+map.m = [\\"||\\\\\\\\/|| \\", \\"||   || \\", \\"||   || \\"]
+map.n = [\\"||\\\\\\\\ || \\", \\"|| \\\\\\\\|| \\", \\"||  \\\\|| \\"]
+map.o = [\\"||¯|| \\", \\"|| || \\", \\"||_|| \\"]
+map.p = [\\"||¯|| \\", \\"||_|| \\", \\"||    \\"]
+map.q = [\\"||¯||  \\", \\"|| ||  \\", \\"||_||¬ \\"]
+map.r = [\\"||¯|| \\", \\"||¯\\\\\\\\ \\", \\"|| || \\"]
+map.s = [\\"||¯¯ \\", \\" \\\\\\\\  \\", \\"__|| \\"]
+map.t = [\\"¯||¯ \\", \\" ||  \\", \\" ||  \\"]
+map.u = [\\"|| || \\", \\"|| || \\", \\"||_|| \\"]
+map.v = [\\"\\\\\\\\ || \\", \\" \\\\\\\\|| \\", \\"  \\\\\\\\| \\"]
+map.w = [\\"\\\\\\\\ |\\\\\\\\ | \\", \\" \\\\\\\\| \\\\\\\\| \\", \\"  \\\\\\\\  \\\\\\\\ \\"]
+map.x = [\\"\\\\\\\\  / \\", \\" \\\\\\\\/  \\", \\" //\\\\  \\"]
+map.y = [\\"\\\\\\\\  // \\", \\" \\\\\\\\//  \\", \\"  ||   \\"]
+map.z = [\\"¯// \\", \\"//  \\", \\"||_ \\"]
+map[\\"0\\"] = [\\"||¯|| \\", \\"||x|| \\", \\"||_|| \\"]
+map[\\"1\\"] = [\\"'|| \\", \\" || \\", \\" || \\"]
+map[\\"2\\"] = [\\"¯¯|| \\", \\"||¯  \\", \\"||_  \\"]
+map[\\"3\\"] = [\\"¯|| \\", \\"-|| \\", \\"_|| \\"]
+map[\\"4\\"] = [\\" /|| \\", \\"/_|| \\", \\"  || \\"]
+map[\\"5\\"] = [\\"||¯¯ \\", \\" ¯|| \\", \\" _|| \\"]
+map[\\"6\\"] = [\\"||¯¯  \\", \\"||¯|| \\", \\"||_|| \\"]
+map[\\"7\\"] = [\\"¯¯// \\", \\" //  \\", \\"//   \\"]
+map[\\"8\\"] = [\\"||¯|| \\", \\"||-|| \\", \\"||_|| \\"]
+map[\\"9\\"] = [\\"||¯|| \\", \\"  ¯|| \\", \\"  //  \\"]
+map[\\" \\"] = [\\"  \\", \\"  \\", \\"  \\"]
+AsciiGen.MAP = map
+
+AsciiGen.gen = function(str, colors)
+	r = [[], [], []]
+	signs = self.MAP
+
+	for char in str
+		char = char.lower
+
+		if signs.hasIndex(char) then
+			r[0].push(signs[char][0])
+			r[1].push(signs[char][1])
+			r[2].push(signs[char][2])
+		end if
+	end for
+
+	if (typeof(colors) == \\"string\\") then
+		r[0] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	else if (typeof(colors) == \\"list\\") then
+		r[0] = (([((\\"<color=#\\" + colors[0]) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors[1]) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	end if
+
+	return [r[0].join(\\"\\"), r[1].join(\\"\\"), r[2].join(\\"\\")].join(\\"\\\\n\\")
+end function
+
 print(AsciiGen.gen(\\"Hallo\\"))
 null
 //debugger
@@ -652,8 +981,7 @@ F",
 
 exports[`parse default scripts has-index.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -665,6 +993,30 @@ end function
 MAIN=function()
 globals.test=\\"was\\"
 locals.foo=\\"moo\\"
+print(globals.hasIndex(\\"test\\"))
+print(locals.hasIndex(\\"foo\\"))
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts has-index.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	globals.test = \\"was\\"
+locals.foo = \\"moo\\"
 print(globals.hasIndex(\\"test\\"))
 print(locals.hasIndex(\\"foo\\"))
 end function
@@ -696,12 +1048,7 @@ F",
 
 exports[`parse default scripts if-scuffed.src 1`] = `
 Array [
-  "globals.H=globals
-H.I=true
-H.J=\\"true - 3\\"
-H.K=\\"true - 4\\"
-H.L=\\"true - 5\\"
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -746,6 +1093,68 @@ if true then
 print(\\"true - 6\\")
 else
 print(\\"true - 6\\")
+end if
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts if-scuffed.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	
+if true then
+	print(\\"true - 1\\")
+end if
+
+if true then
+	print(\\"true - 2\\")
+else if true then
+	print(\\"true - 2\\")
+end if
+
+if true then
+	print(\\"true - 3\\")
+else if true then
+	print(\\"true - 3\\")
+else if true then
+	print(\\"true - 3\\")
+end if
+
+if true then
+	print(\\"true - 4\\")
+else if true then
+	print(\\"true - 4\\")
+else if true then
+	print(\\"true - 4\\")
+else
+	print(\\"true - 4\\")
+end if
+
+if true then
+	print(\\"true - 5\\")
+else if true then
+	print(\\"true - 5\\")
+else
+	print(\\"true - 5\\")
+end if
+
+if true then
+	print(\\"true - 6\\")
+else
+	print(\\"true - 6\\")
 end if
 end function
 MAIN()",
@@ -812,20 +1221,7 @@ F",
 
 exports[`parse default scripts import-code.src 1`] = `
 Array [
-  "globals.H=globals
-H.x=\\"||¯|| \\"
-H.w=\\"||_|| \\"
-H.t=\\"|| || \\"
-H.r=\\"||¯ \\"
-H.v=\\"||  \\"
-H.s=\\"||_ \\"
-H.y=\\"||¯\\\\\\\\ \\"
-H.u=\\"|| \\"
-H.z=\\"  \\"
-H._A=\\"<color=#\\"
-H.AC=\\">\\"
-H.AB=\\"</color>\\"
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -901,6 +1297,97 @@ r[2]=(([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
 end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
+print(AsciiGen.gen(\\"Hallo\\"))",
+]
+`;
+
+exports[`parse default scripts import-code.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	import_code(\\"/some/path\\")
+print(123)
+end function
+MAIN()",
+  "AsciiGen = {}
+map = {}
+map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
+map.b = [\\"||¯/ \\", \\"|| \\\\ \\", \\"||_/ \\"]
+map.c = [\\"||¯ \\", \\"||  \\", \\"||_ \\"]
+map.d = [\\"||¯\\\\\\\\ \\", \\"|| // \\", \\"||//  \\"]
+map.e = [\\"||¯ \\", \\"||- \\", \\"||_ \\"]
+map.f = [\\"||¯ \\", \\"||_ \\", \\"||  \\"]
+map.g = [\\"||¯¯  \\", \\"|| \\\\\\\\ \\", \\"||_|| \\"]
+map.h = [\\"|| || \\", \\"||-|| \\", \\"|| || \\"]
+map.i = [\\"|| \\", \\"|| \\", \\"|| \\"]
+map.j = [\\" ¯||¯ \\", \\"  ||  \\", \\"|_||  \\"]
+map.k = [\\"||  / \\", \\"|| /  \\", \\"||¯\\\\\\\\ \\"]
+map.l = [\\"||  \\", \\"||  \\", \\"||_ \\"]
+map.m = [\\"||\\\\\\\\/|| \\", \\"||   || \\", \\"||   || \\"]
+map.n = [\\"||\\\\\\\\ || \\", \\"|| \\\\\\\\|| \\", \\"||  \\\\|| \\"]
+map.o = [\\"||¯|| \\", \\"|| || \\", \\"||_|| \\"]
+map.p = [\\"||¯|| \\", \\"||_|| \\", \\"||    \\"]
+map.q = [\\"||¯||  \\", \\"|| ||  \\", \\"||_||¬ \\"]
+map.r = [\\"||¯|| \\", \\"||¯\\\\\\\\ \\", \\"|| || \\"]
+map.s = [\\"||¯¯ \\", \\" \\\\\\\\  \\", \\"__|| \\"]
+map.t = [\\"¯||¯ \\", \\" ||  \\", \\" ||  \\"]
+map.u = [\\"|| || \\", \\"|| || \\", \\"||_|| \\"]
+map.v = [\\"\\\\\\\\ || \\", \\" \\\\\\\\|| \\", \\"  \\\\\\\\| \\"]
+map.w = [\\"\\\\\\\\ |\\\\\\\\ | \\", \\" \\\\\\\\| \\\\\\\\| \\", \\"  \\\\\\\\  \\\\\\\\ \\"]
+map.x = [\\"\\\\\\\\  / \\", \\" \\\\\\\\/  \\", \\" //\\\\  \\"]
+map.y = [\\"\\\\\\\\  // \\", \\" \\\\\\\\//  \\", \\"  ||   \\"]
+map.z = [\\"¯// \\", \\"//  \\", \\"||_ \\"]
+map[\\"0\\"] = [\\"||¯|| \\", \\"||x|| \\", \\"||_|| \\"]
+map[\\"1\\"] = [\\"'|| \\", \\" || \\", \\" || \\"]
+map[\\"2\\"] = [\\"¯¯|| \\", \\"||¯  \\", \\"||_  \\"]
+map[\\"3\\"] = [\\"¯|| \\", \\"-|| \\", \\"_|| \\"]
+map[\\"4\\"] = [\\" /|| \\", \\"/_|| \\", \\"  || \\"]
+map[\\"5\\"] = [\\"||¯¯ \\", \\" ¯|| \\", \\" _|| \\"]
+map[\\"6\\"] = [\\"||¯¯  \\", \\"||¯|| \\", \\"||_|| \\"]
+map[\\"7\\"] = [\\"¯¯// \\", \\" //  \\", \\"//   \\"]
+map[\\"8\\"] = [\\"||¯|| \\", \\"||-|| \\", \\"||_|| \\"]
+map[\\"9\\"] = [\\"||¯|| \\", \\"  ¯|| \\", \\"  //  \\"]
+map[\\" \\"] = [\\"  \\", \\"  \\", \\"  \\"]
+AsciiGen.MAP = map
+
+AsciiGen.gen = function(str, colors)
+	r = [[], [], []]
+	signs = self.MAP
+
+	for char in str
+		char = char.lower
+
+		if signs.hasIndex(char) then
+			r[0].push(signs[char][0])
+			r[1].push(signs[char][1])
+			r[2].push(signs[char][2])
+		end if
+	end for
+
+	if (typeof(colors) == \\"string\\") then
+		r[0] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	else if (typeof(colors) == \\"list\\") then
+		r[0] = (([((\\"<color=#\\" + colors[0]) + \\">\\")] + r[0]) + [\\"</color>\\"])
+		r[1] = (([((\\"<color=#\\" + colors[1]) + \\">\\")] + r[1]) + [\\"</color>\\"])
+		r[2] = (([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
+	end if
+
+	return [r[0].join(\\"\\"), r[1].join(\\"\\"), r[2].join(\\"\\")].join(\\"\\\\n\\")
+end function
+
 print(AsciiGen.gen(\\"Hallo\\"))",
 ]
 `;
@@ -1002,8 +1489,7 @@ print(I.gen(\\"Hallo\\"))",
 
 exports[`parse default scripts negation.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1015,6 +1501,30 @@ end function
 MAIN=function()
 test=(((-1 + 2) + -2) + +3)
 foo=[-1,(-2 + 4),((-2 + -4) + +6)]
+print(test)
+print(foo)
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts negation.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	test = (((-1 + 2) + -2) + +3)
+foo = [-1, (-2 + 4), ((-2 + -4) + +6)]
 print(test)
 print(foo)
 end function
@@ -1046,9 +1556,7 @@ F",
 
 exports[`parse default scripts obj-init.src 1`] = `
 Array [
-  "globals.H=globals
-H.P=\\"123\\"
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1062,6 +1570,35 @@ valueOfIdentifier=\\"foo\\"
 myObject={\\"test\\":{\\"another\\":\\"123\\"},\\"value\\":\\"123\\",\\"idtf\\":valueOfIdentifier}
 print([myObject.test.another,myObject.value,myObject.idtf])
 myList=[{\\"another\\":\\"123\\"},\\"123\\",valueOfIdentifier]
+print(myList)
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts obj-init.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	valueOfIdentifier = \\"foo\\"
+
+myObject = {\\"test\\": {\\"another\\": \\"123\\"}, \\"value\\": \\"123\\", \\"idtf\\": valueOfIdentifier}
+
+print([myObject.test.another, myObject.value, myObject.idtf])
+
+myList = [{\\"another\\": \\"123\\"}, \\"123\\", valueOfIdentifier]
+
 print(myList)
 end function
 MAIN()",
@@ -1094,9 +1631,7 @@ F",
 
 exports[`parse default scripts optimize.src 1`] = `
 Array [
-  "globals.H=globals
-H.O=\\"xxxxxxxxxx\\"
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1121,6 +1656,52 @@ end function
 superlangername5=function(abc)
 print(abc)
 end function
+test(\\"xxxxxxxxxx\\")
+superlangername(\\"xxxxxxxxxx\\")
+superlangername4(\\"xxxxxxxxxx\\")
+superlangername(\\"xxxxxxxxxx\\")
+superlangername5(\\"xxxxxxxxxx\\")
+superlangername3(\\"xxxxxxxxxx\\")
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts optimize.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	test = function(abc)
+	print(abc)
+end function
+
+superlangername = function(abc)
+	print(abc)
+end function
+
+superlangername3 = function(abc)
+	print(abc)
+end function
+
+superlangername4 = function(abc)
+	print(abc)
+end function
+
+superlangername5 = function(abc)
+	print(abc)
+end function
+
 test(\\"xxxxxxxxxx\\")
 superlangername(\\"xxxxxxxxxx\\")
 superlangername4(\\"xxxxxxxxxx\\")
@@ -1174,8 +1755,7 @@ F",
 
 exports[`parse default scripts password-generator.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1242,6 +1822,98 @@ while (index < max)
 result.push(pgen.gen())
 index=(index + 1)
 end while
+print(result)
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts password-generator.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	PasswordGenerator = {}
+PasswordGenerator.MAX_PASSWORD_LENGTH = 15
+PasswordGenerator.ALPHABETIC_CHARACTERS = \\"qwertzuiopasdfghjklyxcvbnm\\"
+PasswordGenerator.NUMBER_CHARACTERS = \\"0123456789\\"
+PasswordGenerator.ALPHA_NUMERIC = ((PasswordGenerator.ALPHABETIC_CHARACTERS + PasswordGenerator.ALPHABETIC_CHARACTERS.upper) + PasswordGenerator.NUMBER_CHARACTERS)
+
+PasswordGenerator.constructor = function()
+	me = self
+	me.buffer = [0]
+	me.characters = me.ALPHA_NUMERIC
+	return me
+end function
+
+PasswordGenerator.increaseBuffer = function(i)
+	me = self
+	currentCharBuffer = me.buffer
+	maxBufferSize = me.characters.len
+	
+	if (i == null) then
+		i = (currentCharBuffer.len - 1)
+	end if
+	p = currentCharBuffer[i]
+	p = (p + 1)
+	currentCharBuffer[i] = p
+
+	if (p == maxBufferSize) then
+		currentCharBuffer[i] = 0
+
+		if (i == 0) then
+			currentCharBuffer.push(0)
+		else
+			me.increaseBuffer((i - 1))
+		end if
+	end if
+
+end function
+
+PasswordGenerator.gen = function()
+	me = self
+	currentCharBuffer = me.buffer
+	generatorCharacters = me.characters
+	password = \\"\\"
+	index = 0
+
+	while (index < currentCharBuffer.len)
+		pointer = currentCharBuffer[index]
+		password = (password + generatorCharacters[pointer])
+		
+		if (index == (currentCharBuffer.len - 1)) then
+			self.increaseBuffer()
+		end if
+		index = (index + 1)
+	end while
+
+	if (currentCharBuffer.len > me.MAX_PASSWORD_LENGTH) then
+		return null
+	end if
+
+	return password
+end function
+
+pgen = (new PasswordGenerator).constructor()
+index = 0
+max = 10
+result = []
+
+while (index < max)
+	result.push(pgen.gen())
+	index = (index + 1)
+end while
+
 print(result)
 end function
 MAIN()",
@@ -1326,11 +1998,7 @@ F",
 
 exports[`parse default scripts pseudo-crypto.src 1`] = `
 Array [
-  "globals.H=globals
-H.Ad=1
-H.Ab=null
-H.Ac=63
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1537,6 +2205,274 @@ test=(new Crypto).constructor(\\"test\\")
 pwd=\\"abcde\\"
 foo=test.encrypt(pwd)
 decrypted=test.decrypt(foo)
+print(foo)
+print(decrypted)
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts pseudo-crypto.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	String = {}
+
+String.constructor = function(str)
+	self.str = str
+	return self
+end function
+
+String.parse = function(values)
+	result = self.str
+	index = 0
+	maxIndex = values.len
+
+	while (index < maxIndex)
+		result = result.replace((\\"$\\" + index), values[index])
+		index = (index + 1)
+	end while
+
+	return (new self).constructor(result)
+end function
+
+String.startsWith = function(str)
+	return (self.str.indexOf(str) == 0)
+end function
+
+String.substr = function(startIndex, endIndex)
+	return (new self).constructor(slice(self.str, startIndex, endIndex))
+end function
+
+String.indexOf = function(str)
+	return self.str.indexOf(str)
+end function
+
+String.replace = function(str, newStr)
+	return (new self).constructor(self.str.replace(str, newStr))
+end function
+
+String.remove = function(str)
+	return (new self).constructor(self.str.remove(str))
+end function
+
+String.toString = function()
+	return self.str
+end function
+
+String.length = function()
+	return self.str.len
+end function
+
+String.split = function(seperator)
+	return self.str.split(seperator)
+end function
+
+String.trim = function(seperator)
+	return (new self).constructor(self.str.trim())
+end function
+
+Error = {}
+Error.String = String
+
+Error.constructor = function(message, values)
+	m = self
+	m.message = message
+
+	if (values != null) then
+		m.message = (new m.String).constructor(message).parse(values).toString()
+	end if
+
+	return m
+end function
+
+Error.throw = function()
+	exit(((\\"<color=#ff0000>\\" + self.message) + \\"</color>\\"))
+end function
+
+Crypto = {}
+Crypto.defaultCharset = \\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
+Crypto.defaultSecret = \\"test123\\"
+Crypto.maxCharCode = 55295
+Crypto.Error = Error
+
+Crypto.constructor = function(defaultSecret, hashFn, charset)
+	me = self
+	me.defaultSecret = defaultSecret
+	me.table = charset
+	me.hashFn = @hashFn
+	
+	if (@hashFn == null) then
+		me.hashFn = @md5
+	end if
+	
+	if (charset == null) then
+		me.table = me.defaultCharset
+	end if
+	
+	if (me.table.len != 64) then
+		(new me.Error).constructor(\\"Invalid charset $0...\\", [me.table]).throw()
+	end if
+	return me
+end function
+
+Crypto.getHash = function(pw)
+	me = self
+	hash = []
+	x = me.hashFn(pw)
+
+	for char in x
+		hash.push(char.code)
+	end for
+
+	hash.reverse
+	return hash
+end function
+
+Crypto.encrypt = function(str, pw)
+	me = self
+	
+	if (pw == null) then
+		pw = me.defaultSecret
+	end if
+	hash = me.getHash(pw)
+	hashPointer = 0
+	output = []
+	position = 0
+	padding = (str.len % 3)
+	max = (str.len - padding)
+
+	get = function(v)
+		if not me.table.hasIndex(v) then
+			(new me.Error).constructor(\\"Invalid index $0...\\", [v]).throw()
+		end if
+		return me.table[v]
+	end function
+
+	AND = function(a, b)
+		return bitwise(\\"&\\", a, b)
+	end function
+
+	LSHIFT = function(a, b)
+		return bitwise(\\"<<\\", a, b)
+	end function
+
+	RSHIFT = function(a, b)
+		return bitwise(\\">>\\", a, b)
+	end function
+
+	while (position < max)
+		m = hash[((position % hash.len) - 1)]
+		a = LSHIFT((str[position].code + m), 16)
+		b = LSHIFT((str[(position + 1)].code + m), 8)
+		c = (str[(position + 2)].code + m)
+		buffer = ((a + b) + c)
+		output.push(get(AND(RSHIFT(buffer, 18), 63)))
+		output.push(get(AND(RSHIFT(buffer, 12), 63)))
+		output.push(get(AND(RSHIFT(buffer, 6), 63)))
+		output.push(get(AND(buffer, 63)))
+		position = (position + 3)
+	end while
+
+	if (padding == 2) then
+		m = hash[((position % hash.len) - 1)]
+		a = LSHIFT((str[position].code + m), 8)
+		b = (str[(position + 1)].code + m)
+		buffer = (a + b)
+		output.push(get(RSHIFT(buffer, 10)))
+		output.push(get(AND(RSHIFT(buffer, 4), 63)))
+		output.push(get(AND(LSHIFT(buffer, 2), 63)))
+		output.push(\\"=\\")
+	else if (padding == 1) then
+		m = hash[((position % hash.len) - 1)]
+		buffer = (str[position].code + m)
+		output.push(get(RSHIFT(buffer, 2)))
+		output.push(get(AND(LSHIFT(buffer, 4), 63)))
+		output.push(\\"==\\")
+	end if
+
+	return output.join(\\"\\")
+end function
+
+Crypto.decrypt = function(str, pw)
+	me = self
+	
+	if (pw == null) then
+		pw = me.defaultSecret
+	end if
+	hash = me.getHash(pw)
+	hashPointer = 0
+	hashLength = hash.len
+	output = []
+	bitCounter = 0
+	bitStorage = 0
+	position = 0
+	hashPointer = 0
+	max = str.len
+
+	AND = function(a, b)
+		return bitwise(\\"&\\", a, b)
+	end function
+
+	RSHIFT = function(a, b)
+		return bitwise(\\">>\\", a, b)
+	end function
+
+	while (position < max)
+		buffer = me.table.indexOf(str[position])
+		currentBit = bitCounter
+		bitCounter = (bitCounter + 1)
+
+		if (currentBit % 4) then
+			bitStorage = ((bitStorage * 64) + buffer)
+		else
+			bitStorage = buffer
+		end if
+
+		if (currentBit % 4) then
+			expectedHashIndex = (((floor((hashPointer / 3)) * 3) % hashLength) - 1)
+			
+			if not hash.hasIndex(expectedHashIndex) then
+				break
+			end if
+			m = hash[expectedHashIndex]
+			operation = AND((-2 * bitCounter), 6)
+			operation = RSHIFT(bitStorage, operation)
+			operation = AND(255, operation)
+
+			if (operation != 0) then
+				charCode = (operation - m)
+				
+				if (charCode > me.maxCharCode) then
+					break
+				end if
+				output.push(char(charCode))
+			end if
+
+			hashPointer = (hashPointer + 1)
+		end if
+
+		position = (position + 1)
+	end while
+
+	return output.join(\\"\\")
+end function
+
+test = (new Crypto).constructor(\\"test\\")
+pwd = \\"abcde\\"
+foo = test.encrypt(pwd)
+decrypted = test.decrypt(foo)
 print(foo)
 print(decrypted)
 end function
@@ -1766,8 +2702,7 @@ F",
 
 exports[`parse default scripts random.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1835,6 +2770,100 @@ return self.gen(min,max)
 end function
 print(Random.get(100,500))
 print(Random.seq(100,500,\\"test\\",10))
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts random.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	Random = {}
+Random.pool = {}
+Random.defaultSeed = \\"random\\"
+
+Random.createPool = function(seed, val)
+	return {\\"seed\\": seed, \\"value\\": val, \\"generation\\": 0}
+end function
+
+Random.calcSeed = function(seed)
+	seedVal = 0
+	pos = seed.len
+
+	for char in seed
+		seedVal = ((seedVal + char.code) + pos)
+		pos = (pos - 1)
+	end for
+
+	return seedVal
+end function
+
+Random.gen = function(min, max, seed, inc)
+	me = self
+	pool = me.pool
+	
+	if (inc == null) then
+		inc = true
+	end if
+	
+	if (seed == null) then
+		seed = me.defaultSeed
+	end if
+
+	if pool.hasIndex(seed) then
+		ps = pool[seed]
+		
+		if not inc then
+			return ps.value
+		end if
+		ps.generation = (ps.generation + 1)
+		val = floor(((rnd((ps.value + ps.generation)) * (max - min)) + min))
+		ps.value = val
+		return val
+	end if
+
+	seedVal = me.calcSeed(seed)
+	val = floor(((rnd(seedVal) * (max - min)) + min))
+	pool[seed] = me.createPool(seedVal, val)
+	return val
+end function
+
+Random.seq = function(min, max, seed, amount, keepPool)
+	me = self
+	index = 0
+	result = []
+
+	while (index < amount)
+		temp = me.gen(min, max, seed)
+		result.push(temp)
+		index = (index + 1)
+	end while
+
+	
+	if (keepPool != true) then
+		me.pool.remove(seed)
+	end if
+	return result
+end function
+
+Random.get = function(min, max)
+	return self.gen(min, max)
+end function
+
+print(Random.get(100, 500))
+print(Random.seq(100, 500, \\"test\\", 10))
 end function
 MAIN()",
 ]
@@ -1918,8 +2947,7 @@ F",
 
 exports[`parse default scripts simple-object.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1934,6 +2962,34 @@ test.here=\\"was\\"
 test.was=function()
 print(self.here)
 end function
+print(test.was())
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts simple-object.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	test = {}
+test.here = \\"was\\"
+
+test.was = function()
+	print(self.here)
+end function
+
 print(test.was())
 end function
 MAIN()",
@@ -1966,8 +3022,7 @@ F",
 
 exports[`parse default scripts slice.src 1`] = `
 Array [
-  "globals.H=globals
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -1989,6 +3044,40 @@ end while
 return frags
 end function
 print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\",5))
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts slice.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	divideString = function(str, limit)
+	offset = 0
+	maxLen = str.len
+	frags = []
+
+	while (offset < maxLen)
+		next = (offset + limit)
+		frags.push(str[offset : next])
+		offset = next
+	end while
+
+	return frags
+end function
+print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))
 end function
 MAIN()",
 ]
@@ -2026,10 +3115,7 @@ F",
 
 exports[`parse default scripts unary.src 1`] = `
 Array [
-  "globals.H=globals
-H.L=\\"was\\"
-H.K=false
-MODULES={}
+  "MODULES={}
 EXPORTED={}
 __REQUIRE=function(r)
 if not MODULES.hasIndex(r) then
@@ -2042,6 +3128,36 @@ MAIN=function()
 test=function()
 return null
 end function
+print((@\\"was\\".split and (false or not false)))
+print(@(\\"was\\".split and (false or not false)))
+print((not \\"was\\".split and (false or not false)))
+print(not (\\"was\\".split and (false or not false)))
+print((-1 + 2))
+print(-(1 + 2))
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts unary.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	test = function()
+	return null
+end function
+
 print((@\\"was\\".split and (false or not false)))
 print(@(\\"was\\".split and (false or not false)))
 print((not \\"was\\".split and (false or not false)))

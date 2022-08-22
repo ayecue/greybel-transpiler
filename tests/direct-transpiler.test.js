@@ -1,4 +1,4 @@
-const { Minifier } = require('../dist');
+const { DirectTranspiler, BuildType } = require('../dist');
 const fs = require('fs');
 const path = require('path');
 const testFolder = path.resolve(__dirname, 'scripts');
@@ -16,20 +16,30 @@ describe('parse', function() {
 				const filepath = path.resolve(testFolder, file);
 
 				test(path.basename(filepath), async () => {
-					const result = new Minifier({
+					const result = new DirectTranspiler({
 						code: fs.readFileSync(filepath, 'utf-8'),
 						environmentVariables
-					}).minify();
+					}).parse();
 
 					expect(result).toMatchSnapshot();
 				});
 
 				test(path.basename(filepath) + ' uglify', async () => {
-					const result = new Minifier({
+					const result = new DirectTranspiler({
 						code: fs.readFileSync(filepath, 'utf-8'),
-						uglify: true,
+						buildType: BuildType.UGLIFY,
 						environmentVariables
-					}).minify();
+					}).parse();
+
+					expect(result).toMatchSnapshot();
+				});
+
+				test(path.basename(filepath) + ' beautify', async () => {
+					const result = new DirectTranspiler({
+						code: fs.readFileSync(filepath, 'utf-8'),
+						buildType: BuildType.BEAUTIFY,
+						environmentVariables
+					}).parse();
 
 					expect(result).toMatchSnapshot();
 				});

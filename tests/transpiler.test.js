@@ -1,4 +1,4 @@
-const { Transpiler } = require('../dist');
+const { Transpiler, BuildType } = require('../dist');
 const fs = require('fs');
 const path = require('path');
 const testFolder = path.resolve(__dirname, 'scripts');
@@ -27,7 +27,17 @@ describe('parse', function() {
 				test(path.basename(filepath) + ' uglify', async () => {
 					const result = await (new Transpiler({
 						target: filepath,
-						uglify: true,
+						buildType: BuildType.UGLIFY,
+						environmentVariables
+					}).parse());
+
+					expect(Object.values(result)).toMatchSnapshot();
+				});
+
+				test(path.basename(filepath) + ' beautify', async () => {
+					const result = await (new Transpiler({
+						target: filepath,
+						buildType: BuildType.BEAUTIFY,
 						environmentVariables
 					}).parse());
 

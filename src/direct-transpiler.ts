@@ -1,17 +1,16 @@
 import EventEmitter from 'events';
-import { ASTBase, ASTChunkAdvanced, ASTLiteral, Parser } from 'greybel-core';
+import { ASTChunkAdvanced, ASTLiteral, Parser } from 'greybel-core';
 
-import defaultFactory, { BuildMap } from './build-map/default';
-import uglifyFactory from './build-map/uglify';
+import getFactory, { BuildType } from './build-map';
 import Context from './context';
-import Transformer, { TransformerDataObject } from './transformer';
+import Transformer from './transformer';
 import generateCharsetMap from './utils/charset-generator';
 
-export interface MinifierOptions {
+export interface DirectTranspilerOptions {
   code: string;
 
   obfuscation?: boolean;
-  uglify?: boolean;
+  buildType?: BuildType;
   disableLiteralsOptimization?: boolean;
   disableNamespacesOptimization?: boolean;
   environmentVariables?: Map<string, string>;
@@ -19,11 +18,11 @@ export interface MinifierOptions {
   excludedNamespaces?: string[];
 }
 
-export default class Minifier extends EventEmitter {
+export default class DirectTranspiler extends EventEmitter {
   code: string;
 
   obfuscation: boolean;
-  uglify: boolean;
+  buildType: BuildType;
   installer: boolean;
   disableLiteralsOptimization: boolean;
   disableNamespacesOptimization: boolean;
@@ -31,7 +30,7 @@ export default class Minifier extends EventEmitter {
 
   excludedNamespaces: string[];
 
-  constructor(options: MinifierOptions) {
+  constructor(options: DirectTranspilerOptions) {
     super();
 
     const me = this;
@@ -39,29 +38,20 @@ export default class Minifier extends EventEmitter {
     me.code = options.code;
 
     me.obfuscation = options.obfuscation || true;
-    me.uglify = options.uglify || false;
+    me.buildType = options.buildType || BuildType.DEFAULT;
     me.disableLiteralsOptimization =
-      options.disableLiteralsOptimization || false;
+      options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
     me.disableNamespacesOptimization =
-      options.disableNamespacesOptimization || false;
+      options.disableNamespacesOptimization ||  me.buildType !== BuildType.UGLIFY;
     me.environmentVariables = options.environmentVariables || new Map();
 
     me.excludedNamespaces = options.excludedNamespaces || [];
   }
 
-  getBuildMapFactory(): (
-    make: (item: ASTBase, _data: TransformerDataObject) => string,
-    context: Context,
-    environmentVariables: Map<string, string>
-  ) => BuildMap {
-    const me = this;
-    return me.uglify ? uglifyFactory : defaultFactory;
-  }
-
-  minify(): string {
+  parse(): string {
     const me = this;
 
-    const mapFactory = me.getBuildMapFactory();
+    const mapFactory = getFactory(me.buildType);
     const parser = new Parser(me.code);
     const chunk = parser.parseChunk() as ASTChunkAdvanced;
     const namespaces = [].concat(Array.from(chunk.namespaces));

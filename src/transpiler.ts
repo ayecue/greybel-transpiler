@@ -1,17 +1,14 @@
-import { ASTBase } from 'greybel-core';
-
 import {
   HEADER_BOILERPLATE,
   MAIN_BOILERPLATE,
   MODULE_BOILERPLATE
 } from './boilerplates';
-import defaultFactory, { BuildMap } from './build-map/default';
-import uglifyFactory from './build-map/uglify';
+import getFactory, { BuildType } from './build-map';
 import Context from './context';
 import Dependency from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
 import Target, { TargetParseResult, TargetParseResultItem } from './target';
-import Transformer, { TransformerDataObject } from './transformer';
+import Transformer from './transformer';
 import generateCharsetMap from './utils/charset-generator';
 
 export interface TranspilerOptions {
@@ -19,7 +16,7 @@ export interface TranspilerOptions {
   context?: Context;
 
   obfuscation?: boolean;
-  uglify?: boolean;
+  buildType?: BuildType;
   installer?: boolean;
   excludedNamespaces?: string[];
   disableLiteralsOptimization?: boolean;
@@ -39,7 +36,7 @@ export default class Transpiler {
   resourceHandler: ResourceHandler;
 
   obfuscation: boolean;
-  uglify: boolean;
+  buildType: BuildType;
   installer: boolean;
   disableLiteralsOptimization: boolean;
   disableNamespacesOptimization: boolean;
@@ -61,27 +58,18 @@ export default class Transpiler {
     });
 
     me.obfuscation = options.obfuscation || true;
-    me.uglify = options.uglify || false;
+    me.buildType = options.buildType || BuildType.DEFAULT;
     me.installer = options.installer || false;
     me.disableLiteralsOptimization =
-      options.disableLiteralsOptimization || false;
+      options.disableLiteralsOptimization ||  me.buildType !== BuildType.UGLIFY;
     me.disableNamespacesOptimization =
-      options.disableNamespacesOptimization || false;
+      options.disableNamespacesOptimization ||  me.buildType !== BuildType.UGLIFY;
     me.environmentVariables = options.environmentVariables || new Map();
-  }
-
-  getBuildMapFactory(): (
-    make: (item: ASTBase, _data: TransformerDataObject) => string,
-    context: Context,
-    environmentVariables: Map<string, string>
-  ) => BuildMap {
-    const me = this;
-    return me.uglify ? uglifyFactory : defaultFactory;
   }
 
   async parse(): Promise<TranspilerParseResult> {
     const me = this;
-    const mapFactory = me.getBuildMapFactory();
+    const mapFactory = getFactory(me.buildType);
     const context = me.context;
     const target = new Target({
       target: me.target,
