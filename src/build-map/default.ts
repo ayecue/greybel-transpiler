@@ -105,7 +105,7 @@ export default function (
       item: ASTMapKeyString,
       _data: TransformerDataObject
     ): string => {
-      const key = `"${item.key}"`;
+      const key = make(item.key);
       const value = make(item.value);
 
       return [key, value].join(':');

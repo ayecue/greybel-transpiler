@@ -640,7 +640,7 @@ end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))
-null
+\\"true\\"
 //debugger
 end function
 MAIN()",
@@ -815,7 +815,7 @@ AsciiGen.gen = function(str, colors)
 end function
 
 print(AsciiGen.gen(\\"Hallo\\"))
-null
+\\"true\\"
 //debugger
 end function
 MAIN()",
@@ -972,7 +972,7 @@ end if
 return [c[0].join(\\"\\"),c[1].join(\\"\\"),c[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
-null
+\\"true\\"
 //debugger
 end function
 F",
@@ -1487,6 +1487,77 @@ print(I.gen(\\"Hallo\\"))",
 ]
 `;
 
+exports[`parse default scripts map.src 1`] = `
+Array [
+  "MODULES={}
+EXPORTED={}
+__REQUIRE=function(r)
+if not MODULES.hasIndex(r) then
+exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+end if
+module=MODULES[r]
+return @module(r).exports
+end function
+MAIN=function()
+test={{\\"myTest\\":0,1:2}:true}
+test2={[12,14]:true}
+test3={test:234}
+test4={true:\\"foo\\"}
+test5={123:\\"bar\\"}
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts map.src beautify 1`] = `
+Array [
+  "MODULES = {}
+EXPORTED = {}
+
+__REQUIRE = function(r)
+	if not MODULES.hasIndex(r) then
+		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+	end if
+
+	module = MODULES[r]
+	return @module(r).exports
+end function
+
+MAIN = function()
+	test = {{\\"myTest\\": 0, 1: 2}: true}
+test2 = {[12, 14]: true}
+test3 = {test: 234}
+test4 = {true: \\"foo\\"}
+test5 = {123: \\"bar\\"}
+end function
+MAIN()",
+]
+`;
+
+exports[`parse default scripts map.src uglify 1`] = `
+Array [
+  "globals.H=globals
+H.N=true
+C={}
+D={}
+E=function(r)
+if not C.hasIndex(r) then
+exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
+end if
+G=C[r]
+return @G(r).exports
+end function
+F=function()
+I={{\\"myTest\\":0,1:2}:N}
+J={[12,14]:N}
+K={I:234}
+L={N:\\"foo\\"}
+M={123:\\"bar\\"}
+end function
+F",
+]
+`;
+
 exports[`parse default scripts negation.src 1`] = `
 Array [
   "MODULES={}
@@ -1727,27 +1798,27 @@ G=C[r]
 return @G(r).exports
 end function
 F=function()
-I=function(J)
-print(J)
+I=function(N)
+print(N)
 end function
-K=function(J)
-print(J)
+J=function(N)
+print(N)
 end function
-L=function(J)
-print(J)
+K=function(N)
+print(N)
 end function
-M=function(J)
-print(J)
+L=function(N)
+print(N)
 end function
-N=function(J)
-print(J)
+M=function(N)
+print(N)
 end function
 I(O)
-K(O)
+J(O)
+L(O)
+J(O)
 M(O)
 K(O)
-N(O)
-L(O)
 end function
 F",
 ]
@@ -1939,58 +2010,58 @@ I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
 I.NUMBER_CHARACTERS=\\"0123456789\\"
 I.ALPHA_NUMERIC=((I.ALPHABETIC_CHARACTERS + I.ALPHABETIC_CHARACTERS.upper) + I.NUMBER_CHARACTERS)
 I.constructor=function()
-P=self
-P.buffer=[0]
-P.characters=P.ALPHA_NUMERIC
-return P
+W=self
+W.buffer=[0]
+W.characters=W.ALPHA_NUMERIC
+return W
 end function
-I.increaseBuffer=function(T)
-P=self
-U=P.buffer
-V=P.characters.len
-if (T == null) then
-T=(U.len - 1)
+I.increaseBuffer=function(Z)
+W=self
+a=W.buffer
+b=W.characters.len
+if (Z == null) then
+Z=(a.len - 1)
 end if
-X=U[T]
-X=(X + 1)
-U[T]=X
-if (X == V) then
-U[T]=0
-if (T == 0) then
-U.push(0)
+d=a[Z]
+d=(d + 1)
+a[Z]=d
+if (d == b) then
+a[Z]=0
+if (Z == 0) then
+a.push(0)
 else
-P.increaseBuffer((T - 1))
+W.increaseBuffer((Z - 1))
 end if
 end if
 end function
 I.gen=function()
-P=self
-U=P.buffer
-a=P.characters
-b=\\"\\"
-c=0
-while (c < U.len)
-d=U[c]
-b=(b + a[d])
-if (c == (U.len - 1)) then
+W=self
+a=W.buffer
+e=W.characters
+f=\\"\\"
+S=0
+while (S < a.len)
+g=a[S]
+f=(f + e[g])
+if (S == (a.len - 1)) then
 self.increaseBuffer
 end if
-c=(c + 1)
+S=(S + 1)
 end while
-if (U.len > P.MAX_PASSWORD_LENGTH) then
+if (a.len > W.MAX_PASSWORD_LENGTH) then
 return null
 end if
-return b
+return f
 end function
-e=(new I).constructor
-c=0
-f=10
-g=[]
-while (c < f)
-g.push(e.gen)
-c=(c + 1)
+R=(new I).constructor
+S=0
+T=10
+U=[]
+while (S < T)
+U.push(R.gen)
+S=(S + 1)
 end while
-print(g)
+print(U)
 end function
 F",
 ]
@@ -2483,9 +2554,9 @@ MAIN()",
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 Array [
   "globals.H=globals
-H.Ad=1
-H.Ab=null
-H.Ac=63
+H.Ae=1
+H.Ac=null
+H.Ad=63
 C={}
 D={}
 E=function(r)
@@ -2501,27 +2572,27 @@ I.constructor=function(str)
 self.str=str
 return self
 end function
-I.parse=function(L)
-M=self.str
-N=0
-O=L.len
-while (N < O)
-M=M.replace((\\"$\\" + N),L[N])
-N=(N + Ad)
+I.parse=function(h)
+i=self.str
+j=0
+k=h.len
+while (j < k)
+i=i.replace((\\"$\\" + j),h[j])
+j=(j + Ae)
 end while
-return (new self).constructor(M)
+return (new self).constructor(i)
 end function
 I.startsWith=function(str)
 return (self.str.indexOf(str) == 0)
 end function
-I.substr=function(U,V)
-return (new self).constructor(slice(self.str,U,V))
+I.substr=function(s,n)
+return (new self).constructor(slice(self.str,s,n))
 end function
 I.indexOf=function(str)
 return self.str.indexOf(str)
 end function
-I.replace=function(str,W)
-return (new self).constructor(self.str.replace(str,W))
+I.replace=function(str,o)
+return (new self).constructor(self.str.replace(str,o))
 end function
 I.remove=function(str)
 return (new self).constructor(self.str.remove(str))
@@ -2532,169 +2603,169 @@ end function
 I.length=function()
 return self.str.len
 end function
-I.split=function(AI)
-return self.str.split(AI)
+I.split=function(p)
+return self.str.split(p)
 end function
-I.trim=function(AI)
+I.trim=function(p)
 return (new self).constructor(self.str.trim)
 end function
-d={}
-d.String=I
-d.constructor=function(e,L)
-f=self
-f.message=e
-if (L != Ab) then
-f.message=(new f.String).constructor(e).parse(L).toString
+U={}
+U.String=I
+U.constructor=function(q,h)
+r=self
+r.message=q
+if (h != Ac) then
+r.message=(new r.String).constructor(q).parse(h).toString
 end if
-return f
+return r
 end function
-d.throw=function()
+U.throw=function()
 exit(((\\"<color=#ff0000>\\" + self.message) + \\"</color>\\"))
 end function
-h={}
-h.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
-h.defaultSecret=\\"test123\\"
-h.maxCharCode=55295
-h.Error=d
-h.constructor=function(j,l,m)
-n=self
-n.defaultSecret=j
-n.table=m
-n.hashFn=@l
-if (@l == Ab) then
-n.hashFn=@md5
+W={}
+W.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
+W.defaultSecret=\\"test123\\"
+W.maxCharCode=55295
+W.Error=U
+W.constructor=function(Y,t,u)
+AU=self
+AU.defaultSecret=Y
+AU.table=u
+AU.hashFn=@t
+if (@t == Ac) then
+AU.hashFn=@md5
 end if
-if (m == Ab) then
-n.table=n.defaultCharset
+if (u == Ac) then
+AU.table=AU.defaultCharset
 end if
-if (n.table.len != 64) then
-(new n.Error).constructor(\\"Invalid charset $0...\\",[n.table]).throw
+if (AU.table.len != 64) then
+(new AU.Error).constructor(\\"Invalid charset $0...\\",[AU.table]).throw
 end if
-return n
+return AU
 end function
-h.getHash=function(q)
-n=self
+W.getHash=function(z)
+AU=self
 hash=[]
-r=n.hashFn(q)
-for char in r
+y=AU.hashFn(z)
+for char in y
 hash.push(char.code)
 end for
 hash.reverse
 return hash
 end function
-h.encrypt=function(str,q)
-n=self
-if (q == Ab) then
-q=n.defaultSecret
+W.encrypt=function(str,z)
+AU=self
+if (z == Ac) then
+z=AU.defaultSecret
 end if
-hash=n.getHash(q)
-w=0
-x=[]
-y=0
-z=(str.len % 3)
-_A=(str.len - z)
-AB=function(AC)
-if not n.table.hasIndex(AC) then
-(new n.Error).constructor(\\"Invalid index $0...\\",[AC]).throw
+hash=AU.getHash(z)
+AC=0
+AD=[]
+AE=0
+AF=(str.len % 3)
+AG=(str.len - AF)
+AH=function(AT)
+if not AU.table.hasIndex(AT) then
+(new AU.Error).constructor(\\"Invalid index $0...\\",[AT]).throw
 end if
-return n.table[AC]
+return AU.table[AT]
 end function
-AE=function(AF,AH)
-return bitwise(\\"&\\",AF,AH)
+AI=function(AL,AN)
+return bitwise(\\"&\\",AL,AN)
 end function
-AJ=function(AF,AH)
-return bitwise(\\"<<\\",AF,AH)
+AJ=function(AL,AN)
+return bitwise(\\"<<\\",AL,AN)
 end function
-AK=function(AF,AH)
-return bitwise(\\">>\\",AF,AH)
+AK=function(AL,AN)
+return bitwise(\\">>\\",AL,AN)
 end function
-while (y < _A)
-f=hash[((y % hash.len) - Ad)]
-AF=AJ((str[y].code + f),16)
-AH=AJ((str[(y + Ad)].code + f),8)
-AL=(str[(y + 2)].code + f)
-AN=((AF + AH) + AL)
-x.push(AB(AE(AK(AN,18),Ac)))
-x.push(AB(AE(AK(AN,12),Ac)))
-x.push(AB(AE(AK(AN,6),Ac)))
-x.push(AB(AE(AN,Ac)))
-y=(y + 3)
+while (AE < AG)
+r=hash[((AE % hash.len) - Ae)]
+AL=AJ((str[AE].code + r),16)
+AN=AJ((str[(AE + Ae)].code + r),8)
+AP=(str[(AE + 2)].code + r)
+AR=((AL + AN) + AP)
+AD.push(AH(AI(AK(AR,18),Ad)))
+AD.push(AH(AI(AK(AR,12),Ad)))
+AD.push(AH(AI(AK(AR,6),Ad)))
+AD.push(AH(AI(AR,Ad)))
+AE=(AE + 3)
 end while
-if (z == 2) then
-f=hash[((y % hash.len) - Ad)]
-AF=AJ((str[y].code + f),8)
-AH=(str[(y + Ad)].code + f)
-AN=(AF + AH)
-x.push(AB(AK(AN,10)))
-x.push(AB(AE(AK(AN,4),Ac)))
-x.push(AB(AE(AJ(AN,2),Ac)))
-x.push(\\"=\\")
-else if (z == Ad) then
-f=hash[((y % hash.len) - Ad)]
-AN=(str[y].code + f)
-x.push(AB(AK(AN,2)))
-x.push(AB(AE(AJ(AN,4),Ac)))
-x.push(\\"==\\")
+if (AF == 2) then
+r=hash[((AE % hash.len) - Ae)]
+AL=AJ((str[AE].code + r),8)
+AN=(str[(AE + Ae)].code + r)
+AR=(AL + AN)
+AD.push(AH(AK(AR,10)))
+AD.push(AH(AI(AK(AR,4),Ad)))
+AD.push(AH(AI(AJ(AR,2),Ad)))
+AD.push(\\"=\\")
+else if (AF == Ae) then
+r=hash[((AE % hash.len) - Ae)]
+AR=(str[AE].code + r)
+AD.push(AH(AK(AR,2)))
+AD.push(AH(AI(AJ(AR,4),Ad)))
+AD.push(\\"==\\")
 end if
-return x.join(\\"\\")
+return AD.join(\\"\\")
 end function
-h.decrypt=function(str,q)
-n=self
-if (q == Ab) then
-q=n.defaultSecret
+W.decrypt=function(str,z)
+AU=self
+if (z == Ac) then
+z=AU.defaultSecret
 end if
-hash=n.getHash(q)
-w=0
-AQ=hash.len
-x=[]
-AR=0
-AS=0
-y=0
-w=0
-_A=str.len
-AE=function(AF,AH)
-return bitwise(\\"&\\",AF,AH)
+hash=AU.getHash(z)
+AC=0
+AV=hash.len
+AD=[]
+AW=0
+AX=0
+AE=0
+AC=0
+AG=str.len
+AI=function(AL,AN)
+return bitwise(\\"&\\",AL,AN)
 end function
-AK=function(AF,AH)
-return bitwise(\\">>\\",AF,AH)
+AK=function(AL,AN)
+return bitwise(\\">>\\",AL,AN)
 end function
-while (y < _A)
-AN=n.table.indexOf(str[y])
-AT=AR
-AR=(AR + Ad)
-if (AT % 4) then
-AS=((AS * 64) + AN)
+while (AE < AG)
+AR=AU.table.indexOf(str[AE])
+AY=AW
+AW=(AW + Ae)
+if (AY % 4) then
+AX=((AX * 64) + AR)
 else
-AS=AN
+AX=AR
 end if
-if (AT % 4) then
-AU=(((floor((w / 3)) * 3) % AQ) - Ad)
-if not hash.hasIndex(AU) then
+if (AY % 4) then
+AZ=(((floor((AC / 3)) * 3) % AV) - Ae)
+if not hash.hasIndex(AZ) then
 break
 end if
-f=hash[AU]
-AV=AE((-2 * AR),6)
-AV=AK(AS,AV)
-AV=AE(255,AV)
-if (AV != 0) then
-AW=(AV - f)
-if (AW > n.maxCharCode) then
+r=hash[AZ]
+Aa=AI((-2 * AW),6)
+Aa=AK(AX,Aa)
+Aa=AI(255,Aa)
+if (Aa != 0) then
+Ab=(Aa - r)
+if (Ab > AU.maxCharCode) then
 break
 end if
-x.push(char(AW))
+AD.push(char(Ab))
 end if
-w=(w + Ad)
+AC=(AC + Ae)
 end if
-y=(y + Ad)
+AE=(AE + Ae)
 end while
-return x.join(\\"\\")
+return AD.join(\\"\\")
 end function
-AX=(new h).constructor(\\"test\\")
-AY=\\"abcde\\"
-AZ=AX.encrypt(AY)
-Aa=AX.decrypt(AZ)
-print(AZ)
-print(Aa)
+d=(new W).constructor(\\"test\\")
+e=\\"abcde\\"
+f=d.encrypt(e)
+g=d.decrypt(f)
+print(f)
+print(g)
 end function
 F",
 ]
@@ -2885,58 +2956,58 @@ F=function()
 I={}
 I.pool={}
 I.defaultSeed=\\"random\\"
-I.createPool=function(M,N)
-return {\\"seed\\":M,\\"value\\":N,\\"generation\\":0}
+I.createPool=function(Q,R)
+return {\\"seed\\":Q,\\"value\\":R,\\"generation\\":0}
 end function
-I.calcSeed=function(M)
-P=0
-Q=M.len
-for char in M
-P=((P + char.code) + Q)
-Q=(Q - 1)
+I.calcSeed=function(Q)
+S=0
+T=Q.len
+for char in Q
+S=((S + char.code) + T)
+T=(T - 1)
 end for
-return P
+return S
 end function
-I.gen=function(U,V,M,W)
-X=self
-J=X.pool
-if (W == null) then
-W=true
+I.gen=function(V,W,Q,X)
+Y=self
+J=Y.pool
+if (X == null) then
+X=true
 end if
-if (M == null) then
-M=X.defaultSeed
+if (Q == null) then
+Q=Y.defaultSeed
 end if
-if J.hasIndex(M) then
-Y=J[M]
-if not W then
-return Y.value
+if J.hasIndex(Q) then
+Z=J[Q]
+if not X then
+return Z.value
 end if
-Y.generation=(Y.generation + 1)
-N=floor(((rnd((Y.value + Y.generation)) * (V - U)) + U))
-Y.value=N
-return N
+Z.generation=(Z.generation + 1)
+R=floor(((rnd((Z.value + Z.generation)) * (W - V)) + V))
+Z.value=R
+return R
 end if
-P=X.calcSeed(M)
-N=floor(((rnd(P) * (V - U)) + U))
-J[M]=X.createPool(P,N)
-return N
+S=Y.calcSeed(Q)
+R=floor(((rnd(S) * (W - V)) + V))
+J[Q]=Y.createPool(S,R)
+return R
 end function
-I.seq=function(U,V,M,c,d)
-X=self
+I.seq=function(V,W,Q,c,d)
+Y=self
 e=0
 f=[]
 while (e < c)
-g=X.gen(U,V,M)
+g=Y.gen(V,W,Q)
 f.push(g)
 e=(e + 1)
 end while
 if (d != true) then
-X.pool.remove(M)
+Y.pool.remove(Q)
 end if
 return f
 end function
-I.get=function(U,V)
-return self.gen(U,V)
+I.get=function(V,W)
+return self.gen(V,W)
 end function
 print(I.get(100,500))
 print(I.seq(100,500,\\"test\\",10))

@@ -6,7 +6,8 @@ const testFolder = path.resolve(__dirname, 'scripts');
 describe('parse', function() {
 	const environmentVariables = new Map([
 		['test', '"foo"'],
-		['test2', 0.2]
+		['test2', 0.2],
+		['TEST_ENV', true]
 	]);
 
 	describe('default scripts', function() {
