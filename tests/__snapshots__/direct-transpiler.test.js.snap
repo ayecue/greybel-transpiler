@@ -1303,9 +1303,9 @@ print(decrypted)"
 
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 "globals.H=globals
-H.І=1
-H.Є=null
-H.Ѕ=63
+H.Ѕ=1
+H.Ѓ=null
+H.Є=63
 I={}
 I.constructor=function(str)
 self.str=str
@@ -1317,7 +1317,7 @@ j=0
 k=h.len
 while (j < k)
 i=i.replace((\\"$\\" + j),h[j])
-j=(j + І)
+j=(j + Ѕ)
 end while
 return (new self).constructor(i)
 end function
@@ -1353,7 +1353,7 @@ U.String=I
 U.constructor=function(q,h)
 r=self
 r.message=q
-if (h != Є) then
+if (h != Ѓ) then
 r.message=(new r.String).constructor(q).parse(h).toString
 end if
 return r
@@ -1367,25 +1367,25 @@ W.defaultSecret=\\"test123\\"
 W.maxCharCode=55295
 W.Error=U
 W.constructor=function(Y,t,u)
-ϼ=self
-ϼ.defaultSecret=Y
-ϼ.table=u
-ϼ.hashFn=@t
-if (@t == Є) then
-ϼ.hashFn=@md5
+ϻ=self
+ϻ.defaultSecret=Y
+ϻ.table=u
+ϻ.hashFn=@t
+if (@t == Ѓ) then
+ϻ.hashFn=@md5
 end if
-if (u == Є) then
-ϼ.table=ϼ.defaultCharset
+if (u == Ѓ) then
+ϻ.table=ϻ.defaultCharset
 end if
-if (ϼ.table.len != 64) then
-(new ϼ.Error).constructor(\\"Invalid charset $0...\\",[ϼ.table]).throw
+if (ϻ.table.len != 64) then
+(new ϻ.Error).constructor(\\"Invalid charset $0...\\",[ϻ.table]).throw
 end if
-return ϼ
+return ϻ
 end function
 W.getHash=function(z)
-ϼ=self
+ϻ=self
 hash=[]
-y=ϼ.hashFn(z)
+y=ϻ.hashFn(z)
 for char in y
 hash.push(char.code)
 end for
@@ -1393,111 +1393,111 @@ hash.reverse
 return hash
 end function
 W.encrypt=function(str,z)
-ϼ=self
-if (z == Є) then
-z=ϼ.defaultSecret
+ϻ=self
+if (z == Ѓ) then
+z=ϻ.defaultSecret
 end if
-hash=ϼ.getHash(z)
-Ϫ=0
-ϫ=[]
-Ϭ=0
-ϭ=(str.len % 3)
-Ϯ=(str.len - ϭ)
-ϯ=function(ϻ)
-if not ϼ.table.hasIndex(ϻ) then
-(new ϼ.Error).constructor(\\"Invalid index $0...\\",[ϻ]).throw
+hash=ϻ.getHash(z)
+ϩ=0
+Ϫ=[]
+ϫ=0
+Ϭ=(str.len % 3)
+ϭ=(str.len - Ϭ)
+Ϯ=function(Ϻ)
+if not ϻ.table.hasIndex(Ϻ) then
+(new ϻ.Error).constructor(\\"Invalid index $0...\\",[Ϻ]).throw
 end if
-return ϼ.table[ϻ]
+return ϻ.table[Ϻ]
 end function
-ϰ=function(ϳ,ϵ)
-return bitwise(\\"&\\",ϳ,ϵ)
+ϯ=function(ϲ,ϴ)
+return bitwise(\\"&\\",ϲ,ϴ)
 end function
-ϱ=function(ϳ,ϵ)
-return bitwise(\\"<<\\",ϳ,ϵ)
+ϰ=function(ϲ,ϴ)
+return bitwise(\\"<<\\",ϲ,ϴ)
 end function
-ϲ=function(ϳ,ϵ)
-return bitwise(\\">>\\",ϳ,ϵ)
+ϱ=function(ϲ,ϴ)
+return bitwise(\\">>\\",ϲ,ϴ)
 end function
-while (Ϭ < Ϯ)
-r=hash[((Ϭ % hash.len) - І)]
-ϳ=ϱ((str[Ϭ].code + r),16)
-ϵ=ϱ((str[(Ϭ + І)].code + r),8)
-Ϸ=(str[(Ϭ + 2)].code + r)
-Ϲ=((ϳ + ϵ) + Ϸ)
-ϫ.push(ϯ(ϰ(ϲ(Ϲ,18),Ѕ)))
-ϫ.push(ϯ(ϰ(ϲ(Ϲ,12),Ѕ)))
-ϫ.push(ϯ(ϰ(ϲ(Ϲ,6),Ѕ)))
-ϫ.push(ϯ(ϰ(Ϲ,Ѕ)))
-Ϭ=(Ϭ + 3)
+while (ϫ < ϭ)
+r=hash[((ϫ % hash.len) - Ѕ)]
+ϲ=ϰ((str[ϫ].code + r),16)
+ϴ=ϰ((str[(ϫ + Ѕ)].code + r),8)
+϶=(str[(ϫ + 2)].code + r)
+ϸ=((ϲ + ϴ) + ϶)
+Ϫ.push(Ϯ(ϯ(ϱ(ϸ,18),Є)))
+Ϫ.push(Ϯ(ϯ(ϱ(ϸ,12),Є)))
+Ϫ.push(Ϯ(ϯ(ϱ(ϸ,6),Є)))
+Ϫ.push(Ϯ(ϯ(ϸ,Є)))
+ϫ=(ϫ + 3)
 end while
-if (ϭ == 2) then
-r=hash[((Ϭ % hash.len) - І)]
-ϳ=ϱ((str[Ϭ].code + r),8)
-ϵ=(str[(Ϭ + І)].code + r)
-Ϲ=(ϳ + ϵ)
-ϫ.push(ϯ(ϲ(Ϲ,10)))
-ϫ.push(ϯ(ϰ(ϲ(Ϲ,4),Ѕ)))
-ϫ.push(ϯ(ϰ(ϱ(Ϲ,2),Ѕ)))
-ϫ.push(\\"=\\")
-else if (ϭ == І) then
-r=hash[((Ϭ % hash.len) - І)]
-Ϲ=(str[Ϭ].code + r)
-ϫ.push(ϯ(ϲ(Ϲ,2)))
-ϫ.push(ϯ(ϰ(ϱ(Ϲ,4),Ѕ)))
-ϫ.push(\\"==\\")
+if (Ϭ == 2) then
+r=hash[((ϫ % hash.len) - Ѕ)]
+ϲ=ϰ((str[ϫ].code + r),8)
+ϴ=(str[(ϫ + Ѕ)].code + r)
+ϸ=(ϲ + ϴ)
+Ϫ.push(Ϯ(ϱ(ϸ,10)))
+Ϫ.push(Ϯ(ϯ(ϱ(ϸ,4),Є)))
+Ϫ.push(Ϯ(ϯ(ϰ(ϸ,2),Є)))
+Ϫ.push(\\"=\\")
+else if (Ϭ == Ѕ) then
+r=hash[((ϫ % hash.len) - Ѕ)]
+ϸ=(str[ϫ].code + r)
+Ϫ.push(Ϯ(ϱ(ϸ,2)))
+Ϫ.push(Ϯ(ϯ(ϰ(ϸ,4),Є)))
+Ϫ.push(\\"==\\")
 end if
-return ϫ.join(\\"\\")
+return Ϫ.join(\\"\\")
 end function
 W.decrypt=function(str,z)
-ϼ=self
-if (z == Є) then
-z=ϼ.defaultSecret
+ϻ=self
+if (z == Ѓ) then
+z=ϻ.defaultSecret
 end if
-hash=ϼ.getHash(z)
-Ϫ=0
-Ͻ=hash.len
-ϫ=[]
+hash=ϻ.getHash(z)
+ϩ=0
+ϼ=hash.len
+Ϫ=[]
+Ͻ=0
 Ͼ=0
-Ͽ=0
-Ϭ=0
-Ϫ=0
-Ϯ=str.len
-ϰ=function(ϳ,ϵ)
-return bitwise(\\"&\\",ϳ,ϵ)
+ϫ=0
+ϩ=0
+ϭ=str.len
+ϯ=function(ϲ,ϴ)
+return bitwise(\\"&\\",ϲ,ϴ)
 end function
-ϲ=function(ϳ,ϵ)
-return bitwise(\\">>\\",ϳ,ϵ)
+ϱ=function(ϲ,ϴ)
+return bitwise(\\">>\\",ϲ,ϴ)
 end function
-while (Ϭ < Ϯ)
-Ϲ=ϼ.table.indexOf(str[Ϭ])
-Ѐ=Ͼ
-Ͼ=(Ͼ + І)
-if (Ѐ % 4) then
-Ͽ=((Ͽ * 64) + Ϲ)
+while (ϫ < ϭ)
+ϸ=ϻ.table.indexOf(str[ϫ])
+Ͽ=Ͻ
+Ͻ=(Ͻ + Ѕ)
+if (Ͽ % 4) then
+Ͼ=((Ͼ * 64) + ϸ)
 else
-Ͽ=Ϲ
+Ͼ=ϸ
 end if
-if (Ѐ % 4) then
-Ё=(((floor((Ϫ / 3)) * 3) % Ͻ) - І)
-if not hash.hasIndex(Ё) then
+if (Ͽ % 4) then
+Ѐ=(((floor((ϩ / 3)) * 3) % ϼ) - Ѕ)
+if not hash.hasIndex(Ѐ) then
 break
 end if
-r=hash[Ё]
-Ђ=ϰ((-2 * Ͼ),6)
-Ђ=ϲ(Ͽ,Ђ)
-Ђ=ϰ(255,Ђ)
-if (Ђ != 0) then
-Ѓ=(Ђ - r)
-if (Ѓ > ϼ.maxCharCode) then
+r=hash[Ѐ]
+Ё=ϯ((-2 * Ͻ),6)
+Ё=ϱ(Ͼ,Ё)
+Ё=ϯ(255,Ё)
+if (Ё != 0) then
+Ђ=(Ё - r)
+if (Ђ > ϻ.maxCharCode) then
 break
 end if
-ϫ.push(char(Ѓ))
+Ϫ.push(char(Ђ))
 end if
-Ϫ=(Ϫ + І)
+ϩ=(ϩ + Ѕ)
 end if
-Ϭ=(Ϭ + І)
+ϫ=(ϫ + Ѕ)
 end while
-return ϫ.join(\\"\\")
+return Ϫ.join(\\"\\")
 end function
 d=(new W).constructor(\\"test\\")
 e=\\"abcde\\"
@@ -1662,46 +1662,46 @@ T=(T - 1)
 end for
 return S
 end function
-I.gen=function(W,X,Q,Y)
-Z=self
-J=Z.pool
-if (Y == null) then
-Y=true
+I.gen=function(V,W,Q,X)
+Y=self
+J=Y.pool
+if (X == null) then
+X=true
 end if
 if (Q == null) then
-Q=Z.defaultSeed
+Q=Y.defaultSeed
 end if
 if J.hasIndex(Q) then
-a=J[Q]
-if not Y then
-return a.value
+Z=J[Q]
+if not X then
+return Z.value
 end if
-a.generation=(a.generation + 1)
-R=floor(((rnd((a.value + a.generation)) * (X - W)) + W))
-a.value=R
+Z.generation=(Z.generation + 1)
+R=floor(((rnd((Z.value + Z.generation)) * (W - V)) + V))
+Z.value=R
 return R
 end if
-S=Z.calcSeed(Q)
-R=floor(((rnd(S) * (X - W)) + W))
-J[Q]=Z.createPool(S,R)
+S=Y.calcSeed(Q)
+R=floor(((rnd(S) * (W - V)) + V))
+J[Q]=Y.createPool(S,R)
 return R
 end function
-I.seq=function(W,X,Q,d,e)
-Z=self
-f=0
-g=[]
-while (f < d)
-h=Z.gen(W,X,Q)
-g.push(h)
-f=(f + 1)
+I.seq=function(V,W,Q,c,d)
+Y=self
+e=0
+f=[]
+while (e < c)
+g=Y.gen(V,W,Q)
+f.push(g)
+e=(e + 1)
 end while
-if (e != true) then
-Z.pool.remove(Q)
+if (d != true) then
+Y.pool.remove(Q)
 end if
-return g
+return f
 end function
-I.get=function(W,X)
-return self.gen(W,X)
+I.get=function(V,W)
+return self.gen(V,W)
 end function
 print(I.get(100,500))
 print(I.seq(100,500,\\"test\\",10))"

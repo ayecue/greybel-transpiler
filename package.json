@@ -49,8 +49,8 @@
     },
     "dependencies": {
         "blueimp-md5": "^2.19.0",
-        "greybel-core": "^0.4.0",
-        "greyscript-core": "^0.3.3"
+        "greybel-core": "^0.4.1",
+        "greyscript-core": "^0.3.4"
     },
     "keywords": [
         "greyscript",
