@@ -5,6 +5,7 @@ import getFactory, { BuildType } from './build-map';
 import Context from './context';
 import Transformer from './transformer';
 import generateCharsetMap from './utils/charset-generator';
+import fetchNamespaces from './utils/fetch-namespaces';
 
 export interface DirectTranspilerOptions {
   code: string;
@@ -54,7 +55,7 @@ export default class DirectTranspiler extends EventEmitter {
     const mapFactory = getFactory(me.buildType);
     const parser = new Parser(me.code);
     const chunk = parser.parseChunk() as ASTChunkAdvanced;
-    const namespaces = [].concat(Array.from(chunk.namespaces));
+    const namespaces = fetchNamespaces(chunk);
     const literals = [].concat(chunk.literals);
     const charsetMap = generateCharsetMap(me.obfuscation);
     const context = new Context({

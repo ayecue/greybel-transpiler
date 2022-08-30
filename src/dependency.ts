@@ -5,6 +5,8 @@ import {
   ASTFeatureIncludeExpression,
   Parser
 } from 'greybel-core';
+import { ASTBaseBlockWithScope } from 'greyscript-core';
+import fetchNamespaces from './utils/fetch-namespaces';
 
 import Context from './context';
 import { ResourceHandler } from './resource';
@@ -97,7 +99,7 @@ export default class Dependency extends EventEmitter {
       const parser = new Parser(content);
       const chunk = parser.parseChunk() as ASTChunkAdvanced;
 
-      namespaces.push(...Array.from(chunk.namespaces));
+      namespaces.push(...fetchNamespaces(chunk));
       item.chunk = chunk;
 
       const dependency = new Dependency({

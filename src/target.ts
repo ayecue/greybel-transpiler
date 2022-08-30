@@ -4,6 +4,7 @@ import { ASTChunk, ASTChunkAdvanced, ASTLiteral, Parser } from 'greybel-core';
 import Context from './context';
 import Dependency from './dependency';
 import { ResourceHandler } from './resource';
+import fetchNamespaces from './utils/fetch-namespaces';
 
 export interface TargetOptions {
   target: string;
@@ -57,7 +58,7 @@ export default class Target extends EventEmitter {
 
     const parser = new Parser(content);
     const chunk = parser.parseChunk() as ASTChunkAdvanced;
-    const namespaces = [].concat(Array.from(chunk.namespaces));
+    const namespaces = fetchNamespaces(chunk);
     const literals = [].concat(chunk.literals);
     const nativeImports: Map<string, TargetParseResultItem> = new Map();
 
@@ -77,7 +78,7 @@ export default class Target extends EventEmitter {
       });
       await subDependency.findDependencies(namespaces);
 
-      namespaces.push(...Array.from(subChunk.namespaces));
+      namespaces.push(...fetchNamespaces(subChunk));
       literals.push(...subChunk.literals);
 
       nativeImports.set(nativeImport, {
