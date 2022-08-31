@@ -27,8 +27,5 @@ export const MODULE_BOILERPLATE: ASTChunk = new Parser(
 ).parseChunk() as ASTChunk;
 
 export const MAIN_BOILERPLATE: ASTChunk = new Parser(
-  `MAIN = function()
-	"$0"
-	end function
-	MAIN()`
+  `"$0"`
 ).parseChunk() as ASTChunk;

@@ -11,7 +11,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 AsciiGen={}
 map={}
 map.a=[\\"||¯|| \\",\\"||_|| \\",\\"|| || \\"]
@@ -74,9 +73,7 @@ r[2]=(([((\\"<color=#\\" + colors[2]) + \\">\\")] + r[2]) + [\\"</color>\\"])
 end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
-print(AsciiGen.gen(\\"Hallo\\"))
-end function
-MAIN()",
+print(AsciiGen.gen(\\"Hallo\\"))",
 ]
 `;
 
@@ -94,8 +91,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	AsciiGen = {}
+AsciiGen = {}
 map = {}
 map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
 map.b = [\\"||¯/ \\", \\"|| \\\\ \\", \\"||_/ \\"]
@@ -163,9 +159,7 @@ AsciiGen.gen = function(str, colors)
 	return [r[0].join(\\"\\"), r[1].join(\\"\\"), r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 
-print(AsciiGen.gen(\\"Hallo\\"))
-end function
-MAIN()",
+print(AsciiGen.gen(\\"Hallo\\"))",
 ]
 `;
 
@@ -193,7 +187,6 @@ end if
 G=C[b]
 return @G(b).exports
 end function
-F=function()
 I={}
 J={}
 J.a=[x,w,t]
@@ -256,9 +249,7 @@ b[2]=(([((_A + m[2]) + AC)] + b[2]) + [AB])
 end if
 return [b[0].join(\\"\\"),b[1].join(\\"\\"),b[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
-print(I.gen(\\"Hallo\\"))
-end function
-F",
+print(I.gen(\\"Hallo\\"))",
 ]
 `;
 
@@ -273,7 +264,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 a=(a / b)
 a=(a * b)
 a=(a - b)
@@ -285,9 +275,7 @@ w=(bitwise(\\">>\\",(bitwise(\\">>>\\",a,(bitwise(\\"<<\\",b,c)))),a))
 (bitwise(\\"&\\",a,b))
 (bitwise(\\"^\\",a,b))
 (a and b)
-(a or b)
-end function
-MAIN()",
+(a or b)",
 ]
 `;
 
@@ -305,8 +293,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	a = (a / b)
+a = (a / b)
 a = (a * b)
 a = (a - b)
 a = (a + b)
@@ -317,9 +304,7 @@ w = (bitwise(\\">>\\", (bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c)))), a))
 (bitwise(\\"&\\", a, b))
 (bitwise(\\"^\\", a, b))
 (a and b)
-(a or b)
-end function
-MAIN()",
+(a or b)",
 ]
 `;
 
@@ -335,7 +320,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I=(I / J)
 I=(I * J)
 I=(I - J)
@@ -347,9 +331,7 @@ K=(bitwise(\\">>\\",(bitwise(\\">>>\\",I,(bitwise(\\"<<\\",J,L)))),I))
 (bitwise(\\"&\\",I,J))
 (bitwise(\\"^\\",I,J))
 (I and J)
-(I or J)
-end function
-F",
+(I or J)",
 ]
 `;
 
@@ -364,15 +346,12 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 test=function(arg1=0,arg2=\\"test\\")
 print(arg1)
 print(arg2)
 end function
 test()
-test(\\"foo\\",false)
-end function
-MAIN()",
+test(\\"foo\\",false)",
 ]
 `;
 
@@ -390,16 +369,13 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	test = function(arg1 = 0, arg2 = \\"test\\")
+test = function(arg1 = 0, arg2 = \\"test\\")
 	print(arg1)
 	print(arg2)
 end function
 
 test()
-test(\\"foo\\", false)
-end function
-MAIN()",
+test(\\"foo\\", false)",
 ]
 `;
 
@@ -415,15 +391,12 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I=function(J=0,K=\\"test\\")
 print(J)
 print(K)
 end function
 I
-I(\\"foo\\",false)
-end function
-F",
+I(\\"foo\\",false)",
 ]
 `;
 
@@ -438,12 +411,9 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 myvar2=\\"\\"foo\\"\\"
 myvar=\\"\\"foo\\"\\"
-print(\\"0.2\\")
-end function
-MAIN()",
+print(\\"0.2\\")",
 ]
 `;
 
@@ -461,12 +431,9 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	myvar2 = \\"\\"foo\\"\\"
+myvar2 = \\"\\"foo\\"\\"
 myvar = \\"\\"foo\\"\\"
-print(\\"0.2\\")
-end function
-MAIN()",
+print(\\"0.2\\")",
 ]
 `;
 
@@ -482,12 +449,9 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 J=\\"\\"foo\\"\\"
 I=\\"\\"foo\\"\\"
-print(\\"0.2\\")
-end function
-F",
+print(\\"0.2\\")",
 ]
 `;
 
@@ -575,7 +539,6 @@ end if
 EXPORTED[r]=module
 return EXPORTED[r]
 end function
-MAIN=function()
 foo = __REQUIRE(\\"B\\")
 AsciiGen={}
 map={}
@@ -641,9 +604,7 @@ return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))
 \\"true\\"
-//debugger
-end function
-MAIN()",
+//debugger",
 ]
 `;
 
@@ -744,8 +705,7 @@ print(AsciiGen.gen(\\"Hallo\\"))
 	return EXPORTED[r]
 end function
 
-MAIN = function()
-	foo = __REQUIRE(\\"B\\")
+foo = __REQUIRE(\\"B\\")
 AsciiGen = {}
 map = {}
 map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
@@ -816,9 +776,7 @@ end function
 
 print(AsciiGen.gen(\\"Hallo\\"))
 \\"true\\"
-//debugger
-end function
-MAIN()",
+//debugger",
 ]
 `;
 
@@ -907,7 +865,6 @@ end if
 D[c]=G
 return D[c]
 end function
-F=function()
 I=E(\\"B\\")
 J={}
 K={}
@@ -973,9 +930,7 @@ return [c[0].join(\\"\\"),c[1].join(\\"\\"),c[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
 \\"true\\"
-//debugger
-end function
-F",
+//debugger",
 ]
 `;
 
@@ -990,13 +945,10 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 globals.test=\\"was\\"
 locals.foo=\\"moo\\"
 print(globals.hasIndex(\\"test\\"))
-print(locals.hasIndex(\\"foo\\"))
-end function
-MAIN()",
+print(locals.hasIndex(\\"foo\\"))",
 ]
 `;
 
@@ -1014,13 +966,10 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	globals.test = \\"was\\"
+globals.test = \\"was\\"
 locals.foo = \\"moo\\"
 print(globals.hasIndex(\\"test\\"))
-print(locals.hasIndex(\\"foo\\"))
-end function
-MAIN()",
+print(locals.hasIndex(\\"foo\\"))",
 ]
 `;
 
@@ -1036,13 +985,10 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 H.I=\\"was\\"
 locals.J=\\"moo\\"
 print(H.hasIndex(\\"I\\"))
-print(locals.hasIndex(\\"J\\"))
-end function
-F",
+print(locals.hasIndex(\\"J\\"))",
 ]
 `;
 
@@ -1057,7 +1003,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 if true then
 print(\\"true - 1\\")
 end if
@@ -1093,9 +1038,7 @@ if true then
 print(\\"true - 6\\")
 else
 print(\\"true - 6\\")
-end if
-end function
-MAIN()",
+end if",
 ]
 `;
 
@@ -1113,8 +1056,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	
+
 if true then
 	print(\\"true - 1\\")
 end if
@@ -1155,9 +1097,7 @@ if true then
 	print(\\"true - 6\\")
 else
 	print(\\"true - 6\\")
-end if
-end function
-MAIN()",
+end if",
 ]
 `;
 
@@ -1177,7 +1117,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 if I then
 print(\\"true - 1\\")
 end if
@@ -1213,9 +1152,7 @@ if I then
 print(\\"true - 6\\")
 else
 print(\\"true - 6\\")
-end if
-end function
-F",
+end if",
 ]
 `;
 
@@ -1230,11 +1167,8 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 import_code(\\"/some/path\\")
-print(123)
-end function
-MAIN()",
+print(123)",
   "AsciiGen={}
 map={}
 map.a=[\\"||¯|| \\",\\"||_|| \\",\\"|| || \\"]
@@ -1315,11 +1249,8 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	import_code(\\"/some/path\\")
-print(123)
-end function
-MAIN()",
+import_code(\\"/some/path\\")
+print(123)",
   "AsciiGen = {}
 map = {}
 map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
@@ -1416,11 +1347,8 @@ end if
 G=C[b]
 return @G(b).exports
 end function
-F=function()
 import_code(\\"/some/path\\")
-print(123)
-end function
-F",
+print(123)",
   "I={}
 J={}
 J.a=[x,w,t]
@@ -1498,14 +1426,11 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 test={{\\"myTest\\":0,1:2}:true}
 test2={[12,14]:true}
 test3={test:234}
 test4={true:\\"foo\\"}
-test5={123:\\"bar\\"}
-end function
-MAIN()",
+test5={123:\\"bar\\"}",
 ]
 `;
 
@@ -1523,14 +1448,11 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	test = {{\\"myTest\\": 0, 1: 2}: true}
+test = {{\\"myTest\\": 0, 1: 2}: true}
 test2 = {[12, 14]: true}
 test3 = {test: 234}
 test4 = {true: \\"foo\\"}
-test5 = {123: \\"bar\\"}
-end function
-MAIN()",
+test5 = {123: \\"bar\\"}",
 ]
 `;
 
@@ -1547,14 +1469,11 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I={{\\"myTest\\":0,1:2}:N}
 J={[12,14]:N}
 K={I:234}
 L={N:\\"foo\\"}
-M={123:\\"bar\\"}
-end function
-F",
+M={123:\\"bar\\"}",
 ]
 `;
 
@@ -1569,13 +1488,10 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 test=(((-1 + 2) + -2) + +3)
 foo=[-1,(-2 + 4),((-2 + -4) + +6)]
 print(test)
-print(foo)
-end function
-MAIN()",
+print(foo)",
 ]
 `;
 
@@ -1593,13 +1509,10 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	test = (((-1 + 2) + -2) + +3)
+test = (((-1 + 2) + -2) + +3)
 foo = [-1, (-2 + 4), ((-2 + -4) + +6)]
 print(test)
-print(foo)
-end function
-MAIN()",
+print(foo)",
 ]
 `;
 
@@ -1615,13 +1528,10 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I=(((-1 + 2) + -2) + +3)
 J=[-1,(-2 + 4),((-2 + -4) + +6)]
 print(I)
-print(J)
-end function
-F",
+print(J)",
 ]
 `;
 
@@ -1636,14 +1546,11 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 valueOfIdentifier=\\"foo\\"
 myObject={\\"test\\":{\\"another\\":\\"123\\"},\\"value\\":\\"123\\",\\"idtf\\":valueOfIdentifier}
 print([myObject.test.another,myObject.value,myObject.idtf])
 myList=[{\\"another\\":\\"123\\"},\\"123\\",valueOfIdentifier]
-print(myList)
-end function
-MAIN()",
+print(myList)",
 ]
 `;
 
@@ -1661,8 +1568,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	valueOfIdentifier = \\"foo\\"
+valueOfIdentifier = \\"foo\\"
 
 myObject = {\\"test\\": {\\"another\\": \\"123\\"}, \\"value\\": \\"123\\", \\"idtf\\": valueOfIdentifier}
 
@@ -1670,9 +1576,7 @@ print([myObject.test.another, myObject.value, myObject.idtf])
 
 myList = [{\\"another\\": \\"123\\"}, \\"123\\", valueOfIdentifier]
 
-print(myList)
-end function
-MAIN()",
+print(myList)",
 ]
 `;
 
@@ -1689,14 +1593,11 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I=\\"foo\\"
 J={\\"test\\":{\\"another\\":P},\\"value\\":P,\\"idtf\\":I}
 print([J.test.another,J.value,J.idtf])
 O=[{\\"another\\":P},P,I]
-print(O)
-end function
-F",
+print(O)",
 ]
 `;
 
@@ -1711,7 +1612,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 test=function(abc)
 print(abc)
 end function
@@ -1732,9 +1632,7 @@ superlangername(\\"xxxxxxxxxx\\")
 superlangername4(\\"xxxxxxxxxx\\")
 superlangername(\\"xxxxxxxxxx\\")
 superlangername5(\\"xxxxxxxxxx\\")
-superlangername3(\\"xxxxxxxxxx\\")
-end function
-MAIN()",
+superlangername3(\\"xxxxxxxxxx\\")",
 ]
 `;
 
@@ -1752,8 +1650,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	test = function(abc)
+test = function(abc)
 	print(abc)
 end function
 
@@ -1778,9 +1675,7 @@ superlangername(\\"xxxxxxxxxx\\")
 superlangername4(\\"xxxxxxxxxx\\")
 superlangername(\\"xxxxxxxxxx\\")
 superlangername5(\\"xxxxxxxxxx\\")
-superlangername3(\\"xxxxxxxxxx\\")
-end function
-MAIN()",
+superlangername3(\\"xxxxxxxxxx\\")",
 ]
 `;
 
@@ -1797,7 +1692,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I=function(N)
 print(N)
 end function
@@ -1818,9 +1712,7 @@ J(O)
 L(O)
 J(O)
 M(O)
-K(O)
-end function
-F",
+K(O)",
 ]
 `;
 
@@ -1835,7 +1727,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 PasswordGenerator={}
 PasswordGenerator.MAX_PASSWORD_LENGTH=15
 PasswordGenerator.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
@@ -1893,9 +1784,7 @@ while (index < max)
 result.push(pgen.gen())
 index=(index + 1)
 end while
-print(result)
-end function
-MAIN()",
+print(result)",
 ]
 `;
 
@@ -1913,8 +1802,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	PasswordGenerator = {}
+PasswordGenerator = {}
 PasswordGenerator.MAX_PASSWORD_LENGTH = 15
 PasswordGenerator.ALPHABETIC_CHARACTERS = \\"qwertzuiopasdfghjklyxcvbnm\\"
 PasswordGenerator.NUMBER_CHARACTERS = \\"0123456789\\"
@@ -1985,9 +1873,7 @@ while (index < max)
 	index = (index + 1)
 end while
 
-print(result)
-end function
-MAIN()",
+print(result)",
 ]
 `;
 
@@ -2003,7 +1889,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I={}
 I.MAX_PASSWORD_LENGTH=15
 I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
@@ -2061,9 +1946,7 @@ while (S < T)
 U.push(R.gen)
 S=(S + 1)
 end while
-print(U)
-end function
-F",
+print(U)",
 ]
 `;
 
@@ -2078,7 +1961,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 String={}
 String.constructor=function(str)
 self.str=str
@@ -2277,9 +2159,7 @@ pwd=\\"abcde\\"
 foo=test.encrypt(pwd)
 decrypted=test.decrypt(foo)
 print(foo)
-print(decrypted)
-end function
-MAIN()",
+print(decrypted)",
 ]
 `;
 
@@ -2297,8 +2177,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	String = {}
+String = {}
 
 String.constructor = function(str)
 	self.str = str
@@ -2545,9 +2424,7 @@ pwd = \\"abcde\\"
 foo = test.encrypt(pwd)
 decrypted = test.decrypt(foo)
 print(foo)
-print(decrypted)
-end function
-MAIN()",
+print(decrypted)",
 ]
 `;
 
@@ -2566,7 +2443,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I={}
 I.constructor=function(str)
 self.str=str
@@ -2765,9 +2641,7 @@ e=\\"abcde\\"
 f=d.encrypt(e)
 g=d.decrypt(f)
 print(f)
-print(g)
-end function
-F",
+print(g)",
 ]
 `;
 
@@ -2782,7 +2656,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 Random={}
 Random.pool={}
 Random.defaultSeed=\\"random\\"
@@ -2840,9 +2713,7 @@ Random.get=function(min,max)
 return self.gen(min,max)
 end function
 print(Random.get(100,500))
-print(Random.seq(100,500,\\"test\\",10))
-end function
-MAIN()",
+print(Random.seq(100,500,\\"test\\",10))",
 ]
 `;
 
@@ -2860,8 +2731,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	Random = {}
+Random = {}
 Random.pool = {}
 Random.defaultSeed = \\"random\\"
 
@@ -2934,9 +2804,7 @@ Random.get = function(min, max)
 end function
 
 print(Random.get(100, 500))
-print(Random.seq(100, 500, \\"test\\", 10))
-end function
-MAIN()",
+print(Random.seq(100, 500, \\"test\\", 10))",
 ]
 `;
 
@@ -2952,7 +2820,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I={}
 I.pool={}
 I.defaultSeed=\\"random\\"
@@ -3010,9 +2877,7 @@ I.get=function(V,W)
 return self.gen(V,W)
 end function
 print(I.get(100,500))
-print(I.seq(100,500,\\"test\\",10))
-end function
-F",
+print(I.seq(100,500,\\"test\\",10))",
 ]
 `;
 
@@ -3027,15 +2892,12 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 test={}
 test.here=\\"was\\"
 test.was=function()
 print(self.here)
 end function
-print(test.was())
-end function
-MAIN()",
+print(test.was())",
 ]
 `;
 
@@ -3053,17 +2915,14 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	test = {}
+test = {}
 test.here = \\"was\\"
 
 test.was = function()
 	print(self.here)
 end function
 
-print(test.was())
-end function
-MAIN()",
+print(test.was())",
 ]
 `;
 
@@ -3079,15 +2938,12 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I={}
 I.here=\\"was\\"
 I.was=function()
 print(self.here)
 end function
-print(I.was)
-end function
-F",
+print(I.was)",
 ]
 `;
 
@@ -3102,7 +2958,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 divideString=function(str,limit)
 offset=0
 maxLen=str.len
@@ -3114,9 +2969,7 @@ offset=next
 end while
 return frags
 end function
-print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\",5))
-end function
-MAIN()",
+print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\",5))",
 ]
 `;
 
@@ -3134,8 +2987,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	divideString = function(str, limit)
+divideString = function(str, limit)
 	offset = 0
 	maxLen = str.len
 	frags = []
@@ -3148,9 +3000,7 @@ MAIN = function()
 
 	return frags
 end function
-print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))
-end function
-MAIN()",
+print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))",
 ]
 `;
 
@@ -3166,7 +3016,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I=function(str,J)
 K=0
 L=str.len
@@ -3178,9 +3027,7 @@ K=O
 end while
 return N
 end function
-print(I(\\"blahhblahhblahhblahhblahhblahhgad\\",5))
-end function
-F",
+print(I(\\"blahhblahhblahhblahhblahhblahhgad\\",5))",
 ]
 `;
 
@@ -3195,7 +3042,6 @@ end if
 module=MODULES[r]
 return @module(r).exports
 end function
-MAIN=function()
 test=function()
 return null
 end function
@@ -3204,9 +3050,7 @@ print(@(\\"was\\".split and (false or not false)))
 print((not \\"was\\".split and (false or not false)))
 print(not (\\"was\\".split and (false or not false)))
 print((-1 + 2))
-print(-(1 + 2))
-end function
-MAIN()",
+print(-(1 + 2))",
 ]
 `;
 
@@ -3224,8 +3068,7 @@ __REQUIRE = function(r)
 	return @module(r).exports
 end function
 
-MAIN = function()
-	test = function()
+test = function()
 	return null
 end function
 
@@ -3234,9 +3077,7 @@ print(@(\\"was\\".split and (false or not false)))
 print((not \\"was\\".split and (false or not false)))
 print(not (\\"was\\".split and (false or not false)))
 print((-1 + 2))
-print(-(1 + 2))
-end function
-MAIN()",
+print(-(1 + 2))",
 ]
 `;
 
@@ -3254,7 +3095,6 @@ end if
 G=C[r]
 return @G(r).exports
 end function
-F=function()
 I=function()
 return null
 end function
@@ -3263,8 +3103,6 @@ print(@(L.split and (K or not K)))
 print((not L.split and (K or not K)))
 print(not (L.split and (K or not K)))
 print((-1 + 2))
-print(-(1 + 2))
-end function
-F",
+print(-(1 + 2))",
 ]
 `;
