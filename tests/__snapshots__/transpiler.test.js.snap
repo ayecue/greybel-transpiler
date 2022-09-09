@@ -2,16 +2,7 @@
 
 exports[`parse default scripts ascii.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-AsciiGen={}
+  "AsciiGen={}
 map={}
 map.a=[\\"||¯|| \\",\\"||_|| \\",\\"|| || \\"]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
@@ -79,19 +70,7 @@ print(AsciiGen.gen(\\"Hallo\\"))",
 
 exports[`parse default scripts ascii.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-AsciiGen = {}
+  "AsciiGen = {}
 map = {}
 map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
 map.b = [\\"||¯/ \\", \\"|| \\\\ \\", \\"||_/ \\"]
@@ -178,15 +157,6 @@ H.x=\\"  \\"
 H.y=\\"<color=#\\"
 H._A=\\">\\"
 H.z=\\"</color>\\"
-C={}
-D={}
-E=function(b)
-if not C.hasIndex(b) then
-exit(((\\"Module \\" + b) + \\" cannot be found...\\"))
-end if
-G=C[b]
-return @G(b).exports
-end function
 I={}
 J={}
 J.a=[v,u,r]
@@ -255,16 +225,7 @@ print(I.gen(\\"Hallo\\"))",
 
 exports[`parse default scripts binary-expressions.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-a=(a / b)
+  "a=(a / b)
 a=(a * b)
 a=(a - b)
 a=(a + b)
@@ -281,19 +242,7 @@ w=(bitwise(\\">>\\",(bitwise(\\">>>\\",a,(bitwise(\\"<<\\",b,c)))),a))
 
 exports[`parse default scripts binary-expressions.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-a = (a / b)
+  "a = (a / b)
 a = (a * b)
 a = (a - b)
 a = (a + b)
@@ -311,15 +260,6 @@ w = (bitwise(\\">>\\", (bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c)))), a))
 exports[`parse default scripts binary-expressions.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I=(I / J)
 I=(I * J)
 I=(I - J)
@@ -337,16 +277,7 @@ K=(bitwise(\\">>\\",(bitwise(\\">>>\\",I,(bitwise(\\"<<\\",J,L)))),I))
 
 exports[`parse default scripts default-args.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-test=function(arg1=0,arg2=\\"test\\")
+  "test=function(arg1=0,arg2=\\"test\\")
 print(arg1)
 print(arg2)
 end function
@@ -357,19 +288,7 @@ test(\\"foo\\",false)",
 
 exports[`parse default scripts default-args.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-test = function(arg1 = 0, arg2 = \\"test\\")
+  "test = function(arg1 = 0, arg2 = \\"test\\")
 	print(arg1)
 	print(arg2)
 end function
@@ -382,15 +301,6 @@ test(\\"foo\\", false)",
 exports[`parse default scripts default-args.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I=function(J=0,K=\\"test\\")
 print(J)
 print(K)
@@ -402,16 +312,7 @@ I(\\"foo\\",false)",
 
 exports[`parse default scripts envar.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-myvar2=\\"\\"foo\\"\\"
+  "myvar2=\\"\\"foo\\"\\"
 myvar=\\"\\"foo\\"\\"
 print(\\"0.2\\")",
 ]
@@ -419,19 +320,7 @@ print(\\"0.2\\")",
 
 exports[`parse default scripts envar.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-myvar2 = \\"\\"foo\\"\\"
+  "myvar2 = \\"\\"foo\\"\\"
 myvar = \\"\\"foo\\"\\"
 print(\\"0.2\\")",
 ]
@@ -440,15 +329,6 @@ print(\\"0.2\\")",
 exports[`parse default scripts envar.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 J=\\"\\"foo\\"\\"
 I=\\"\\"foo\\"\\"
 print(\\"0.2\\")",
@@ -936,16 +816,7 @@ print(J.gen(\\"Hallo\\"))
 
 exports[`parse default scripts has-index.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-globals.test=\\"was\\"
+  "globals.test=\\"was\\"
 locals.foo=\\"moo\\"
 print(globals.hasIndex(\\"test\\"))
 print(locals.hasIndex(\\"foo\\"))",
@@ -954,19 +825,7 @@ print(locals.hasIndex(\\"foo\\"))",
 
 exports[`parse default scripts has-index.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-globals.test = \\"was\\"
+  "globals.test = \\"was\\"
 locals.foo = \\"moo\\"
 print(globals.hasIndex(\\"test\\"))
 print(locals.hasIndex(\\"foo\\"))",
@@ -976,15 +835,6 @@ print(locals.hasIndex(\\"foo\\"))",
 exports[`parse default scripts has-index.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 H.I=\\"was\\"
 locals.J=\\"moo\\"
 print(H.hasIndex(\\"I\\"))
@@ -994,16 +844,7 @@ print(locals.hasIndex(\\"J\\"))",
 
 exports[`parse default scripts if-scuffed.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-if true then
+  "if true then
 print(\\"true - 1\\")
 end if
 if true then
@@ -1044,19 +885,7 @@ end if",
 
 exports[`parse default scripts if-scuffed.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-
+  "
 if true then
 	print(\\"true - 1\\")
 end if
@@ -1108,15 +937,6 @@ H.I=true
 H.J=\\"true - 3\\"
 H.K=\\"true - 4\\"
 H.L=\\"true - 5\\"
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 if I then
 print(\\"true - 1\\")
 end if
@@ -1158,16 +978,7 @@ end if",
 
 exports[`parse default scripts import-code.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-import_code(\\"/some/path\\")
+  "import_code(\\"/some/path\\")
 print(123)",
   "AsciiGen={}
 map={}
@@ -1237,19 +1048,7 @@ print(AsciiGen.gen(\\"Hallo\\"))",
 
 exports[`parse default scripts import-code.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-import_code(\\"/some/path\\")
+  "import_code(\\"/some/path\\")
 print(123)",
   "AsciiGen = {}
 map = {}
@@ -1338,15 +1137,6 @@ H.x=\\"  \\"
 H.y=\\"<color=#\\"
 H._A=\\">\\"
 H.z=\\"</color>\\"
-C={}
-D={}
-E=function(b)
-if not C.hasIndex(b) then
-exit(((\\"Module \\" + b) + \\" cannot be found...\\"))
-end if
-G=C[b]
-return @G(b).exports
-end function
 import_code(\\"/some/path\\")
 print(123)",
   "I={}
@@ -1417,16 +1207,7 @@ print(I.gen(\\"Hallo\\"))",
 
 exports[`parse default scripts map.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-test={{\\"myTest\\":0,1:2}:true}
+  "test={{\\"myTest\\":0,1:2}:true}
 test2={[12,14]:true}
 test3={test:234}
 test4={true:\\"foo\\"}
@@ -1436,19 +1217,7 @@ test5={123:\\"bar\\"}",
 
 exports[`parse default scripts map.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-test = {{\\"myTest\\": 0, 1: 2}: true}
+  "test = {{\\"myTest\\": 0, 1: 2}: true}
 test2 = {[12, 14]: true}
 test3 = {test: 234}
 test4 = {true: \\"foo\\"}
@@ -1460,15 +1229,6 @@ exports[`parse default scripts map.src uglify 1`] = `
 Array [
   "globals.H=globals
 H.N=true
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I={{\\"myTest\\":0,1:2}:N}
 J={[12,14]:N}
 K={I:234}
@@ -1479,16 +1239,7 @@ M={123:\\"bar\\"}",
 
 exports[`parse default scripts negation.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-test=(((-1 + 2) + -2) + +3)
+  "test=(((-1 + 2) + -2) + +3)
 foo=[-1,(-2 + 4),((-2 + -4) + +6)]
 print(test)
 print(foo)",
@@ -1497,19 +1248,7 @@ print(foo)",
 
 exports[`parse default scripts negation.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-test = (((-1 + 2) + -2) + +3)
+  "test = (((-1 + 2) + -2) + +3)
 foo = [-1, (-2 + 4), ((-2 + -4) + +6)]
 print(test)
 print(foo)",
@@ -1519,15 +1258,6 @@ print(foo)",
 exports[`parse default scripts negation.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I=(((-1 + 2) + -2) + +3)
 J=[-1,(-2 + 4),((-2 + -4) + +6)]
 print(I)
@@ -1537,16 +1267,7 @@ print(J)",
 
 exports[`parse default scripts obj-init.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-valueOfIdentifier=\\"foo\\"
+  "valueOfIdentifier=\\"foo\\"
 myObject={\\"test\\":{\\"another\\":\\"123\\"},\\"value\\":\\"123\\",\\"idtf\\":valueOfIdentifier}
 print([myObject.test.another,myObject.value,myObject.idtf])
 myList=[{\\"another\\":\\"123\\"},\\"123\\",valueOfIdentifier]
@@ -1556,19 +1277,7 @@ print(myList)",
 
 exports[`parse default scripts obj-init.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-valueOfIdentifier = \\"foo\\"
+  "valueOfIdentifier = \\"foo\\"
 
 myObject = {\\"test\\": {\\"another\\": \\"123\\"}, \\"value\\": \\"123\\", \\"idtf\\": valueOfIdentifier}
 
@@ -1584,15 +1293,6 @@ exports[`parse default scripts obj-init.src uglify 1`] = `
 Array [
   "globals.H=globals
 H.P=\\"123\\"
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I=\\"foo\\"
 J={\\"test\\":{\\"another\\":P},\\"value\\":P,\\"idtf\\":I}
 print([J.test.another,J.value,J.idtf])
@@ -1603,16 +1303,7 @@ print(O)",
 
 exports[`parse default scripts optimize.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-test=function(abc)
+  "test=function(abc)
 print(abc)
 end function
 superlangername=function(abc)
@@ -1638,19 +1329,7 @@ superlangername3(\\"xxxxxxxxxx\\")",
 
 exports[`parse default scripts optimize.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-test = function(abc)
+  "test = function(abc)
 	print(abc)
 end function
 
@@ -1683,15 +1362,6 @@ exports[`parse default scripts optimize.src uglify 1`] = `
 Array [
   "globals.H=globals
 H.O=\\"xxxxxxxxxx\\"
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I=function(N)
 print(N)
 end function
@@ -1718,16 +1388,7 @@ K(O)",
 
 exports[`parse default scripts password-generator.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-PasswordGenerator={}
+  "PasswordGenerator={}
 PasswordGenerator.MAX_PASSWORD_LENGTH=15
 PasswordGenerator.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
 PasswordGenerator.NUMBER_CHARACTERS=\\"0123456789\\"
@@ -1790,19 +1451,7 @@ print(result)",
 
 exports[`parse default scripts password-generator.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-PasswordGenerator = {}
+  "PasswordGenerator = {}
 PasswordGenerator.MAX_PASSWORD_LENGTH = 15
 PasswordGenerator.ALPHABETIC_CHARACTERS = \\"qwertzuiopasdfghjklyxcvbnm\\"
 PasswordGenerator.NUMBER_CHARACTERS = \\"0123456789\\"
@@ -1880,15 +1529,6 @@ print(result)",
 exports[`parse default scripts password-generator.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I={}
 I.MAX_PASSWORD_LENGTH=15
 I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
@@ -1952,16 +1592,7 @@ print(T)",
 
 exports[`parse default scripts pseudo-crypto.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-String={}
+  "String={}
 String.constructor=function(str)
 self.str=str
 return self
@@ -2165,19 +1796,7 @@ print(decrypted)",
 
 exports[`parse default scripts pseudo-crypto.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-String = {}
+  "String = {}
 
 String.constructor = function(str)
 	self.str = str
@@ -2434,15 +2053,6 @@ Array [
 H.AY=1
 H.AW=null
 H.AX=63
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I={}
 I.constructor=function(str)
 self.str=str
@@ -2647,16 +2257,7 @@ print(e)",
 
 exports[`parse default scripts random.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-Random={}
+  "Random={}
 Random.pool={}
 Random.defaultSeed=\\"random\\"
 Random.createPool=function(seed,val)
@@ -2719,19 +2320,7 @@ print(Random.seq(100,500,\\"test\\",10))",
 
 exports[`parse default scripts random.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-Random = {}
+  "Random = {}
 Random.pool = {}
 Random.defaultSeed = \\"random\\"
 
@@ -2811,15 +2400,6 @@ print(Random.seq(100, 500, \\"test\\", 10))",
 exports[`parse default scripts random.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I={}
 I.pool={}
 I.defaultSeed=\\"random\\"
@@ -2883,16 +2463,7 @@ print(I.seq(100,500,\\"test\\",10))",
 
 exports[`parse default scripts simple-object.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-test={}
+  "test={}
 test.here=\\"was\\"
 test.was=function()
 print(self.here)
@@ -2903,19 +2474,7 @@ print(test.was())",
 
 exports[`parse default scripts simple-object.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-test = {}
+  "test = {}
 test.here = \\"was\\"
 
 test.was = function()
@@ -2929,15 +2488,6 @@ print(test.was())",
 exports[`parse default scripts simple-object.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I={}
 I.here=\\"was\\"
 I.was=function()
@@ -2949,16 +2499,7 @@ print(I.was)",
 
 exports[`parse default scripts slice.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-divideString=function(str,limit)
+  "divideString=function(str,limit)
 offset=0
 maxLen=str.len
 frags=[]
@@ -2975,19 +2516,7 @@ print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\",5))",
 
 exports[`parse default scripts slice.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-divideString = function(str, limit)
+  "divideString = function(str, limit)
 	offset = 0
 	maxLen = str.len
 	frags = []
@@ -3007,15 +2536,6 @@ print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))",
 exports[`parse default scripts slice.src uglify 1`] = `
 Array [
   "globals.H=globals
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I=function(str,J)
 K=0
 L=str.len
@@ -3033,16 +2553,7 @@ print(I(\\"blahhblahhblahhblahhblahhblahhgad\\",5))",
 
 exports[`parse default scripts unary.src 1`] = `
 Array [
-  "MODULES={}
-EXPORTED={}
-__REQUIRE=function(r)
-if not MODULES.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-module=MODULES[r]
-return @module(r).exports
-end function
-test=function()
+  "test=function()
 return null
 end function
 print((@\\"was\\".split and (false or not false)))
@@ -3056,19 +2567,7 @@ print(-(1 + 2))",
 
 exports[`parse default scripts unary.src beautify 1`] = `
 Array [
-  "MODULES = {}
-EXPORTED = {}
-
-__REQUIRE = function(r)
-	if not MODULES.hasIndex(r) then
-		exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-	end if
-
-	module = MODULES[r]
-	return @module(r).exports
-end function
-
-test = function()
+  "test = function()
 	return null
 end function
 
@@ -3086,15 +2585,6 @@ Array [
   "globals.H=globals
 H.L=\\"was\\"
 H.K=false
-C={}
-D={}
-E=function(r)
-if not C.hasIndex(r) then
-exit(((\\"Module \\" + r) + \\" cannot be found...\\"))
-end if
-G=C[r]
-return @G(r).exports
-end function
 I=function()
 return null
 end function
