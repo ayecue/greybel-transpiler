@@ -259,8 +259,7 @@ w = (bitwise(\\">>\\", (bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c)))), a))
 
 exports[`parse default scripts binary-expressions.src uglify 1`] = `
 Array [
-  "globals.H=globals
-I=(I / J)
+  "I=(I / J)
 I=(I * J)
 I=(I - J)
 I=(I + J)
@@ -328,8 +327,7 @@ print(\\"0.2\\")",
 
 exports[`parse default scripts envar.src uglify 1`] = `
 Array [
-  "globals.H=globals
-J=\\"\\"foo\\"\\"
+  "J=\\"\\"foo\\"\\"
 I=\\"\\"foo\\"\\"
 print(\\"0.2\\")",
 ]
@@ -662,8 +660,7 @@ print(AsciiGen.gen(\\"Hallo\\"))
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
 Array [
-  "globals.H=globals
-C={}
+  "C={}
 D={}
 E=function(c)
 if not C.hasIndex(c) then

@@ -123,18 +123,20 @@ export default class Transpiler {
         if (optimizeLiterals) {
           const literalMapping = context.literals.getMapping();
 
-          processed.push('globals.' + tempVarForGlobal + '=globals');
+          if (literalMapping.size > 0) {
+            processed.push('globals.' + tempVarForGlobal + '=globals');
 
-          literalMapping.forEach(function (literal) {
-            if (literal.namespace == null) return;
-            processed.push(
-              tempVarForGlobal +
-                '.' +
-                literal.namespace +
-                '=' +
-                literal.literal.raw
-            );
-          });
+            literalMapping.forEach(function (literal) {
+              if (literal.namespace == null) return;
+              processed.push(
+                tempVarForGlobal +
+                  '.' +
+                  literal.namespace +
+                  '=' +
+                  literal.literal.raw
+              );
+            });
+          }
         }
 
         if (moduleCount > 0) {
