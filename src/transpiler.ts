@@ -99,6 +99,7 @@ export default class Transpiler {
     ): string => {
       const mainNamespace = context.modules.get(mainDependency.getId());
       const modules: { [key: string]: string } = {};
+      let moduleCount = 0;
       const iterator = function (item: Dependency) {
         const moduleName = context.modules.get(item.getId());
 
@@ -108,6 +109,7 @@ export default class Transpiler {
           modules[moduleName] = moduleBoilerplate
             .replace('"$0"', '"' + moduleName + '"')
             .replace('"$1"', code);
+          moduleCount++;
         }
 
         item.dependencies.forEach(iterator);
@@ -121,21 +123,25 @@ export default class Transpiler {
         if (optimizeLiterals) {
           const literalMapping = context.literals.getMapping();
 
-          processed.push('globals.' + tempVarForGlobal + '=globals');
+          if (literalMapping.size > 0) {
+            processed.push('globals.' + tempVarForGlobal + '=globals');
 
-          literalMapping.forEach(function (literal) {
-            if (literal.namespace == null) return;
-            processed.push(
-              tempVarForGlobal +
-                '.' +
-                literal.namespace +
-                '=' +
-                literal.literal.raw
-            );
-          });
+            literalMapping.forEach(function (literal) {
+              if (literal.namespace == null) return;
+              processed.push(
+                tempVarForGlobal +
+                  '.' +
+                  literal.namespace +
+                  '=' +
+                  literal.literal.raw
+              );
+            });
+          }
         }
 
-        processed.push(headerBoilerplate);
+        if (moduleCount > 0) {
+          processed.push(headerBoilerplate);
+        }
       }
 
       Object.keys(modules).forEach((moduleKey: string) =>
