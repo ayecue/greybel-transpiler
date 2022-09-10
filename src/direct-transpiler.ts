@@ -84,18 +84,17 @@ export default class DirectTranspiler extends EventEmitter {
     const processed = [];
 
     if (!me.disableLiteralsOptimization) {
-      const literalMapping = context.literals.getMapping();
+      const literalMapping = Array.from(context.literals.getMapping().values())
+        .filter((literal) => literal.namespace != null);
 
-      if (literalMapping.size > 0) {
-        processed.push('globals.' + tempVarForGlobal + '=globals');
-
-        literalMapping.forEach(function (literal) {
-          if (literal.namespace == null) return;
+        if (literalMapping.length > 0) {
           processed.push(
-            tempVarForGlobal + '.' + literal.namespace + '=' + literal.literal.raw
+            'globals.' + tempVarForGlobal + '=globals',
+            ...literalMapping.map((literal) => {
+              return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`
+            })
           );
-        });
-      }
+        }
     }
 
     const result = transformer.transform(chunk);

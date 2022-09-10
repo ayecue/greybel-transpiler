@@ -121,21 +121,16 @@ export default class Transpiler {
 
       if (!isNativeImport) {
         if (optimizeLiterals) {
-          const literalMapping = context.literals.getMapping();
+          const literalMapping = Array.from(context.literals.getMapping().values())
+            .filter((literal) => literal.namespace != null);
 
-          if (literalMapping.size > 0) {
-            processed.push('globals.' + tempVarForGlobal + '=globals');
-
-            literalMapping.forEach(function (literal) {
-              if (literal.namespace == null) return;
-              processed.push(
-                tempVarForGlobal +
-                  '.' +
-                  literal.namespace +
-                  '=' +
-                  literal.literal.raw
-              );
-            });
+          if (literalMapping.length > 0) {
+            processed.push(
+              'globals.' + tempVarForGlobal + '=globals',
+              ...literalMapping.map((literal) => {
+                return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`
+              })
+            );
           }
         }
 
