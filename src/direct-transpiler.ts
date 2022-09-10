@@ -7,6 +7,8 @@ import Transformer from './transformer';
 import generateCharsetMap from './utils/charset-generator';
 import fetchNamespaces from './utils/fetch-namespaces';
 
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
 export interface DirectTranspilerOptions {
   code: string;
 
@@ -38,7 +40,7 @@ export default class DirectTranspiler extends EventEmitter {
 
     me.code = options.code;
 
-    me.obfuscation = options.obfuscation || true;
+    me.obfuscation = hasOwnProperty.call(options, 'obfuscation') ? options.obfuscation : true;
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.disableLiteralsOptimization =
       options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;

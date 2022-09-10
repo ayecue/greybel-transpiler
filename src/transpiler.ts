@@ -11,6 +11,8 @@ import Target, { TargetParseResult, TargetParseResultItem } from './target';
 import Transformer from './transformer';
 import generateCharsetMap from './utils/charset-generator';
 
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
 export interface TranspilerOptions {
   target: string;
   context?: Context;
@@ -48,7 +50,7 @@ export default class Transpiler {
     me.target = options.target;
     me.resourceHandler =
       options.resourceHandler || new ResourceProvider().getHandler();
-    me.obfuscation = options.obfuscation || true;
+    me.obfuscation = hasOwnProperty.call(options, 'obfuscation') ? options.obfuscation : true;
 
     const charsetMap = generateCharsetMap(me.obfuscation);
 

@@ -19,7 +19,8 @@ describe('parse', function() {
 				test(path.basename(filepath), async () => {
 					const result = await (new Transpiler({
 						target: filepath,
-						environmentVariables
+						environmentVariables,
+						obfuscation: false
 					}).parse());
 
 					expect(Object.values(result)).toMatchSnapshot();
@@ -29,7 +30,8 @@ describe('parse', function() {
 					const result = await (new Transpiler({
 						target: filepath,
 						buildType: BuildType.UGLIFY,
-						environmentVariables
+						environmentVariables,
+						obfuscation: false
 					}).parse());
 
 					expect(Object.values(result)).toMatchSnapshot();
