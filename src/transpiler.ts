@@ -48,8 +48,9 @@ export default class Transpiler {
     me.target = options.target;
     me.resourceHandler =
       options.resourceHandler || new ResourceProvider().getHandler();
+    me.obfuscation = options.obfuscation || true;
 
-    const charsetMap = generateCharsetMap(options.obfuscation);
+    const charsetMap = generateCharsetMap(me.obfuscation);
 
     me.context = new Context({
       variablesCharset: charsetMap.variables,
@@ -57,7 +58,6 @@ export default class Transpiler {
       modulesCharset: charsetMap.modules
     });
 
-    me.obfuscation = options.obfuscation || true;
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.installer = options.installer || false;
     me.disableLiteralsOptimization =
