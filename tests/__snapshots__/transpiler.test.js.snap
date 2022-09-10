@@ -299,8 +299,7 @@ test(\\"foo\\", false)",
 
 exports[`parse default scripts default-args.src uglify 1`] = `
 Array [
-  "globals.H=globals
-I=function(J=0,K=\\"test\\")
+  "I=function(J=0,K=\\"test\\")
 print(J)
 print(K)
 end function
@@ -831,8 +830,7 @@ print(locals.hasIndex(\\"foo\\"))",
 
 exports[`parse default scripts has-index.src uglify 1`] = `
 Array [
-  "globals.H=globals
-H.I=\\"was\\"
+  "H.I=\\"was\\"
 locals.J=\\"moo\\"
 print(H.hasIndex(\\"I\\"))
 print(locals.hasIndex(\\"J\\"))",
@@ -1254,8 +1252,7 @@ print(foo)",
 
 exports[`parse default scripts negation.src uglify 1`] = `
 Array [
-  "globals.H=globals
-I=(((-1 + 2) + -2) + +3)
+  "I=(((-1 + 2) + -2) + +3)
 J=[-1,(-2 + 4),((-2 + -4) + +6)]
 print(I)
 print(J)",
@@ -1525,8 +1522,7 @@ print(result)",
 
 exports[`parse default scripts password-generator.src uglify 1`] = `
 Array [
-  "globals.H=globals
-I={}
+  "I={}
 I.MAX_PASSWORD_LENGTH=15
 I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
 I.NUMBER_CHARACTERS=\\"0123456789\\"
@@ -2396,8 +2392,7 @@ print(Random.seq(100, 500, \\"test\\", 10))",
 
 exports[`parse default scripts random.src uglify 1`] = `
 Array [
-  "globals.H=globals
-I={}
+  "I={}
 I.pool={}
 I.defaultSeed=\\"random\\"
 I.createPool=function(Q,val)
@@ -2484,8 +2479,7 @@ print(test.was())",
 
 exports[`parse default scripts simple-object.src uglify 1`] = `
 Array [
-  "globals.H=globals
-I={}
+  "I={}
 I.here=\\"was\\"
 I.was=function()
 print(self.here)
@@ -2532,8 +2526,7 @@ print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))",
 
 exports[`parse default scripts slice.src uglify 1`] = `
 Array [
-  "globals.H=globals
-I=function(str,J)
+  "I=function(str,J)
 K=0
 L=str.len
 M=[]
