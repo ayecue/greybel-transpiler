@@ -1,6 +1,10 @@
+export { BuildMap, BuildType, default as getFactory } from './build-map';
 export { default as Context, ContextOptions } from './context';
 export { default as Dependency, DependencyOptions } from './dependency';
-export { default as DirectTranspiler, DirectTranspilerOptions } from './direct-transpiler';
+export {
+  default as DirectTranspiler,
+  DirectTranspilerOptions
+} from './direct-transpiler';
 export * from './resource';
 export {
   default as Target,
@@ -15,8 +19,3 @@ export {
   TranspilerOptions,
   TranspilerParseResult
 } from './transpiler';
-export {
-  default as getFactory,
-  BuildMap,
-  BuildType
-} from './build-map';

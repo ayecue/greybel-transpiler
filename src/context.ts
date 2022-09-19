@@ -45,4 +45,20 @@ export default class Context {
     me.literals = new LiteralsMapper(me.variables);
     me.data = new Map();
   }
+
+  createModuleNamespace(id: string) {
+    return this.modules.createNamespace(id);
+  }
+
+  getOrCreateData<T>(key: string, onCreate: () => T): T {
+    const me = this;
+
+    if (me.data.has(key)) {
+      return me.data.get(key);
+    }
+
+    const v = onCreate();
+    me.data.set(key, v);
+    return v;
+  }
 }

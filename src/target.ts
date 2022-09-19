@@ -4,7 +4,6 @@ import { ASTChunk, ASTChunkAdvanced, ASTLiteral, Parser } from 'greybel-core';
 import Context from './context';
 import Dependency, { DependencyType } from './dependency';
 import { ResourceHandler } from './resource';
-import fetchNamespaces from './utils/fetch-namespaces';
 
 export interface TargetOptions {
   target: string;
@@ -71,6 +70,8 @@ export default class Target extends EventEmitter {
 
     for (const item of dependency.dependencies) {
       if (item.type === DependencyType.NativeImport) {
+        // TODO: use fetchNativeImports
+
         parsedImports.set(item.target, {
           chunk: item.chunk,
           dependency: item

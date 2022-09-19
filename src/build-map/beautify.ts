@@ -44,7 +44,7 @@ export default function (
   let indent = 0;
   const incIndent = () => indent++;
   const decIndent = () => indent--;
-  const putIndent = (str: string) => `${'\t'.repeat(indent)}${str}`
+  const putIndent = (str: string) => `${'\t'.repeat(indent)}${str}`;
 
   return {
     AssignmentStatement: (
@@ -86,7 +86,11 @@ export default function (
       for (bodyItem of item.body) {
         const transformed = make(bodyItem);
         if (transformed === '') continue;
-        if (isBlock(transformed) && body.length > 0 && body[body.length - 1] !== '') {
+        if (
+          isBlock(transformed) &&
+          body.length > 0 &&
+          body[body.length - 1] !== ''
+        ) {
           body.push('');
         }
 
@@ -160,7 +164,11 @@ export default function (
       for (bodyItem of item.body) {
         const transformed = make(bodyItem);
         if (transformed === '') continue;
-        if (isBlock(transformed) && body.length > 0 && body[body.length - 1] !== '') {
+        if (
+          isBlock(transformed) &&
+          body.length > 0 &&
+          body[body.length - 1] !== ''
+        ) {
           body.push('');
         }
 
@@ -173,7 +181,14 @@ export default function (
 
       decIndent();
 
-      return 'while ' + condition + '\n' + body.join('\n') + '\n' + putIndent('end while');
+      return (
+        'while ' +
+        condition +
+        '\n' +
+        body.join('\n') +
+        '\n' +
+        putIndent('end while')
+      );
     },
     CallExpression: (
       item: ASTCallExpression,
@@ -301,7 +316,11 @@ export default function (
       for (bodyItem of item.body) {
         const transformed = make(bodyItem);
         if (transformed === '') continue;
-        if (isBlock(transformed) && body.length > 0 && body[body.length - 1] !== '') {
+        if (
+          isBlock(transformed) &&
+          body.length > 0 &&
+          body[body.length - 1] !== ''
+        ) {
           body.push('');
         }
 
@@ -315,7 +334,10 @@ export default function (
       decIndent();
 
       return (
-        'for ' + variable + ' in ' + iterator +
+        'for ' +
+        variable +
+        ' in ' +
+        iterator +
         '\n' +
         body.join('\n') +
         '\n' +
@@ -346,7 +368,11 @@ export default function (
       for (bodyItem of item.body) {
         const transformed = make(bodyItem);
         if (transformed === '') continue;
-        if (isBlock(transformed) && body.length > 0 && body[body.length - 1] !== '') {
+        if (
+          isBlock(transformed) &&
+          body.length > 0 &&
+          body[body.length - 1] !== ''
+        ) {
           body.push('');
         }
 
@@ -372,7 +398,11 @@ export default function (
       for (bodyItem of item.body) {
         const transformed = make(bodyItem);
         if (transformed === '') continue;
-        if (isBlock(transformed) && body.length > 0 && body[body.length - 1] !== '') {
+        if (
+          isBlock(transformed) &&
+          body.length > 0 &&
+          body[body.length - 1] !== ''
+        ) {
           body.push('');
         }
 
@@ -385,7 +415,9 @@ export default function (
 
       decIndent();
 
-      return putIndent('else if') + ' ' + condition + ' then\n' + body.join('\n');
+      return (
+        putIndent('else if') + ' ' + condition + ' then\n' + body.join('\n')
+      );
     },
     ElseClause: (item: ASTElseClause, _data: TransformerDataObject): string => {
       const body = [];
@@ -397,7 +429,11 @@ export default function (
       for (bodyItem of item.body) {
         const transformed = make(bodyItem);
         if (transformed === '') continue;
-        if (isBlock(transformed) && body.length > 0 && body[body.length - 1] !== '') {
+        if (
+          isBlock(transformed) &&
+          body.length > 0 &&
+          body[body.length - 1] !== ''
+        ) {
           body.push('');
         }
 
@@ -522,7 +558,11 @@ export default function (
       for (bodyItem of item.body) {
         const transformed = make(bodyItem);
         if (transformed === '') continue;
-        if (isBlock(transformed) && body.length > 0 && body[body.length - 1] !== '') {
+        if (
+          isBlock(transformed) &&
+          body.length > 0 &&
+          body[body.length - 1] !== ''
+        ) {
           body.push('');
         }
 
