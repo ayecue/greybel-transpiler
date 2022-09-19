@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import { ASTChunk, ASTChunkAdvanced, ASTLiteral, Parser } from 'greybel-core';
 
 import Context from './context';
-import Dependency from './dependency';
+import Dependency, { DependencyType } from './dependency';
 import { ResourceHandler } from './resource';
 import fetchNamespaces from './utils/fetch-namespaces';
 
@@ -58,8 +58,6 @@ export default class Target extends EventEmitter {
 
     const parser = new Parser(content);
     const chunk = parser.parseChunk() as ASTChunkAdvanced;
-    const namespaces = fetchNamespaces(chunk);
-    const literals = [].concat(chunk.literals);
     const dependency = new Dependency({
       target,
       resourceHandler,
@@ -67,34 +65,17 @@ export default class Target extends EventEmitter {
       context
     });
 
-    await dependency.findDependencies(namespaces);
+    const { namespaces, literals } = await dependency.findDependencies();
 
-    const nativeImports = await dependency.fetchNativeImports();
     const parsedImports: Map<string, TargetParseResultItem> = new Map();
 
-    for (const nativeImport of nativeImports) {
-      const subTarget = await resourceHandler.getTargetRelativeTo(
-        target,
-        nativeImport
-      );
-      const subContent = await resourceHandler.get(subTarget);
-      const subParser = new Parser(subContent);
-      const subChunk = subParser.parseChunk() as ASTChunkAdvanced;
-      const subDependency = new Dependency({
-        target: subTarget,
-        resourceHandler,
-        chunk: subChunk,
-        context
-      });
-      await subDependency.findDependencies(namespaces);
-
-      namespaces.push(...fetchNamespaces(subChunk));
-      literals.push(...subChunk.literals);
-
-      parsedImports.set(nativeImport, {
-        chunk: subChunk,
-        dependency: subDependency
-      });
+    for (const item of dependency.dependencies) {
+      if (item.type === DependencyType.NativeImport) {
+        parsedImports.set(item.target, {
+          chunk: item.chunk,
+          dependency: item
+        });
+      }
     }
 
     if (!options.disableNamespacesOptimization) {

@@ -5,7 +5,7 @@ import {
 } from './boilerplates';
 import getFactory, { BuildType } from './build-map';
 import Context from './context';
-import Dependency from './dependency';
+import Dependency, { DependencyType } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
 import Target, { TargetParseResult, TargetParseResultItem } from './target';
 import Transformer from './transformer';
@@ -103,10 +103,10 @@ export default class Transpiler {
       const modules: { [key: string]: string } = {};
       let moduleCount = 0;
       const iterator = function (item: Dependency) {
-        const moduleName = context.modules.get(item.getId());
+        const moduleName = item.getNamespace();
 
         if (moduleName in modules) return;
-        if (moduleName !== mainNamespace && !item.isInclude) {
+        if (moduleName !== mainNamespace && item.type === DependencyType.Import) {
           const code = transformer.transform(item.chunk);
           modules[moduleName] = moduleBoilerplate
             .replace('"$0"', '"' + moduleName + '"')
@@ -114,7 +114,7 @@ export default class Transpiler {
           moduleCount++;
         }
 
-        item.dependencies.forEach(iterator);
+        item.dependencies.filter((item) => item.type !== DependencyType.NativeImport).forEach(iterator);
       };
 
       iterator(mainDependency);

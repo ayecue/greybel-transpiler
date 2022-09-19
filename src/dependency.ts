@@ -5,18 +5,32 @@ import {
   ASTFeatureIncludeExpression,
   Parser
 } from 'greybel-core';
-import { ASTBaseBlockWithScope } from 'greyscript-core';
+import { ASTBase, ASTBaseBlockWithScope } from 'greyscript-core';
 import fetchNamespaces from './utils/fetch-namespaces';
 
 import Context from './context';
 import { ResourceHandler } from './resource';
 
+export enum DependencyType {
+  Main,
+  Import,
+  Include,
+  NativeImport
+};
+
 export interface DependencyOptions {
   target: string;
   resourceHandler: ResourceHandler;
   chunk: ASTChunkAdvanced;
-  isInclude?: boolean;
+  type?: DependencyType;
   context: Context;
+}
+
+export interface DependencyFindResult {
+  /* eslint-disable no-use-before-define */
+  dependencies: Dependency[];
+  namespaces: string[];
+  literals: ASTBase[];
 }
 
 export default class Dependency extends EventEmitter {
@@ -26,7 +40,7 @@ export default class Dependency extends EventEmitter {
   chunk: ASTChunkAdvanced;
   /* eslint-disable no-use-before-define */
   dependencies: Dependency[];
-  isInclude: boolean;
+  type: DependencyType;
   context: Context;
 
   constructor(options: DependencyOptions) {
@@ -39,7 +53,7 @@ export default class Dependency extends EventEmitter {
     me.resourceHandler = options.resourceHandler;
     me.chunk = options.chunk;
     me.dependencies = [];
-    me.isInclude = options.isInclude || false;
+    me.type = options.type || DependencyType.Main;
     me.context = options.context;
 
     if (!me.context.data.has('globalDependencyMap')) {
@@ -58,92 +72,95 @@ export default class Dependency extends EventEmitter {
     return this.id;
   }
 
-  async fetchNativeImports() {
+  getNamespace(): string {
     const me = this;
-    const nativeImports = [];
-
-    for (const nativeImport of me.chunk.nativeImports) {
-      const importPath = await me.resourceHandler.getTargetRelativeTo(me.target, nativeImport);
-      nativeImports.push(importPath);
-    }
-
-    const defers = [];
-
-    for (const dependency of me.dependencies) {
-      defers.push(dependency.fetchNativeImports());
-    }
-
-    const dependencyImports: Array<Array<string>> = await Promise.all(defers);
-
-    for (const dependencyImport of dependencyImports) {
-      nativeImports.push(...dependencyImport);
-    }
-
-    return nativeImports;
+    return me.context.modules.get(me.id);
   }
 
-  async findDependencies(namespaces: string[]): Promise<Dependency[]> {
+  private async resolve(path: string, type: DependencyType): Promise<Dependency> {
     const me = this;
     const globalDependencyMap: Map<string, Dependency> = me.context.data.get(
       'globalDependencyMap'
     );
-    const resourceHandler = me.resourceHandler;
     const context = me.context;
-    const items = [...me.chunk.imports, ...me.chunk.includes];
-    const result = [];
-    let item;
+    const resourceHandler = me.resourceHandler;
+    const subTarget = await resourceHandler.getTargetRelativeTo(
+      me.target,
+      path
+    );
+    const id = md5(subTarget);
+    const namespace = context.modules.get(id);
 
-    for (item of items) {
-      const subTarget = await resourceHandler.getTargetRelativeTo(
-        me.target,
-        item.path
-      );
-      const id = md5(subTarget);
-      const namespace = context.modules.get(id);
+    if (globalDependencyMap.has(namespace)) {
+      return globalDependencyMap.get(namespace);
+    }
 
-      if (globalDependencyMap.has(namespace)) {
-        const dependency = globalDependencyMap.get(namespace);
-        item.chunk = dependency.chunk;
-        item.namespace = namespace;
-        result.push(dependency);
-        continue;
-      }
-
-      if (!(await resourceHandler.has(subTarget))) {
+    if (!(await resourceHandler.has(subTarget))) {
         throw new Error('Dependency ' + subTarget + ' does not exist...');
       }
 
-      const isInclude =
-        (item as ASTFeatureIncludeExpression).type ===
-        'FeatureIncludeExpression';
-      const content = await resourceHandler.get(subTarget);
+    const content = await resourceHandler.get(subTarget);
 
-      me.emit('parse-before', subTarget);
+    me.emit('parse-before', subTarget);
 
-      const parser = new Parser(content);
-      const chunk = parser.parseChunk() as ASTChunkAdvanced;
+    const parser = new Parser(content);
+    const chunk = parser.parseChunk() as ASTChunkAdvanced;
+    const dependency = new Dependency({
+      target: subTarget,
+      resourceHandler,
+      chunk,
+      type,
+      context
+    });
 
-      namespaces.push(...fetchNamespaces(chunk));
+    me.emit('parse-after', dependency);
+
+    return dependency;
+  }
+
+  async findDependencies(): Promise<DependencyFindResult> {
+    const me = this;
+    const { imports, includes, nativeImports } = me.chunk;
+    const namespaces: string[] = [...fetchNamespaces(me.chunk)];
+    const literals: ASTBase[] = [...me.chunk.literals];
+    const result = [];
+
+    //handle native imports
+    for (const nativeImport of nativeImports) {
+      const dependency = await me.resolve(nativeImport, DependencyType.NativeImport);
+      const r = await dependency.findDependencies();
+
+      namespaces.push(...r.namespaces);
+      literals.push(...r.literals);
+
+      result.push(dependency);
+    }
+
+    //handle internal includes/imports
+    const items = [...imports, ...includes];
+
+    for (const item of items) {
+      const type = item instanceof ASTFeatureIncludeExpression ? DependencyType.Include : DependencyType.Import;
+      const dependency = await me.resolve(item.path, type);
+      const chunk = dependency.chunk;
+
       item.chunk = chunk;
+      item.namespace = dependency.getNamespace();
 
-      const dependency = new Dependency({
-        target: subTarget,
-        resourceHandler,
-        chunk,
-        isInclude,
-        context
-      });
-      await dependency.findDependencies(namespaces);
+      const r = await dependency.findDependencies();
 
-      item.namespace = context.modules.get(id);
-
-      me.emit('parse-after', dependency);
+      namespaces.push(...r.namespaces);
+      literals.push(...r.literals);
 
       result.push(dependency);
     }
 
     me.dependencies = result;
 
-    return result;
+    return {
+      dependencies: result,
+      namespaces,
+      literals
+    };
   }
 }
