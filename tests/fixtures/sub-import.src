@@ -1,0 +1,2 @@
+import_code("/some/path":"./envar-include")
+print(123)

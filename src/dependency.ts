@@ -58,6 +58,30 @@ export default class Dependency extends EventEmitter {
     return this.id;
   }
 
+  async fetchNativeImports() {
+    const me = this;
+    const nativeImports = [];
+
+    for (const nativeImport of me.chunk.nativeImports) {
+      const importPath = await me.resourceHandler.getTargetRelativeTo(me.target, nativeImport);
+      nativeImports.push(importPath);
+    }
+
+    const defers = [];
+
+    for (const dependency of me.dependencies) {
+      defers.push(dependency.fetchNativeImports());
+    }
+
+    const dependencyImports: Array<Array<string>> = await Promise.all(defers);
+
+    for (const dependencyImport of dependencyImports) {
+      nativeImports.push(...dependencyImport);
+    }
+
+    return nativeImports;
+  }
+
   async findDependencies(namespaces: string[]): Promise<Dependency[]> {
     const me = this;
     const globalDependencyMap: Map<string, Dependency> = me.context.data.get(

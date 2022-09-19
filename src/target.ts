@@ -60,9 +60,19 @@ export default class Target extends EventEmitter {
     const chunk = parser.parseChunk() as ASTChunkAdvanced;
     const namespaces = fetchNamespaces(chunk);
     const literals = [].concat(chunk.literals);
-    const nativeImports: Map<string, TargetParseResultItem> = new Map();
+    const dependency = new Dependency({
+      target,
+      resourceHandler,
+      chunk,
+      context
+    });
 
-    for (const nativeImport of chunk.nativeImports) {
+    await dependency.findDependencies(namespaces);
+
+    const nativeImports = await dependency.fetchNativeImports();
+    const parsedImports: Map<string, TargetParseResultItem> = new Map();
+
+    for (const nativeImport of nativeImports) {
       const subTarget = await resourceHandler.getTargetRelativeTo(
         target,
         nativeImport
@@ -81,19 +91,11 @@ export default class Target extends EventEmitter {
       namespaces.push(...fetchNamespaces(subChunk));
       literals.push(...subChunk.literals);
 
-      nativeImports.set(nativeImport, {
+      parsedImports.set(nativeImport, {
         chunk: subChunk,
         dependency: subDependency
       });
     }
-
-    const dependency = new Dependency({
-      target,
-      resourceHandler,
-      chunk,
-      context
-    });
-    await dependency.findDependencies(namespaces);
 
     if (!options.disableNamespacesOptimization) {
       const uniqueNamespaces = new Set(namespaces);
@@ -111,7 +113,7 @@ export default class Target extends EventEmitter {
         chunk,
         dependency
       },
-      nativeImports
+      nativeImports: parsedImports
     };
   }
 }
