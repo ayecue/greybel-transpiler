@@ -5,7 +5,7 @@ import {
   ASTFeatureIncludeExpression,
   Parser
 } from 'greybel-core';
-import { ASTBase, ASTBaseBlockWithScope } from 'greyscript-core';
+import { ASTBase } from 'greyscript-core';
 import fetchNamespaces from './utils/fetch-namespaces';
 
 import Context from './context';
@@ -152,6 +152,12 @@ export default class Dependency extends EventEmitter {
       item.namespace = dependency.getNamespace();
 
       const r = await dependency.findDependencies();
+
+      for (const subItem of r.dependencies) {
+        if (subItem.type === DependencyType.NativeImport) {
+          result.add(subItem);
+        }
+      }
 
       namespaces.push(...r.namespaces);
       literals.push(...r.literals);
