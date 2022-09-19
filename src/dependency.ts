@@ -28,7 +28,7 @@ export interface DependencyOptions {
 
 export interface DependencyFindResult {
   /* eslint-disable no-use-before-define */
-  dependencies: Dependency[];
+  dependencies: Set<Dependency>;
   namespaces: string[];
   literals: ASTBase[];
 }
@@ -39,7 +39,7 @@ export default class Dependency extends EventEmitter {
   resourceHandler: ResourceHandler;
   chunk: ASTChunkAdvanced;
   /* eslint-disable no-use-before-define */
-  dependencies: Dependency[];
+  dependencies: Set<Dependency>;
   type: DependencyType;
   context: Context;
 
@@ -52,7 +52,7 @@ export default class Dependency extends EventEmitter {
     me.id = md5(options.target);
     me.resourceHandler = options.resourceHandler;
     me.chunk = options.chunk;
-    me.dependencies = [];
+    me.dependencies = new Set<Dependency>();
     me.type = options.type || DependencyType.Main;
     me.context = options.context;
 
@@ -123,7 +123,7 @@ export default class Dependency extends EventEmitter {
     const { imports, includes, nativeImports } = me.chunk;
     const namespaces: string[] = [...fetchNamespaces(me.chunk)];
     const literals: ASTBase[] = [...me.chunk.literals];
-    const result = [];
+    const result = new Set<Dependency>();
 
     //handle native imports
     for (const nativeImport of nativeImports) {
@@ -137,7 +137,7 @@ export default class Dependency extends EventEmitter {
       namespaces.push(...r.namespaces);
       literals.push(...r.literals);
 
-      result.push(dependency);
+      result.add(dependency);
     }
 
     //handle internal includes/imports
@@ -156,7 +156,7 @@ export default class Dependency extends EventEmitter {
       namespaces.push(...r.namespaces);
       literals.push(...r.literals);
 
-      result.push(dependency);
+      result.add(dependency);
     }
 
     me.dependencies = result;

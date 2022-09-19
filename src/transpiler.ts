@@ -114,7 +114,11 @@ export default class Transpiler {
           moduleCount++;
         }
 
-        item.dependencies.filter((item) => item.type !== DependencyType.NativeImport).forEach(iterator);
+        for (const subItem of item.dependencies) {
+          if (item.type !== DependencyType.NativeImport) {
+            iterator(subItem);
+          }
+        }
       };
 
       iterator(mainDependency);
