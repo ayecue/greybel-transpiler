@@ -127,7 +127,11 @@ export default class Dependency extends EventEmitter {
 
     //handle native imports
     for (const nativeImport of nativeImports) {
-      const dependency = await me.resolve(nativeImport, DependencyType.NativeImport);
+      if (!nativeImport.fileSystemDirectory) {
+        continue;
+      }
+
+      const dependency = await me.resolve(nativeImport.fileSystemDirectory, DependencyType.NativeImport);
       const r = await dependency.findDependencies();
 
       namespaces.push(...r.namespaces);
