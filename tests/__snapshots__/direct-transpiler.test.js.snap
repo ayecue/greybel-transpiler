@@ -473,17 +473,20 @@ end if"
 `;
 
 exports[`parse default scripts import-code.src 1`] = `
-"import_code(\\"/some/path\\")
+"import_code(\\"/some/foo\\")
+import_code(\\"/some/bar\\")
 print(123)"
 `;
 
 exports[`parse default scripts import-code.src beautify 1`] = `
-"import_code(\\"/some/path\\")
+"import_code(\\"/some/foo\\")
+import_code(\\"/some/bar\\")
 print(123)"
 `;
 
 exports[`parse default scripts import-code.src uglify 1`] = `
-"import_code(\\"/some/path\\")
+"import_code(\\"/some/foo\\")
+import_code(\\"/some/bar\\")
 print(123)"
 `;
 

@@ -1,2 +1,2 @@
-import_code("/some/path":"./envar-include")
+import_code("/some/sub":"./envar-include")
 print(123)

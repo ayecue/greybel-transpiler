@@ -480,10 +480,11 @@ end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/some/path\\")
+import_code(\\"/some/sub\\")
 print(123)
 \\"true\\"
 //debugger",
+  "myvar2=\\"\\"foo\\"\\"",
 ]
 `;
 
@@ -654,10 +655,11 @@ AsciiGen.gen = function(str, colors)
 end function
 
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/some/path\\")
+import_code(\\"/some/sub\\")
 print(123)
 \\"true\\"
 //debugger",
+  "myvar2 = \\"\\"foo\\"\\"",
 ]
 `;
 
@@ -832,10 +834,11 @@ end if
 return [c[AJ].join(AM),c[AK].join(AM),c[AL].join(AM)].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
-import_code(\\"/some/path\\")
+import_code(\\"/some/sub\\")
 print(123)
 \\"true\\"
 //debugger",
+  "q=\\"\\"foo\\"\\"",
 ]
 `;
 
@@ -1002,7 +1005,8 @@ end if",
 
 exports[`parse default scripts import-code.src 1`] = `
 Array [
-  "import_code(\\"/some/path\\")
+  "import_code(\\"/some/foo\\")
+import_code(\\"/some/bar\\")
 print(123)",
   "AsciiGen={}
 map={}
@@ -1067,12 +1071,15 @@ end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))",
+  "import_code(\\"/some/sub\\")
+print(123)",
 ]
 `;
 
 exports[`parse default scripts import-code.src beautify 1`] = `
 Array [
-  "import_code(\\"/some/path\\")
+  "import_code(\\"/some/foo\\")
+import_code(\\"/some/bar\\")
 print(123)",
   "AsciiGen = {}
 map = {}
@@ -1143,65 +1150,68 @@ AsciiGen.gen = function(str, colors)
 end function
 
 print(AsciiGen.gen(\\"Hallo\\"))",
+  "import_code(\\"/some/sub\\")
+print(123)",
 ]
 `;
 
 exports[`parse default scripts import-code.src uglify 1`] = `
 Array [
   "globals.H=globals
-H.v=\\"||¯|| \\"
-H.u=\\"||_|| \\"
-H.r=\\"|| || \\"
-H.p=\\"||¯ \\"
-H.t=\\"||  \\"
-H.q=\\"||_ \\"
-H.w=\\"||¯\\\\\\\\ \\"
-H.s=\\"|| \\"
-H.x=\\"  \\"
-H.y=\\"<color=#\\"
-H._A=\\">\\"
-H.z=\\"</color>\\"
-import_code(\\"/some/path\\")
+H.w=\\"||¯|| \\"
+H.v=\\"||_|| \\"
+H.s=\\"|| || \\"
+H.q=\\"||¯ \\"
+H.u=\\"||  \\"
+H.r=\\"||_ \\"
+H.x=\\"||¯\\\\\\\\ \\"
+H.t=\\"|| \\"
+H.y=\\"  \\"
+H.z=\\"<color=#\\"
+H.AB=\\">\\"
+H._A=\\"</color>\\"
+import_code(\\"/some/foo\\")
+import_code(\\"/some/bar\\")
 print(123)",
   "I={}
 J={}
-J.a=[v,u,r]
+J.a=[w,v,s]
 J.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-J.c=[p,t,q]
-J.d=[w,\\"|| // \\",\\"||//  \\"]
-J.e=[p,\\"||- \\",q]
-J.f=[p,q,t]
-J.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",u]
-J.h=[r,\\"||-|| \\",r]
-J.i=[s,s,s]
+J.c=[q,u,r]
+J.d=[x,\\"|| // \\",\\"||//  \\"]
+J.e=[q,\\"||- \\",r]
+J.f=[q,r,u]
+J.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",v]
+J.h=[s,\\"||-|| \\",s]
+J.i=[t,t,t]
 J.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-J.k=[\\"||  / \\",\\"|| /  \\",w]
-J.l=[t,t,q]
+J.k=[\\"||  / \\",\\"|| /  \\",x]
+J.l=[u,u,r]
 J.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
 J.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-J.o=[v,r,u]
-J.p=[v,u,\\"||    \\"]
+J.o=[w,s,v]
+J.p=[w,v,\\"||    \\"]
 J.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-J.r=[v,w,r]
+J.r=[w,x,s]
 J.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
 J.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
-J.u=[r,r,u]
+J.u=[s,s,v]
 J.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 J.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 J.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 J.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-J.z=[\\"¯// \\",\\"//  \\",q]
-J[\\"0\\"]=[v,\\"||x|| \\",u]
+J.z=[\\"¯// \\",\\"//  \\",r]
+J[\\"0\\"]=[w,\\"||x|| \\",v]
 J[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
 J[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 J[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 J[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
 J[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
-J[\\"6\\"]=[\\"||¯¯  \\",v,u]
+J[\\"6\\"]=[\\"||¯¯  \\",w,v]
 J[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-J[\\"8\\"]=[v,\\"||-|| \\",u]
-J[\\"9\\"]=[v,\\"  ¯|| \\",\\"  //  \\"]
-J[\\" \\"]=[x,x,x]
+J[\\"8\\"]=[w,\\"||-|| \\",v]
+J[\\"9\\"]=[w,\\"  ¯|| \\",\\"  //  \\"]
+J[\\" \\"]=[y,y,y]
 I.MAP=J
 I.gen=function(str,m)
 b=[[],[],[]]
@@ -1215,17 +1225,19 @@ b[2].push(n[char][2])
 end if
 end for
 if (typeof(m) == \\"string\\") then
-b[0]=(([((y + m) + _A)] + b[0]) + [z])
-b[1]=(([((y + m) + _A)] + b[1]) + [z])
-b[2]=(([((y + m) + _A)] + b[2]) + [z])
+b[0]=(([((z + m) + AB)] + b[0]) + [_A])
+b[1]=(([((z + m) + AB)] + b[1]) + [_A])
+b[2]=(([((z + m) + AB)] + b[2]) + [_A])
 else if (typeof(m) == \\"list\\") then
-b[0]=(([((y + m[0]) + _A)] + b[0]) + [z])
-b[1]=(([((y + m[1]) + _A)] + b[1]) + [z])
-b[2]=(([((y + m[2]) + _A)] + b[2]) + [z])
+b[0]=(([((z + m[0]) + AB)] + b[0]) + [_A])
+b[1]=(([((z + m[1]) + AB)] + b[1]) + [_A])
+b[2]=(([((z + m[2]) + AB)] + b[2]) + [_A])
 end if
 return [b[0].join(\\"\\"),b[1].join(\\"\\"),b[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(I.gen(\\"Hallo\\"))",
+  "import_code(\\"/some/sub\\")
+print(123)",
 ]
 `;
 

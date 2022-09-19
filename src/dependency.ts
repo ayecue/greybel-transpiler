@@ -153,6 +153,7 @@ export default class Dependency extends EventEmitter {
 
       const r = await dependency.findDependencies();
 
+      //add native imports from includes/imports
       for (const subItem of r.dependencies) {
         if (subItem.type === DependencyType.NativeImport) {
           result.add(subItem);
