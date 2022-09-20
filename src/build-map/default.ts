@@ -30,6 +30,7 @@ import {
 
 import Context from '../context';
 import { TransformerDataObject } from '../transformer';
+import injectImport from '../utils/inject-imports';
 
 export interface BuildMap {
   [type: string]: (item: ASTBase, _data: TransformerDataObject) => string;
@@ -439,9 +440,7 @@ export default function (
       item: ASTImportCodeExpression,
       _data: TransformerDataObject
     ): string => {
-      const dir = `"${item.gameDirectory}"`;
-
-      return 'import_code(' + dir + ')';
+      return injectImport(context, item);
     }
   };
 }

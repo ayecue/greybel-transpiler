@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import { ASTChunk, ASTChunkAdvanced, ASTLiteral, Parser } from 'greybel-core';
 
 import Context from './context';
-import Dependency, { DependencyType } from './dependency';
+import Dependency, { DependencyRef, DependencyType } from './dependency';
 import { ResourceHandler } from './resource';
 
 export interface TargetOptions {
@@ -67,11 +67,13 @@ export default class Target extends EventEmitter {
     const { namespaces, literals } = await dependency.findDependencies();
 
     const parsedImports: Map<string, TargetParseResultItem> = new Map();
+    const astDepMap = me.context.getOrCreateData<
+      Map<DependencyRef, Set<Dependency>>
+    >('astDepMap', () => new Map());
 
     for (const item of dependency.dependencies) {
       if (item.type === DependencyType.NativeImport) {
-        // TODO: use fetchNativeImports
-
+        astDepMap.set(item.ref, item.fetchNativeImports());
         parsedImports.set(item.target, {
           chunk: item.chunk,
           dependency: item
