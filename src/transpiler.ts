@@ -5,7 +5,7 @@ import {
 } from './boilerplates';
 import getFactory, { BuildType } from './build-map';
 import Context from './context';
-import Dependency from './dependency';
+import Dependency, { DependencyType } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
 import Target, { TargetParseResult, TargetParseResultItem } from './target';
 import Transformer from './transformer';
@@ -50,7 +50,9 @@ export default class Transpiler {
     me.target = options.target;
     me.resourceHandler =
       options.resourceHandler || new ResourceProvider().getHandler();
-    me.obfuscation = hasOwnProperty.call(options, 'obfuscation') ? options.obfuscation : true;
+    me.obfuscation = hasOwnProperty.call(options, 'obfuscation')
+      ? options.obfuscation
+      : true;
 
     const charsetMap = generateCharsetMap(me.obfuscation);
 
@@ -63,9 +65,10 @@ export default class Transpiler {
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.installer = options.installer || false;
     me.disableLiteralsOptimization =
-      options.disableLiteralsOptimization ||  me.buildType !== BuildType.UGLIFY;
+      options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
     me.disableNamespacesOptimization =
-      options.disableNamespacesOptimization ||  me.buildType !== BuildType.UGLIFY;
+      options.disableNamespacesOptimization ||
+      me.buildType !== BuildType.UGLIFY;
     me.environmentVariables = options.environmentVariables || new Map();
   }
 
@@ -103,10 +106,13 @@ export default class Transpiler {
       const modules: { [key: string]: string } = {};
       let moduleCount = 0;
       const iterator = function (item: Dependency) {
-        const moduleName = context.modules.get(item.getId());
+        const moduleName = item.getNamespace();
 
         if (moduleName in modules) return;
-        if (moduleName !== mainNamespace && !item.isInclude) {
+        if (
+          moduleName !== mainNamespace &&
+          item.type === DependencyType.Import
+        ) {
           const code = transformer.transform(item.chunk);
           modules[moduleName] = moduleBoilerplate
             .replace('"$0"', '"' + moduleName + '"')
@@ -114,7 +120,11 @@ export default class Transpiler {
           moduleCount++;
         }
 
-        item.dependencies.forEach(iterator);
+        for (const subItem of item.dependencies) {
+          if (item.type !== DependencyType.NativeImport) {
+            iterator(subItem);
+          }
+        }
       };
 
       iterator(mainDependency);
@@ -123,14 +133,15 @@ export default class Transpiler {
 
       if (!isNativeImport) {
         if (optimizeLiterals) {
-          const literalMapping = Array.from(context.literals.getMapping().values())
-            .filter((literal) => literal.namespace != null);
+          const literalMapping = Array.from(
+            context.literals.getMapping().values()
+          ).filter((literal) => literal.namespace != null);
 
           if (literalMapping.length > 0) {
             processed.push(
               'globals.' + tempVarForGlobal + '=globals',
               ...literalMapping.map((literal) => {
-                return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`
+                return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`;
               })
             );
           }

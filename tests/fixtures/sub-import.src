@@ -1,0 +1,3 @@
+import_code("/some/sub":"./envar-include")
+import_code("/some/sub-sub":"./sub-sub-import")
+print(123)

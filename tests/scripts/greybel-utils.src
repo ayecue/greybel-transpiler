@@ -1,4 +1,5 @@
 #import foo from "./ascii";
 #include "./ascii";
+#include "../fixtures/sub-import"
 #envar TEST_ENV;
 debugger;

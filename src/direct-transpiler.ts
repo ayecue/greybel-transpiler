@@ -40,12 +40,15 @@ export default class DirectTranspiler extends EventEmitter {
 
     me.code = options.code;
 
-    me.obfuscation = hasOwnProperty.call(options, 'obfuscation') ? options.obfuscation : true;
+    me.obfuscation = hasOwnProperty.call(options, 'obfuscation')
+      ? options.obfuscation
+      : true;
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.disableLiteralsOptimization =
       options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
     me.disableNamespacesOptimization =
-      options.disableNamespacesOptimization ||  me.buildType !== BuildType.UGLIFY;
+      options.disableNamespacesOptimization ||
+      me.buildType !== BuildType.UGLIFY;
     me.environmentVariables = options.environmentVariables || new Map();
 
     me.excludedNamespaces = options.excludedNamespaces || [];
@@ -86,17 +89,18 @@ export default class DirectTranspiler extends EventEmitter {
     const processed = [];
 
     if (!me.disableLiteralsOptimization) {
-      const literalMapping = Array.from(context.literals.getMapping().values())
-        .filter((literal) => literal.namespace != null);
+      const literalMapping = Array.from(
+        context.literals.getMapping().values()
+      ).filter((literal) => literal.namespace != null);
 
-        if (literalMapping.length > 0) {
-          processed.push(
-            'globals.' + tempVarForGlobal + '=globals',
-            ...literalMapping.map((literal) => {
-              return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`
-            })
-          );
-        }
+      if (literalMapping.length > 0) {
+        processed.push(
+          'globals.' + tempVarForGlobal + '=globals',
+          ...literalMapping.map((literal) => {
+            return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`;
+          })
+        );
+      }
     }
 
     const result = transformer.transform(chunk);
