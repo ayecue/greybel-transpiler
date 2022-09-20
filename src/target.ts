@@ -73,23 +73,36 @@ export default class Target extends EventEmitter {
 
     for (const item of dependency.dependencies) {
       if (item.type === DependencyType.NativeImport) {
-        astDepMap.set(item.ref, item.fetchNativeImports());
+        const subImports = item.fetchNativeImports();
+
+        for (const subImport of subImports) {
+          parsedImports.set(subImport.target, {
+            chunk: subImport.chunk,
+            dependency: subImport
+          });
+        }
+
         parsedImports.set(item.target, {
           chunk: item.chunk,
           dependency: item
         });
+
+        astDepMap.set(item.ref, subImports);
       }
     }
 
     if (!options.disableNamespacesOptimization) {
       const uniqueNamespaces = new Set(namespaces);
-      uniqueNamespaces.forEach((namespace: string) =>
-        context.variables.createNamespace(namespace)
-      );
+
+      for (const namespace of uniqueNamespaces) {
+        context.variables.createNamespace(namespace);
+      }
     }
 
     if (!options.disableLiteralsOptimization) {
-      literals.forEach((literal: ASTLiteral) => context.literals.add(literal));
+      for (const literal of literals) {
+        context.literals.add(literal as ASTLiteral);
+      }
     }
 
     return {
