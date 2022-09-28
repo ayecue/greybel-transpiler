@@ -1022,8 +1022,8 @@ end if",
 exports[`parse default scripts import-code.src 1`] = `
 Array [
   "import_code(\\"/some/foo\\")
-import_code(\\"/some/sub\\")
 import_code(\\"/some/sub-sub\\")
+import_code(\\"/some/sub\\")
 import_code(\\"/some/bar\\")
 print(123)",
   "AsciiGen={}
@@ -1100,8 +1100,8 @@ x=123",
 exports[`parse default scripts import-code.src beautify 1`] = `
 Array [
   "import_code(\\"/some/foo\\")
-import_code(\\"/some/sub\\")
 import_code(\\"/some/sub-sub\\")
+import_code(\\"/some/sub\\")
 import_code(\\"/some/bar\\")
 print(123)",
   "AsciiGen = {}
@@ -1198,8 +1198,8 @@ H.AB=\\"<color=#\\"
 H.AD=\\">\\"
 H.AC=\\"</color>\\"
 import_code(\\"/some/foo\\")
-import_code(\\"/some/sub\\")
 import_code(\\"/some/sub-sub\\")
+import_code(\\"/some/sub\\")
 import_code(\\"/some/bar\\")
 print(AE)",
   "I={}

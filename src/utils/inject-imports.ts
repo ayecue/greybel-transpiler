@@ -25,7 +25,7 @@ export default function (
     for (const subDep of subDeps) {
       if (depsUsed.has(subDep)) continue;
 
-      lines.push(`import_code("${subDep.ref.gameDirectory}")`);
+      lines.unshift(`import_code("${subDep.ref.gameDirectory}")`);
       depsUsed.add(subDep);
     }
 
