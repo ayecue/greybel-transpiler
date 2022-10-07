@@ -7,7 +7,7 @@ export const HEADER_BOILERPLATE: ASTChunkAdvanced = new Parser(
 	if (not MODULES.hasIndex(r)) then
 	exit("Module "+r+" cannot be found...")
 	end if
-	module=MODULES[r]
+	module=@MODULES[r]
 	return @module(r).exports
 	end function`
 ).parseChunk() as ASTChunkAdvanced;
