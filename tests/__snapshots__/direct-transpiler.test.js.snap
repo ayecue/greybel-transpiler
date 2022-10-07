@@ -262,6 +262,27 @@ I and J
 I or J"
 `;
 
+exports[`parse default scripts comments.src 1`] = `
+"//comment
+myVariable
+//comment2
+test=2
+//comment3"
+`;
+
+exports[`parse default scripts comments.src beautify 1`] = `
+"//comment
+myVariable
+//comment2
+test = 2
+//comment3"
+`;
+
+exports[`parse default scripts comments.src uglify 1`] = `
+"I
+J=2"
+`;
+
 exports[`parse default scripts default-args.src 1`] = `
 "test=function(arg1=0,arg2=\\"test\\")
 print(arg1)
