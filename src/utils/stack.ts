@@ -1,4 +1,4 @@
-import { ASTBase } from 'greybel-core';
+import { ASTBase } from 'greyscript-core';
 
 export default class Stack {
   currentStack: ASTBase[];
