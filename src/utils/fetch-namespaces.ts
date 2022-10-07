@@ -1,7 +1,6 @@
-import { ASTChunkAdvanced } from 'greybel-core';
-import { ASTBaseBlockWithScope } from 'greyscript-core';
+import { ASTChunk, ASTBaseBlockWithScope } from 'greyscript-core';
 
-export default function (chunk: ASTChunkAdvanced): string[] {
+export default function (chunk: ASTChunk): string[] {
   const allNamespaces = new Set<string>(chunk.namespaces);
 
   chunk.scopes.reduce((result: Set<string>, scope: ASTBaseBlockWithScope) => {

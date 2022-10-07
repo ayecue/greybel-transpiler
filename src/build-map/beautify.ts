@@ -1,14 +1,16 @@
 import {
+  ASTFeatureEnvarExpression,
+  ASTFeatureImportExpression,
+  ASTFeatureIncludeExpression,
+} from 'greybel-core';
+import {
   ASTAssignmentStatement,
   ASTBase,
+  ASTEvaluationExpression,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
   ASTElseClause,
-  ASTEvaluationExpression,
-  ASTFeatureEnvarExpression,
-  ASTFeatureImportExpression,
-  ASTFeatureIncludeExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
@@ -25,8 +27,10 @@ import {
   ASTReturnStatement,
   ASTSliceExpression,
   ASTUnaryExpression,
-  ASTWhileStatement
-} from 'greybel-core';
+  ASTWhileStatement,
+  ASTParenthesisExpression,
+  ASTComment
+} from 'greyscript-core';
 
 import Context from '../context';
 import { TransformerDataObject } from '../transformer';
@@ -48,6 +52,20 @@ export default function (
   const putIndent = (str: string) => `${'\t'.repeat(indent)}${str}`;
 
   return {
+    ParenthesisExpression: (
+      item: ASTParenthesisExpression,
+      _data: TransformerDataObject
+    ): string => {
+      const expr = make(item.expression);
+
+      return '(' + expr + ')';
+    },
+    Comment: (
+      item: ASTComment,
+      _data: TransformerDataObject
+    ): string => {
+      return '//' + item.value;
+    },
     AssignmentStatement: (
       item: ASTAssignmentStatement,
       _data: TransformerDataObject
@@ -203,6 +221,10 @@ export default function (
         args.push(make(argItem));
       }
 
+      if (args.length === 0) {
+        return base;
+      }
+
       return base + '(' + args.join(', ') + ')';
     },
     StringLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
@@ -232,7 +254,7 @@ export default function (
     ): string => {
       const arg = make(item.argument);
 
-      if (item.operator === 'new') return '(' + item.operator + ' ' + arg + ')';
+      if (item.operator === 'new') return item.operator + ' ' + arg;
 
       return item.operator + arg;
     },
@@ -513,9 +535,8 @@ export default function (
     ): string => {
       const left = make(item.left);
       const right = make(item.right);
-      const expression = [left, item.operator, right].join(' ');
 
-      return '(' + expression + ')';
+      return left + ' ' + item.operator + ' ' + right;
     },
     BinaryExpression: (
       item: ASTEvaluationExpression,
@@ -524,7 +545,7 @@ export default function (
       const left = make(item.left);
       const right = make(item.right);
       const operator = item.operator;
-      let expression = [left, operator, right].join(' ');
+      let expression = left + ' ' + operator + ' ' + right;
 
       if (
         operator === '<<' ||
@@ -536,11 +557,9 @@ export default function (
       ) {
         expression =
           'bitwise(' + ['"' + operator + '"', left, right].join(', ') + ')';
-      } else {
-        expression = [left, operator, right].join(' ');
       }
 
-      return '(' + expression + ')';
+      return expression;
     },
     BinaryNegatedExpression: (
       item: ASTUnaryExpression,

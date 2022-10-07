@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import { ASTChunk, ASTChunkAdvanced, ASTLiteral, Parser } from 'greybel-core';
+import { ASTChunkAdvanced, Parser } from 'greybel-core';
+import { ASTLiteral } from 'greyscript-core';
 
 import Context from './context';
 import Dependency, { DependencyRef, DependencyType } from './dependency';
@@ -17,7 +18,7 @@ export interface TargetParseOptions {
 }
 
 export interface TargetParseResultItem {
-  chunk: ASTChunk;
+  chunk: ASTChunkAdvanced;
   dependency: Dependency;
 }
 

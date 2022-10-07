@@ -1,4 +1,4 @@
-import { ParserValidator } from 'greybel-core';
+import { ParserValidator } from 'greyscript-core';
 
 import LiteralsMapper from './utils/literals-mapper';
 import NamespaceGenerator from './utils/namespace-generator';
