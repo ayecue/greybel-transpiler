@@ -545,6 +545,7 @@ num=0
 iterate=function()
 clear_screen
 text=\\"<mark=green><color=black>\\"+outer.num
+print(outer.hasIndex(\\"num\\"))
 if (outer.num>20) then
 text=\\"<mark=yellow><color=green>\\"+outer.num
 end if
@@ -581,6 +582,7 @@ exports[`parse default scripts outer.src beautify 1`] = `
 	iterate = function()
 		clear_screen
 		text = \\"<mark=green><color=black>\\" + outer.num
+		print(outer.hasIndex(\\"num\\"))
 		
 		if (outer.num > 20) then
 			text = \\"<mark=yellow><color=green>\\" + outer.num
@@ -623,6 +625,7 @@ J=0
 K=function()
 clear_screen
 L=\\"<mark=green><color=black>\\"+outer.J
+print(outer.hasIndex(\\"J\\"))
 if (outer.J>20) then
 L=\\"<mark=yellow><color=green>\\"+outer.J
 end if
