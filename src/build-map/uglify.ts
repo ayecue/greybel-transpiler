@@ -77,7 +77,7 @@ export default function (
       const globalNamespace = context.variables.get('globals');
 
       const value = make(identifier, {
-        usesNativeVar: base === globalNamespace || base === 'locals',
+        usesNativeVar: base === globalNamespace || base === 'locals' || base === 'outer',
         isMember: true
       });
 
