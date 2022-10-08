@@ -367,7 +367,7 @@ __REQUIRE=function(r)
 if (not MODULES.hasIndex(r)) then
 exit(\\"Module \\"+r+\\" cannot be found...\\")
 end if
-module=MODULES[r]
+module=@MODULES[r]
 return @module(r).exports
 end function
 MODULES[\\"B\\"]=function(r)
@@ -530,7 +530,7 @@ __REQUIRE = function(r)
 		exit(\\"Module \\" + r + \\" cannot be found...\\")
 	end if
 
-	module = MODULES[r]
+	module = @MODULES[r]
 	return @module(r).exports
 end function
 
@@ -732,7 +732,7 @@ E=function(b)
 if (not C.hasIndex(b)) then
 exit(\\"Module \\"+b+\\" cannot be found...\\")
 end if
-G=C[b]
+G=@C[b]
 return @G(b).exports
 end function
 C[\\"B\\"]=function(b)
