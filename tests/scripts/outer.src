@@ -5,6 +5,8 @@ main = function()
 
         text = "<mark=green><color=black>" + outer.num
 
+        print(outer.hasIndex("num"))
+
         if (outer.num > 20) then text = "<mark=yellow><color=green>" + outer.num
         if (outer.num > 40) then text = "<mark=red><color=yellow>" + outer.num
         if (outer.num < -20) then text = "<mark=green><color=yellow>" + outer.num

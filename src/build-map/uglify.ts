@@ -184,7 +184,7 @@ export default function (
       const base = make(item.base);
       const globalNamespace = context.variables.get('globals');
       const isNativeVarHasIndex =
-        base === globalNamespace + '.hasIndex' || base === 'locals.hasIndex';
+        base === globalNamespace + '.hasIndex' || base === 'locals.hasIndex' || base === 'outer.hasIndex';
       let argItem;
 
       if (isNativeVarHasIndex) {
