@@ -264,18 +264,18 @@ I or J"
 
 exports[`parse default scripts comments.src 1`] = `
 "//comment
-myVariable
 //comment2
-test=2
-//comment3"
+myVariable
+//comment3
+test=2"
 `;
 
 exports[`parse default scripts comments.src beautify 1`] = `
 "//comment
-myVariable
 //comment2
-test = 2
-//comment3"
+myVariable
+//comment3
+test = 2"
 `;
 
 exports[`parse default scripts comments.src uglify 1`] = `
