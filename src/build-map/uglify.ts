@@ -102,6 +102,14 @@ export default function (
         body.push(transformed);
       }
 
+      if (parameters.length === 0) {
+        return (
+          'function\n' +
+          body.join('\n') +
+          '\nend function'
+        );
+      }
+
       return (
         'function(' +
         parameters.join(',') +
