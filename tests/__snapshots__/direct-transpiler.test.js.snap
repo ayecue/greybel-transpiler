@@ -1773,6 +1773,7 @@ exports[`parse default scripts simple-object.src 1`] = `
 "test={}
 test.here=\\"was\\"
 test.was=function()
+super.here
 print(self.here)
 end function
 print(test.was)"
@@ -1783,6 +1784,7 @@ exports[`parse default scripts simple-object.src beautify 1`] = `
 test.here = \\"was\\"
 
 test.was = function()
+	super.here
 	print(self.here)
 end function
 
@@ -1793,6 +1795,7 @@ exports[`parse default scripts simple-object.src uglify 1`] = `
 "I={}
 I.here=\\"was\\"
 I.was=function
+super.here
 print(self.here)
 end function
 print(I.was)"

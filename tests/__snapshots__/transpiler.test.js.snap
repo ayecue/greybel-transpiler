@@ -2611,6 +2611,7 @@ Array [
   "test={}
 test.here=\\"was\\"
 test.was=function()
+super.here
 print(self.here)
 end function
 print(test.was)",
@@ -2623,6 +2624,7 @@ Array [
 test.here = \\"was\\"
 
 test.was = function()
+	super.here
 	print(self.here)
 end function
 
@@ -2635,6 +2637,7 @@ Array [
   "I={}
 I.here=\\"was\\"
 I.was=function
+super.here
 print(self.here)
 end function
 print(I.was)",
