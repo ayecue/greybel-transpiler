@@ -1,16 +1,17 @@
 import {
   ASTFeatureEnvarExpression,
   ASTFeatureImportExpression,
-  ASTFeatureIncludeExpression,
+  ASTFeatureIncludeExpression
 } from 'greybel-core';
 import {
   ASTAssignmentStatement,
   ASTBase,
-  ASTEvaluationExpression,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
+  ASTComment,
   ASTElseClause,
+  ASTEvaluationExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
@@ -24,12 +25,11 @@ import {
   ASTMapConstructorExpression,
   ASTMapKeyString,
   ASTMemberExpression,
+  ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
   ASTUnaryExpression,
-  ASTWhileStatement,
-  ASTParenthesisExpression,
-  ASTComment
+  ASTWhileStatement
 } from 'greyscript-core';
 
 import Context from '../context';
@@ -54,10 +54,7 @@ export default function (
 
       return '(' + expr + ')';
     },
-    Comment: (
-      item: ASTComment,
-      _data: TransformerDataObject
-    ): string => {
+    Comment: (item: ASTComment, _data: TransformerDataObject): string => {
       return '//' + item.value;
     },
     AssignmentStatement: (
@@ -402,6 +399,15 @@ export default function (
     EmptyExpression: (_item: ASTBase, _data: TransformerDataObject): string => {
       return '';
     },
+    IsaExpression: (
+      item: ASTEvaluationExpression,
+      _data: TransformerDataObject
+    ): string => {
+      const left = make(item.left);
+      const right = make(item.right);
+
+      return left + ' ' + item.operator + ' ' + right;
+    },
     LogicalExpression: (
       item: ASTEvaluationExpression,
       _data: TransformerDataObject
@@ -409,7 +415,7 @@ export default function (
       const left = make(item.left);
       const right = make(item.right);
 
-      return left + ' ' + item.operator + ' ' + right;;
+      return left + ' ' + item.operator + ' ' + right;
     },
     BinaryExpression: (
       item: ASTEvaluationExpression,

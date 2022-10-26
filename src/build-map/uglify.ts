@@ -1,16 +1,17 @@
 import {
   ASTFeatureEnvarExpression,
   ASTFeatureImportExpression,
-  ASTFeatureIncludeExpression,
+  ASTFeatureIncludeExpression
 } from 'greybel-core';
 import {
   ASTAssignmentStatement,
   ASTBase,
-  ASTEvaluationExpression,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
+  ASTComment,
   ASTElseClause,
+  ASTEvaluationExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
@@ -24,13 +25,12 @@ import {
   ASTMapConstructorExpression,
   ASTMapKeyString,
   ASTMemberExpression,
+  ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
   ASTUnaryExpression,
-  ASTWhileStatement,
-  ASTComment
+  ASTWhileStatement
 } from 'greyscript-core';
-import { ASTParenthesisExpression } from 'greyscript-core';
 
 import Context from '../context';
 import { TransformerDataObject } from '../transformer';
@@ -51,10 +51,7 @@ export default function (
 
       return '(' + expr + ')';
     },
-    Comment: (
-      _item: ASTComment,
-      _data: TransformerDataObject
-    ): string => {
+    Comment: (_item: ASTComment, _data: TransformerDataObject): string => {
       return '';
     },
     AssignmentStatement: (
@@ -77,7 +74,8 @@ export default function (
       const globalNamespace = context.variables.get('globals');
 
       const value = make(identifier, {
-        usesNativeVar: base === globalNamespace || base === 'locals' || base === 'outer',
+        usesNativeVar:
+          base === globalNamespace || base === 'locals' || base === 'outer',
         isMember: true
       });
 
@@ -100,6 +98,10 @@ export default function (
         const transformed = make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
+      }
+
+      if (parameters.length === 0) {
+        return 'function\n' + body.join('\n') + '\nend function';
       }
 
       return (
@@ -184,7 +186,9 @@ export default function (
       const base = make(item.base);
       const globalNamespace = context.variables.get('globals');
       const isNativeVarHasIndex =
-        base === globalNamespace + '.hasIndex' || base === 'locals.hasIndex' || base === 'outer.hasIndex';
+        base === globalNamespace + '.hasIndex' ||
+        base === 'locals.hasIndex' ||
+        base === 'outer.hasIndex';
       let argItem;
 
       if (isNativeVarHasIndex) {
@@ -443,6 +447,15 @@ export default function (
     },
     EmptyExpression: (_item: ASTBase, _data: TransformerDataObject): string => {
       return '';
+    },
+    IsaExpression: (
+      item: ASTEvaluationExpression,
+      _data: TransformerDataObject
+    ): string => {
+      const left = make(item.left);
+      const right = make(item.right);
+
+      return left + ' ' + item.operator + ' ' + right;
     },
     LogicalExpression: (
       item: ASTEvaluationExpression,

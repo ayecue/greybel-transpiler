@@ -1,4 +1,4 @@
-import { ASTChunk, ASTBaseBlockWithScope } from 'greyscript-core';
+import { ASTBaseBlockWithScope, ASTChunk } from 'greyscript-core';
 
 export default function (chunk: ASTChunk): string[] {
   const allNamespaces = new Set<string>(chunk.namespaces);
