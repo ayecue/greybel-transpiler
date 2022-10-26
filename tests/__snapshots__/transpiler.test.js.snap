@@ -1432,9 +1432,9 @@ main",
 
 exports[`parse default scripts outer.src uglify 1`] = `
 Array [
-  "I=function()
+  "I=function
 J=0
-K=function()
+K=function
 clear_screen
 L=\\"<mark=green><color=black>\\"+outer.J
 print(outer.hasIndex(\\"J\\"))
@@ -1615,7 +1615,7 @@ I.MAX_PASSWORD_LENGTH=15
 I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
 I.NUMBER_CHARACTERS=\\"0123456789\\"
 I.ALPHA_NUMERIC=I.ALPHABETIC_CHARACTERS+I.ALPHABETIC_CHARACTERS.upper+I.NUMBER_CHARACTERS
-I.constructor=function()
+I.constructor=function
 U=self
 U.buffer=[0]
 U.characters=U.ALPHA_NUMERIC
@@ -1640,7 +1640,7 @@ U.increaseBuffer(X-1)
 end if
 end if
 end function
-I.gen=function()
+I.gen=function
 U=self
 Y=U.buffer
 b=U.characters
@@ -2164,10 +2164,10 @@ end function
 I.remove=function(str)
 return (new self).constructor(self.str.remove(str))
 end function
-I.toString=function()
+I.toString=function
 return self.str
 end function
-I.length=function()
+I.length=function
 return self.str.len
 end function
 I.split=function(l)
@@ -2186,7 +2186,7 @@ n.message=(new n.String).constructor(o).parse(values).toString
 end if
 return n
 end function
-S.throw=function()
+S.throw=function
 exit(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
 end function
 U={}
@@ -2569,7 +2569,7 @@ exports[`parse default scripts simple-object.src uglify 1`] = `
 Array [
   "I={}
 I.here=\\"was\\"
-I.was=function()
+I.was=function
 print(self.here)
 end function
 print(I.was)",
@@ -2663,7 +2663,7 @@ Array [
   "globals.H=globals
 H.L=\\"was\\"
 H.K=false
-I=function()
+I=function
 return null
 end function
 print(@L.split and (K or not K))
