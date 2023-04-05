@@ -227,7 +227,7 @@ bitwise(\\">>\\",a,b)
 w=bitwise(\\">>\\",bitwise(\\">>>\\",a,(bitwise(\\"<<\\",b,c))),a)
 bitwise(\\"|\\",a,b)
 bitwise(\\"&\\",a,b)
-bitwise(\\"^\\",a,b)
+a^b
 a and b
 a or b"
 `;
@@ -242,7 +242,7 @@ bitwise(\\">>\\", a, b)
 w = bitwise(\\">>\\", bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c))), a)
 bitwise(\\"|\\", a, b)
 bitwise(\\"&\\", a, b)
-bitwise(\\"^\\", a, b)
+a ^ b
 a and b
 a or b"
 `;
@@ -257,7 +257,7 @@ bitwise(\\">>\\",I,J)
 K=bitwise(\\">>\\",bitwise(\\">>>\\",I,(bitwise(\\"<<\\",J,L))),I)
 bitwise(\\"|\\",I,J)
 bitwise(\\"&\\",I,J)
-bitwise(\\"^\\",I,J)
+I^J
 I and J
 I or J"
 `;

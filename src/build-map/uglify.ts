@@ -480,8 +480,7 @@ export default function (
         operator === '>>' ||
         operator === '>>>' ||
         operator === '|' ||
-        operator === '&' ||
-        operator === '^'
+        operator === '&'
       ) {
         expression =
           'bitwise(' + ['"' + operator + '"', left, right].join(',') + ')';
