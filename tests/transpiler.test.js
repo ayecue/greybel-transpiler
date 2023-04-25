@@ -46,4 +46,18 @@ describe('parse', function () {
       });
     });
   });
+
+  describe('special scripts', function () {
+    const testFile = path.resolve(__dirname, 'special', 'circular-import.src');
+
+    test(path.basename(testFile), async () => {
+      expect(() => {
+        return new Transpiler({
+          target: testFile,
+          environmentVariables,
+          obfuscation: false
+        }).parse();
+      }).rejects.toThrowError(/^Circular dependency/);
+    });
+  });
 });

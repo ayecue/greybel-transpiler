@@ -24,6 +24,10 @@ export type DependencyRef =
   | ASTFeatureIncludeExpression
   | ASTFeatureImportExpression;
 
+export type ResourceDependencyMap = Map<string, Dependency>;
+
+export type SourceMap = Map<string, Set<string>>;
+
 export interface DependencyOptions {
   target: string;
   resourceHandler: ResourceHandler;
@@ -68,12 +72,19 @@ export default class Dependency extends EventEmitter {
     me.ref = options.ref;
 
     const namespace = me.context.createModuleNamespace(me.id);
-    const resourceDepMap = me.context.getOrCreateData<Map<string, Dependency>>(
-      'resourceDepMap',
+    const resourceDependencyMap = me.context.getOrCreateData<ResourceDependencyMap>(
+      'resourceDependencyMap',
       () => new Map()
     );
 
-    resourceDepMap.set(namespace, me);
+    resourceDependencyMap.set(namespace, me);
+
+    const sourceMap = me.context.getOrCreateData<SourceMap>(
+      'sourceMap',
+      () => new Map()
+    );
+
+    sourceMap.set(namespace, new Set());
   }
 
   getId(): string {
@@ -106,7 +117,7 @@ export default class Dependency extends EventEmitter {
     const me = this;
     const context = me.context;
     const { data, modules } = context;
-    const resourceDepMap: Map<string, Dependency> = data.get('resourceDepMap');
+    const resourceDependencyMap: ResourceDependencyMap = data.get('resourceDependencyMap');
     const resourceHandler = me.resourceHandler;
     const subTarget = await resourceHandler.getTargetRelativeTo(
       me.target,
@@ -115,8 +126,8 @@ export default class Dependency extends EventEmitter {
     const id = md5(subTarget);
     const namespace = modules.get(id);
 
-    if (resourceDepMap.has(namespace)) {
-      return resourceDepMap.get(namespace);
+    if (resourceDependencyMap.has(namespace)) {
+      return resourceDependencyMap.get(namespace);
     }
 
     if (!(await resourceHandler.has(subTarget))) {
@@ -146,6 +157,10 @@ export default class Dependency extends EventEmitter {
   async findDependencies(): Promise<DependencyFindResult> {
     const me = this;
     const { imports, includes, nativeImports } = me.chunk;
+    const { data } = me.context;
+    const sourceNamespace = me.getNamespace();
+    const sourceMap: SourceMap = data.get('sourceMap');
+    const relatedNamespaces = sourceMap.get(sourceNamespace);
     const namespaces: string[] = [...fetchNamespaces(me.chunk)];
     const literals: ASTBase[] = [...me.chunk.literals];
     const result: Dependency[] = [];
@@ -161,10 +176,18 @@ export default class Dependency extends EventEmitter {
         DependencyType.NativeImport,
         nativeImport
       );
-      const r = await dependency.findDependencies();
+      const namespace = dependency.getNamespace();
 
-      namespaces.push(...r.namespaces);
-      literals.push(...r.literals);
+      relatedNamespaces.add(namespace);
+
+      if (sourceMap.get(namespace).has(sourceNamespace)) {
+        throw new Error(`Circular dependency from ${me.target} to ${dependency.target} detected.`);
+      }
+
+      const relatedDependencies = await dependency.findDependencies();
+
+      namespaces.push(...relatedDependencies.namespaces);
+      literals.push(...relatedDependencies.literals);
 
       result.push(dependency);
     }
@@ -178,17 +201,25 @@ export default class Dependency extends EventEmitter {
           ? DependencyType.Include
           : DependencyType.Import;
       const dependency = await me.resolve(item.path, type, item);
+      const namespace = dependency.getNamespace();
+
+      relatedNamespaces.add(namespace);
+
+      if (sourceMap.get(namespace).has(sourceNamespace)) {
+        throw new Error(`Circular dependency from ${me.target} to ${dependency.target} detected.`);
+      }
+
       const chunk = dependency.chunk;
 
       item.chunk = chunk;
-      item.namespace = dependency.getNamespace();
+      item.namespace = namespace;
 
-      const r = await dependency.findDependencies();
+      const relatedDependencies = await dependency.findDependencies();
 
       result.push(...dependency.fetchNativeImports());
 
-      namespaces.push(...r.namespaces);
-      literals.push(...r.literals);
+      namespaces.push(...relatedDependencies.namespaces);
+      literals.push(...relatedDependencies.literals);
 
       result.push(dependency);
     }
