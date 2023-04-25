@@ -48,9 +48,21 @@ describe('parse', function () {
   });
 
   describe('special scripts', function () {
-    const testFile = path.resolve(__dirname, 'special', 'circular-import.src');
+    test('simple circular import', async () => {
+      const testFile = path.resolve(__dirname, 'special', 'circular-import.src');
 
-    test(path.basename(testFile), async () => {
+      expect(() => {
+        return new Transpiler({
+          target: testFile,
+          environmentVariables,
+          obfuscation: false
+        }).parse();
+      }).rejects.toThrowError(/^Circular dependency/);
+    });
+
+    test('long circular import', async () => {
+      const testFile = path.resolve(__dirname, 'special', 'long-circular-import.src');
+
       expect(() => {
         return new Transpiler({
           target: testFile,

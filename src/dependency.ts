@@ -24,10 +24,6 @@ export type DependencyRef =
   | ASTFeatureIncludeExpression
   | ASTFeatureImportExpression;
 
-export type ResourceDependencyMap = Map<string, Dependency>;
-
-export type SourceMap = Map<string, Set<string>>;
-
 export interface DependencyOptions {
   target: string;
   resourceHandler: ResourceHandler;
@@ -44,6 +40,11 @@ export interface DependencyFindResult {
   namespaces: string[];
   literals: ASTBase[];
 }
+
+/* eslint-disable no-use-before-define */
+export type ResourceDependencyMap = Map<string, Dependency>;
+
+export type DependencyCallStack = string[];
 
 export default class Dependency extends EventEmitter {
   target: string;
@@ -72,19 +73,18 @@ export default class Dependency extends EventEmitter {
     me.ref = options.ref;
 
     const namespace = me.context.createModuleNamespace(me.id);
-    const resourceDependencyMap = me.context.getOrCreateData<ResourceDependencyMap>(
-      'resourceDependencyMap',
-      () => new Map()
-    );
+    const resourceDependencyMap =
+      me.context.getOrCreateData<ResourceDependencyMap>(
+        'resourceDependencyMap',
+        () => new Map()
+      );
 
     resourceDependencyMap.set(namespace, me);
 
-    const sourceMap = me.context.getOrCreateData<SourceMap>(
-      'sourceMap',
-      () => new Map()
+    me.context.getOrCreateData<DependencyCallStack>(
+      'dependencyCallStack',
+      () => []
     );
-
-    sourceMap.set(namespace, new Set());
   }
 
   getId(): string {
@@ -117,7 +117,9 @@ export default class Dependency extends EventEmitter {
     const me = this;
     const context = me.context;
     const { data, modules } = context;
-    const resourceDependencyMap: ResourceDependencyMap = data.get('resourceDependencyMap');
+    const resourceDependencyMap: ResourceDependencyMap = data.get(
+      'resourceDependencyMap'
+    );
     const resourceHandler = me.resourceHandler;
     const subTarget = await resourceHandler.getTargetRelativeTo(
       me.target,
@@ -159,11 +161,14 @@ export default class Dependency extends EventEmitter {
     const { imports, includes, nativeImports } = me.chunk;
     const { data } = me.context;
     const sourceNamespace = me.getNamespace();
-    const sourceMap: SourceMap = data.get('sourceMap');
-    const relatedNamespaces = sourceMap.get(sourceNamespace);
+    const dependencyCallStack: DependencyCallStack = data.get(
+      'dependencyCallStack'
+    );
     const namespaces: string[] = [...fetchNamespaces(me.chunk)];
     const literals: ASTBase[] = [...me.chunk.literals];
     const result: Dependency[] = [];
+
+    dependencyCallStack.push(sourceNamespace);
 
     // handle native imports
     for (const nativeImport of nativeImports) {
@@ -178,10 +183,10 @@ export default class Dependency extends EventEmitter {
       );
       const namespace = dependency.getNamespace();
 
-      relatedNamespaces.add(namespace);
-
-      if (sourceMap.get(namespace).has(sourceNamespace)) {
-        throw new Error(`Circular dependency from ${me.target} to ${dependency.target} detected.`);
+      if (dependencyCallStack.includes(namespace)) {
+        throw new Error(
+          `Circular dependency from ${me.target} to ${dependency.target} detected.`
+        );
       }
 
       const relatedDependencies = await dependency.findDependencies();
@@ -203,10 +208,10 @@ export default class Dependency extends EventEmitter {
       const dependency = await me.resolve(item.path, type, item);
       const namespace = dependency.getNamespace();
 
-      relatedNamespaces.add(namespace);
-
-      if (sourceMap.get(namespace).has(sourceNamespace)) {
-        throw new Error(`Circular dependency from ${me.target} to ${dependency.target} detected.`);
+      if (dependencyCallStack.includes(namespace)) {
+        throw new Error(
+          `Circular dependency from ${me.target} to ${dependency.target} detected.`
+        );
       }
 
       const chunk = dependency.chunk;
@@ -227,6 +232,8 @@ export default class Dependency extends EventEmitter {
     const dependencies = new Set<Dependency>(result);
 
     me.dependencies = dependencies;
+
+    dependencyCallStack.pop();
 
     return {
       dependencies,
