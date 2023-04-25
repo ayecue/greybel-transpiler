@@ -34,12 +34,12 @@ export default class Transformer {
     const currentStack = me.currentStack;
     if (o == null) return '';
     if (o.type == null) {
-      console.error('Error ast type:', o);
-      throw new Error('Unexpected as type');
+      console.error('Error AST type:', o);
+      throw new Error('Unexpected AST type');
     }
     const fn = me.buildMap[o.type];
     if (fn == null) {
-      console.error('Error ast:', o);
+      console.error('Error AST:', o);
       throw new Error('Type does not exist ' + o.type);
     }
     currentStack.push(o);
