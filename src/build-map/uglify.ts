@@ -32,12 +32,12 @@ import {
   ASTWhileStatement
 } from 'greyscript-core';
 
-import Context from '../context';
+import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
-import injectImport from '../utils/inject-imports';
+import { injectImport } from '../utils/inject-imports';
 import { BuildMap } from './default';
 
-export default function (
+export function uglifyFactory(
   make: (item: ASTBase, _data?: TransformerDataObject) => string,
   context: Context,
   environmentVariables: Map<string, string>

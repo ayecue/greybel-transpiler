@@ -1,9 +1,9 @@
 import { ASTImportCodeExpression } from 'greyscript-core';
 
-import Context from '../context';
-import Dependency from '../dependency';
+import { Context } from '../context';
+import { Dependency } from '../dependency';
 
-export default function (
+export function injectImport(
   context: Context,
   item: ASTImportCodeExpression
 ): string {

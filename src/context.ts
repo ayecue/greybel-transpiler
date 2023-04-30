@@ -1,7 +1,7 @@
 import { ParserValidator } from 'greyscript-core';
 
-import LiteralsMapper from './utils/literals-mapper';
-import NamespaceGenerator from './utils/namespace-generator';
+import { LiteralsMapper } from './utils/literals-mapper';
+import { NamespaceGenerator } from './utils/namespace-generator';
 
 export interface ContextOptions {
   variablesCharset?: string;
@@ -9,7 +9,7 @@ export interface ContextOptions {
   modulesCharset?: string;
 }
 
-export default class Context {
+export class Context {
   modules: NamespaceGenerator;
   variables: NamespaceGenerator;
   literals: LiteralsMapper;

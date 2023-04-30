@@ -1,21 +1,18 @@
-export { BuildMap, BuildType, default as getFactory } from './build-map';
-export { default as Context, ContextOptions } from './context';
-export { default as Dependency, DependencyOptions } from './dependency';
-export {
-  default as DirectTranspiler,
-  DirectTranspilerOptions
-} from './direct-transpiler';
+export { BuildMap, BuildType, getFactory } from './build-map';
+export { Context, ContextOptions } from './context';
+export { Dependency, DependencyOptions } from './dependency';
+export { DirectTranspiler, DirectTranspilerOptions } from './direct-transpiler';
 export * from './resource';
 export {
-  default as Target,
+  Target,
   TargetOptions,
   TargetParseOptions,
   TargetParseResult,
   TargetParseResultItem
 } from './target';
-export { default as Transformer, TransformerDataObject } from './transformer';
+export { Transformer, TransformerDataObject } from './transformer';
 export {
-  default as Transpiler,
+  Transpiler,
   TranspilerOptions,
   TranspilerParseResult
 } from './transpiler';

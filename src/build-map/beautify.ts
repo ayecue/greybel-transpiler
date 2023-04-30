@@ -32,16 +32,16 @@ import {
   ASTWhileStatement
 } from 'greyscript-core';
 
-import Context from '../context';
+import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
-import injectImport from '../utils/inject-imports';
+import { injectImport } from '../utils/inject-imports';
 import { BuildMap } from './default';
 
 const isBlock = (item: string) => {
   return /^[^\n]*(function|if|for|while)[^\n]*/.test(item);
 };
 
-export default function (
+export function beatuifyFactory(
   make: (item: ASTBase, _data?: TransformerDataObject) => string,
   context: Context,
   environmentVariables: Map<string, string>

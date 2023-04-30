@@ -2,11 +2,11 @@ import EventEmitter from 'events';
 import { ASTChunkAdvanced, Parser } from 'greybel-core';
 import { ASTLiteral } from 'greyscript-core';
 
-import getFactory, { BuildType } from './build-map';
-import Context from './context';
-import Transformer from './transformer';
-import generateCharsetMap from './utils/charset-generator';
-import fetchNamespaces from './utils/fetch-namespaces';
+import { BuildType, getFactory } from './build-map';
+import { Context } from './context';
+import { Transformer } from './transformer';
+import { generateCharsetMap } from './utils/charset-generator';
+import { fetchNamespaces } from './utils/fetch-namespaces';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -22,7 +22,7 @@ export interface DirectTranspilerOptions {
   excludedNamespaces?: string[];
 }
 
-export default class DirectTranspiler extends EventEmitter {
+export class DirectTranspiler extends EventEmitter {
   code: string;
 
   obfuscation: boolean;

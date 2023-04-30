@@ -3,13 +3,13 @@ import {
   MAIN_BOILERPLATE,
   MODULE_BOILERPLATE
 } from './boilerplates';
-import getFactory, { BuildType } from './build-map';
-import Context from './context';
-import Dependency, { DependencyType } from './dependency';
+import { BuildType, getFactory } from './build-map';
+import { Context } from './context';
+import { Dependency, DependencyType } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
-import Target, { TargetParseResult, TargetParseResultItem } from './target';
-import Transformer from './transformer';
-import generateCharsetMap from './utils/charset-generator';
+import { Target, TargetParseResult, TargetParseResultItem } from './target';
+import { Transformer } from './transformer';
+import { generateCharsetMap } from './utils/charset-generator';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -32,7 +32,7 @@ export interface TranspilerParseResult {
   [key: string]: string;
 }
 
-export default class Transpiler {
+export class Transpiler {
   target: string;
   context: Context;
   resourceHandler: ResourceHandler;

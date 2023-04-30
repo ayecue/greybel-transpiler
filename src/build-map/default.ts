@@ -32,15 +32,15 @@ import {
   ASTWhileStatement
 } from 'greyscript-core';
 
-import Context from '../context';
+import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
-import injectImport from '../utils/inject-imports';
+import { injectImport } from '../utils/inject-imports';
 
 export interface BuildMap {
   [type: string]: (item: ASTBase, _data: TransformerDataObject) => string;
 }
 
-export default function (
+export function defaultFactory(
   make: (item: ASTBase, _data?: TransformerDataObject) => string,
   context: Context,
   environmentVariables: Map<string, string>

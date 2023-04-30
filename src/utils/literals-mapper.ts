@@ -1,7 +1,7 @@
 import md5 from 'blueimp-md5';
 import { ASTLiteral } from 'greyscript-core';
 
-import NamespaceGenerator from './namespace-generator';
+import { NamespaceGenerator } from './namespace-generator';
 
 export interface LiteralMetaData {
   literal: ASTLiteral;
@@ -10,7 +10,7 @@ export interface LiteralMetaData {
   namespace: string;
 }
 
-export default class LiteralsMapper {
+export class LiteralsMapper {
   mapping: Map<string, LiteralMetaData>;
   variableNamespacesGenerator: NamespaceGenerator;
 

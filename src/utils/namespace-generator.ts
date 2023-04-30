@@ -4,7 +4,7 @@ export interface NamespaceGeneratorOptions {
   defaultNamespaces?: string[];
 }
 
-export default class NamespaceGenerator {
+export class NamespaceGenerator {
   buffer: number[];
   mapping: Map<string, string>;
   rmapping: Map<string, string>;

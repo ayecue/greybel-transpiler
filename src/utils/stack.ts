@@ -1,6 +1,6 @@
 import { ASTBase } from 'greyscript-core';
 
-export default class Stack {
+export class Stack {
   currentStack: ASTBase[];
 
   constructor() {

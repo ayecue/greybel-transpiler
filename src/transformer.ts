@@ -1,14 +1,14 @@
 import { ASTBase, ASTChunk } from 'greyscript-core';
 
 import { BuildMap } from './build-map/default';
-import Context from './context';
-import Stack from './utils/stack';
+import { Context } from './context';
+import { Stack } from './utils/stack';
 
 export interface TransformerDataObject {
   [key: string]: any;
 }
 
-export default class Transformer {
+export class Transformer {
   currentStack: Stack;
   context: Context;
   buildMap: BuildMap;

@@ -8,9 +8,9 @@ import {
 } from 'greybel-core';
 import { ASTBase, ASTImportCodeExpression } from 'greyscript-core';
 
-import Context from './context';
+import { Context } from './context';
 import { ResourceHandler } from './resource';
-import fetchNamespaces from './utils/fetch-namespaces';
+import { fetchNamespaces } from './utils/fetch-namespaces';
 
 export enum DependencyType {
   Main,
@@ -46,7 +46,7 @@ export type ResourceDependencyMap = Map<string, Dependency>;
 
 export type DependencyCallStack = string[];
 
-export default class Dependency extends EventEmitter {
+export class Dependency extends EventEmitter {
   target: string;
   id: string;
   resourceHandler: ResourceHandler;

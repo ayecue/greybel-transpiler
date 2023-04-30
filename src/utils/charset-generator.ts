@@ -12,9 +12,7 @@ export interface CharsetMap {
   modules: string;
 }
 
-export default function generateCharsetMap(
-  obfuscation: boolean = false
-): CharsetMap {
+export function generateCharsetMap(obfuscation: boolean = false): CharsetMap {
   const alphaUpper = generateChars(65, 90);
   const alphaLower = generateChars(97, 122);
   const numbers = generateChars(48, 57);

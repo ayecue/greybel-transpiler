@@ -2,8 +2,8 @@ import EventEmitter from 'events';
 import { ASTChunkAdvanced, Parser } from 'greybel-core';
 import { ASTLiteral } from 'greyscript-core';
 
-import Context from './context';
-import Dependency, { DependencyRef, DependencyType } from './dependency';
+import { Context } from './context';
+import { Dependency, DependencyRef, DependencyType } from './dependency';
 import { ResourceHandler } from './resource';
 
 export interface TargetOptions {
@@ -27,7 +27,7 @@ export interface TargetParseResult {
   nativeImports: Map<string, TargetParseResultItem>;
 }
 
-export default class Target extends EventEmitter {
+export class Target extends EventEmitter {
   target: string;
   resourceHandler: ResourceHandler;
   context: Context;
