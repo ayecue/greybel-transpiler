@@ -16,3 +16,4 @@ export {
   TranspilerOptions,
   TranspilerParseResult
 } from './transpiler';
+export { BuildError } from './utils/error';

@@ -5,6 +5,7 @@ import { ASTLiteral } from 'greyscript-core';
 import { Context } from './context';
 import { Dependency, DependencyRef, DependencyType } from './dependency';
 import { ResourceHandler } from './resource';
+import { BuildError } from './utils/error';
 
 export interface TargetOptions {
   target: string;
@@ -56,62 +57,72 @@ export class Target extends EventEmitter {
 
     me.emit('parse-before', target);
 
-    const parser = new Parser(content);
-    const chunk = parser.parseChunk() as ASTChunkAdvanced;
-    const dependency = new Dependency({
-      target,
-      resourceHandler,
-      chunk,
-      context
-    });
-
-    const { namespaces, literals } = await dependency.findDependencies();
-
-    const parsedImports: Map<string, TargetParseResultItem> = new Map();
-    const astDepMap = me.context.getOrCreateData<
-      Map<DependencyRef, Set<Dependency>>
-    >('astDepMap', () => new Map());
-
-    for (const item of dependency.dependencies) {
-      if (item.type === DependencyType.NativeImport) {
-        const subImports = item.fetchNativeImports();
-
-        for (const subImport of subImports) {
-          parsedImports.set(subImport.target, {
-            chunk: subImport.chunk,
-            dependency: subImport
-          });
-        }
-
-        parsedImports.set(item.target, {
-          chunk: item.chunk,
-          dependency: item
-        });
-
-        astDepMap.set(item.ref, subImports);
-      }
-    }
-
-    if (!options.disableNamespacesOptimization) {
-      const uniqueNamespaces = new Set(namespaces);
-
-      for (const namespace of uniqueNamespaces) {
-        context.variables.createNamespace(namespace);
-      }
-    }
-
-    if (!options.disableLiteralsOptimization) {
-      for (const literal of literals) {
-        context.literals.add(literal as ASTLiteral);
-      }
-    }
-
-    return {
-      main: {
+    try {
+      const parser = new Parser(content);
+      const chunk = parser.parseChunk() as ASTChunkAdvanced;
+      const dependency = new Dependency({
+        target,
+        resourceHandler,
         chunk,
-        dependency
-      },
-      nativeImports: parsedImports
-    };
+        context
+      });
+
+      const { namespaces, literals } = await dependency.findDependencies();
+
+      const parsedImports: Map<string, TargetParseResultItem> = new Map();
+      const astDepMap = me.context.getOrCreateData<
+        Map<DependencyRef, Set<Dependency>>
+      >('astDepMap', () => new Map());
+
+      for (const item of dependency.dependencies) {
+        if (item.type === DependencyType.NativeImport) {
+          const subImports = item.fetchNativeImports();
+
+          for (const subImport of subImports) {
+            parsedImports.set(subImport.target, {
+              chunk: subImport.chunk,
+              dependency: subImport
+            });
+          }
+
+          parsedImports.set(item.target, {
+            chunk: item.chunk,
+            dependency: item
+          });
+
+          astDepMap.set(item.ref, subImports);
+        }
+      }
+
+      if (!options.disableNamespacesOptimization) {
+        const uniqueNamespaces = new Set(namespaces);
+
+        for (const namespace of uniqueNamespaces) {
+          context.variables.createNamespace(namespace);
+        }
+      }
+
+      if (!options.disableLiteralsOptimization) {
+        for (const literal of literals) {
+          context.literals.add(literal as ASTLiteral);
+        }
+      }
+
+      return {
+        main: {
+          chunk,
+          dependency
+        },
+        nativeImports: parsedImports
+      };
+    } catch (err: any) {
+      if (err instanceof BuildError) {
+        throw err;
+      }
+
+      throw new BuildError(err.message, {
+        target: this.target
+      });
+    }
   }
 }

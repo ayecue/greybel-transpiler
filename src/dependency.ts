@@ -10,6 +10,7 @@ import { ASTBase, ASTImportCodeExpression } from 'greyscript-core';
 
 import { Context } from './context';
 import { ResourceHandler } from './resource';
+import { BuildError } from './utils/error';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 
 export enum DependencyType {
@@ -140,20 +141,30 @@ export class Dependency extends EventEmitter {
 
     me.emit('parse-before', subTarget);
 
-    const parser = new Parser(content);
-    const chunk = parser.parseChunk() as ASTChunkAdvanced;
-    const dependency = new Dependency({
-      target: subTarget,
-      resourceHandler,
-      chunk,
-      type,
-      context,
-      ref
-    });
+    try {
+      const parser = new Parser(content);
+      const chunk = parser.parseChunk() as ASTChunkAdvanced;
+      const dependency = new Dependency({
+        target: subTarget,
+        resourceHandler,
+        chunk,
+        type,
+        context,
+        ref
+      });
 
-    me.emit('parse-after', dependency);
+      me.emit('parse-after', dependency);
 
-    return dependency;
+      return dependency;
+    } catch (err: any) {
+      if (err instanceof BuildError) {
+        throw err;
+      }
+
+      throw new BuildError(err.message, {
+        target: this.target
+      });
+    }
   }
 
   async findDependencies(): Promise<DependencyFindResult> {
