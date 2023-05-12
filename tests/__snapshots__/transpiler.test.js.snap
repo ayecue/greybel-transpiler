@@ -308,7 +308,10 @@ print(arg1)
 print(arg2)
 end function
 test
-test(\\"foo\\",false)",
+test(\\"foo\\",false)
+var1=\\"test\\"
+var2=\\"test\\"
+var3=\\"test\\"",
 ]
 `;
 
@@ -320,18 +323,26 @@ Array [
 end function
 
 test
-test(\\"foo\\", false)",
+test(\\"foo\\", false)
+var1 = \\"test\\"
+var2 = \\"test\\"
+var3 = \\"test\\"",
 ]
 `;
 
 exports[`parse default scripts default-args.src uglify 1`] = `
 Array [
-  "I=function(J=0,K=\\"test\\")
+  "globals.H=globals
+H.O=\\"test\\"
+I=function(J=0,K=\\"test\\")
 print(J)
 print(K)
 end function
 I
-I(\\"foo\\",false)",
+I(\\"foo\\",false)
+L=O
+M=O
+N=O",
 ]
 `;
 

@@ -289,7 +289,10 @@ print(arg1)
 print(arg2)
 end function
 test
-test(\\"foo\\",false)"
+test(\\"foo\\",false)
+var1=\\"test\\"
+var2=\\"test\\"
+var3=\\"test\\""
 `;
 
 exports[`parse default scripts default-args.src beautify 1`] = `
@@ -299,16 +302,24 @@ exports[`parse default scripts default-args.src beautify 1`] = `
 end function
 
 test
-test(\\"foo\\", false)"
+test(\\"foo\\", false)
+var1 = \\"test\\"
+var2 = \\"test\\"
+var3 = \\"test\\""
 `;
 
 exports[`parse default scripts default-args.src uglify 1`] = `
-"I=function(J=0,K=\\"test\\")
+"globals.H=globals
+H.O=\\"test\\"
+I=function(J=0,K=\\"test\\")
 print(J)
 print(K)
 end function
 I
-I(\\"foo\\",false)"
+I(\\"foo\\",false)
+L=O
+M=O
+N=O"
 `;
 
 exports[`parse default scripts envar.src 1`] = `

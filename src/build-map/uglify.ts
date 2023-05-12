@@ -56,12 +56,12 @@ export function uglifyFactory(
     },
     AssignmentStatement: (
       item: ASTAssignmentStatement,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): string => {
       const varibale = item.variable;
       const init = item.init;
       const left = make(varibale);
-      const right = make(init);
+      const right = make(init, data);
 
       return left + '=' + right;
     },
@@ -91,7 +91,7 @@ export function uglifyFactory(
       let bodyItem;
 
       for (parameterItem of item.parameters) {
-        parameters.push(make(parameterItem));
+        parameters.push(make(parameterItem, { isArgument: true }));
       }
 
       for (bodyItem of item.body) {
@@ -156,10 +156,10 @@ export function uglifyFactory(
     },
     NumericLiteral: (
       item: ASTLiteral,
-      _data: TransformerDataObject
+      { isArgument = false }: TransformerDataObject
     ): string => {
       const literal = context.literals.get(item);
-      if (literal != null && literal.namespace != null)
+      if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return item.value.toString();
     },
@@ -213,9 +213,12 @@ export function uglifyFactory(
       if (args.length === 0) return base;
       return base + '(' + args.join(',') + ')';
     },
-    StringLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
+    StringLiteral: (
+      item: ASTLiteral,
+      { isArgument = false }: TransformerDataObject
+    ): string => {
       const literal = context.literals.get(item);
-      if (literal != null && literal.namespace != null)
+      if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return item.raw.toString();
     },
@@ -308,9 +311,12 @@ export function uglifyFactory(
 
       return 'else\n' + statement;
     },
-    NilLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
+    NilLiteral: (
+      item: ASTLiteral,
+      { isArgument = false }: TransformerDataObject
+    ): string => {
       const literal = context.literals.get(item);
-      if (literal != null && literal.namespace != null)
+      if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return 'null';
     },
@@ -438,10 +444,10 @@ export function uglifyFactory(
     },
     BooleanLiteral: (
       item: ASTLiteral,
-      _data: TransformerDataObject
+      { isArgument = false }: TransformerDataObject
     ): string => {
       const literal = context.literals.get(item);
-      if (literal != null && literal.namespace != null)
+      if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return item.raw.toString();
     },

@@ -5,3 +5,7 @@ end function
 
 test()
 test("foo", false)
+
+var1 = "test"
+var2 = "test"
+var3 = "test"
