@@ -415,6 +415,10 @@ export function uglifyFactory(
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): string => {
+      if (!item.chunk) {
+        return '#import "' + make(item.name) + ' from ' + item.path + '";';
+      }
+
       const requireMethodName = context.variables.get('__REQUIRE');
       return (
         make(item.name) + '=' + requireMethodName + '("' + item.namespace + '")'
@@ -424,6 +428,10 @@ export function uglifyFactory(
       item: ASTFeatureIncludeExpression,
       _data: TransformerDataObject
     ): string => {
+      if (!item.chunk) {
+        return '#include "' + item.path + '";';
+      }
+
       return make(item.chunk);
     },
     ListConstructorExpression: (

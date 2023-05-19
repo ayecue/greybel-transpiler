@@ -360,12 +360,20 @@ export function defaultFactory(
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): string => {
+      if (!item.chunk) {
+        return '#import "' + make(item.name) + ' from ' + item.path + '";';
+      }
+
       return make(item.name) + ' = __REQUIRE("' + item.namespace + '")';
     },
     FeatureIncludeExpression: (
       item: ASTFeatureIncludeExpression,
       _data: TransformerDataObject
     ): string => {
+      if (!item.chunk) {
+        return '#include "' + item.path + '";';
+      }
+
       return make(item.chunk);
     },
     FeatureDebuggerExpression: (
