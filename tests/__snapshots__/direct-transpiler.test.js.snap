@@ -386,20 +386,20 @@ print(locals.hasIndex(\\"J\\"))"
 `;
 
 exports[`parse default scripts import-code.src 1`] = `
-"import_code(\\"/some/foo\\")
-import_code(\\"/some/bar\\")
+"import_code(\\"./ascii\\")
+import_code(\\"../fixtures/sub-import\\")
 print(123)"
 `;
 
 exports[`parse default scripts import-code.src beautify 1`] = `
-"import_code(\\"/some/foo\\")
-import_code(\\"/some/bar\\")
+"import_code(\\"./ascii\\")
+import_code(\\"../fixtures/sub-import\\")
 print(123)"
 `;
 
 exports[`parse default scripts import-code.src uglify 1`] = `
-"import_code(\\"/some/foo\\")
-import_code(\\"/some/bar\\")
+"import_code(\\"./ascii\\")
+import_code(\\"../fixtures/sub-import\\")
 print(123)"
 `;
 

@@ -183,12 +183,8 @@ export class Dependency extends EventEmitter {
 
     // handle native imports
     for (const nativeImport of nativeImports) {
-      if (!nativeImport.fileSystemDirectory) {
-        continue;
-      }
-
       const dependency = await me.resolve(
-        nativeImport.fileSystemDirectory,
+        nativeImport.directory,
         DependencyType.NativeImport,
         nativeImport
       );
@@ -204,7 +200,6 @@ export class Dependency extends EventEmitter {
 
       namespaces.push(...relatedDependencies.namespaces);
       literals.push(...relatedDependencies.literals);
-
       result.push(dependency);
     }
 
@@ -233,10 +228,8 @@ export class Dependency extends EventEmitter {
       const relatedDependencies = await dependency.findDependencies();
 
       result.push(...dependency.fetchNativeImports());
-
       namespaces.push(...relatedDependencies.namespaces);
       literals.push(...relatedDependencies.literals);
-
       result.push(dependency);
     }
 

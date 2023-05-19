@@ -1,35 +1,43 @@
 import { ASTImportCodeExpression } from 'greyscript-core';
 
 import { Context } from '../context';
-import { Dependency } from '../dependency';
+import { Dependency, DependencyRef } from '../dependency';
 
 export function injectImport(
   context: Context,
   item: ASTImportCodeExpression
 ): string {
-  const astDepMap = context.data.get('astDepMap');
+  const astRefDependencyMap = context.data.get('astRefDependencyMap') as Map<
+    DependencyRef,
+    {
+      main: Dependency;
+      imports: Set<Dependency>;
+    }
+  >;
 
-  if (!astDepMap) {
-    return `import_code("${item.gameDirectory}")`;
+  if (!astRefDependencyMap) {
+    return `import_code("${item.directory}")`;
   }
 
-  const depsUsed = context.getOrCreateData<Set<Dependency>>(
-    'depsUsed',
+  const astRefsVisited = context.getOrCreateData<Set<Dependency>>(
+    'astRefsVisited',
     () => new Set()
   );
 
-  if (astDepMap.has(item)) {
+  if (astRefDependencyMap.has(item)) {
     const lines = [];
-    const subDeps = astDepMap.get(item);
+    const entry = astRefDependencyMap.get(item);
 
-    for (const subDep of subDeps) {
-      if (depsUsed.has(subDep)) continue;
+    for (const importEntry of entry.imports) {
+      if (astRefsVisited.has(importEntry)) continue;
+      if (importEntry.ref instanceof ASTImportCodeExpression) {
+        lines.unshift(`import_code("${importEntry.target}")`);
+      }
 
-      lines.unshift(`import_code("${subDep.ref.gameDirectory}")`);
-      depsUsed.add(subDep);
+      astRefsVisited.add(importEntry);
     }
 
-    lines.push(`import_code("${item.gameDirectory}")`);
+    lines.push(`import_code("${entry.main.target}")`);
 
     return lines.join('\n');
   }

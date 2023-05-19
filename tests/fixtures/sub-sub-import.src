@@ -1,4 +1,5 @@
 import_code("/some/sub":"./envar-include")
+import_code("/some/sub-sub":"./sub-sub-sub-import")
 test = 123
 was = 123
 x = 123

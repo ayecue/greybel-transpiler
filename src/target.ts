@@ -70,15 +70,21 @@ export class Target extends EventEmitter {
       const { namespaces, literals } = await dependency.findDependencies();
 
       const parsedImports: Map<string, TargetParseResultItem> = new Map();
-      const astDepMap = me.context.getOrCreateData<
-        Map<DependencyRef, Set<Dependency>>
-      >('astDepMap', () => new Map());
+      const astRefDependencyMap = me.context.getOrCreateData<
+        WeakMap<
+          DependencyRef,
+          {
+            main: Dependency;
+            imports: Set<Dependency>;
+          }
+        >
+      >('astRefDependencyMap', () => new WeakMap());
 
       for (const item of dependency.dependencies) {
         if (item.type === DependencyType.NativeImport) {
-          const subImports = item.fetchNativeImports();
+          const relatedImports = item.fetchNativeImports();
 
-          for (const subImport of subImports) {
+          for (const subImport of relatedImports) {
             parsedImports.set(subImport.target, {
               chunk: subImport.chunk,
               dependency: subImport
@@ -90,7 +96,10 @@ export class Target extends EventEmitter {
             dependency: item
           });
 
-          astDepMap.set(item.ref, subImports);
+          astRefDependencyMap.set(item.ref, {
+            main: item,
+            imports: relatedImports
+          });
         }
       }
 
