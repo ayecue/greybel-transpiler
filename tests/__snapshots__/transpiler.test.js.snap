@@ -520,17 +520,15 @@ end function
 print(AsciiGen.gen(\\"Hallo\\"))
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
 print(123)
 \\"true\\"
 //debugger",
   "myvar2=\\"\\"foo\\"\\"",
-  "lastimport=\\"hi\\"",
-  "import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-test=123
+  "test=123
 was=123
 x=123",
+  "lastimport=\\"hi\\"",
 ]
 `;
 
@@ -703,17 +701,15 @@ end function
 print(AsciiGen.gen(\\"Hallo\\"))
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
 print(123)
 \\"true\\"
 //debugger",
   "myvar2 = \\"\\"foo\\"\\"",
-  "lastimport = \\"hi\\"",
-  "import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-test = 123
+  "test = 123
 was = 123
 x = 123",
+  "lastimport = \\"hi\\"",
 ]
 `;
 
@@ -891,17 +887,15 @@ end function
 print(J.gen(\\"Hallo\\"))
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
 import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
 print(AO)
 \\"true\\"
 //debugger",
   "o=\\"\\"foo\\"\\"",
-  "r=\\"hi\\"",
-  "import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-p=AO
+  "p=AO
 q=AO
 h=AO",
+  "r=\\"hi\\"",
 ]
 `;
 

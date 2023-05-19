@@ -227,10 +227,10 @@ export class Dependency extends EventEmitter {
 
       const relatedDependencies = await dependency.findDependencies();
 
-      result.push(...dependency.fetchNativeImports());
       namespaces.push(...relatedDependencies.namespaces);
       literals.push(...relatedDependencies.literals);
       result.push(dependency);
+      result.push(...dependency.fetchNativeImports());
     }
 
     const dependencies = new Set<Dependency>(result);

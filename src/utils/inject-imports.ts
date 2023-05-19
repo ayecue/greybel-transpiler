@@ -19,25 +19,30 @@ export function injectImport(
     return `import_code("${item.directory}")`;
   }
 
-  const astRefsVisited = context.getOrCreateData<Set<Dependency>>(
+  const astRefsVisited = context.getOrCreateData<Set<string>>(
     'astRefsVisited',
     () => new Set()
   );
 
   if (astRefDependencyMap.has(item)) {
-    const lines = [];
+    const lines: string[] = [];
     const entry = astRefDependencyMap.get(item);
 
+    if (astRefsVisited.has(entry.main.target)) {
+      return lines.join('\n');
+    }
+
     for (const importEntry of entry.imports) {
-      if (astRefsVisited.has(importEntry)) continue;
+      if (astRefsVisited.has(importEntry.target)) continue;
       if (importEntry.ref instanceof ASTImportCodeExpression) {
         lines.unshift(`import_code("${importEntry.target}")`);
       }
 
-      astRefsVisited.add(importEntry);
+      astRefsVisited.add(importEntry.target);
     }
 
     lines.push(`import_code("${entry.main.target}")`);
+    astRefsVisited.add(entry.main.target);
 
     return lines.join('\n');
   }
