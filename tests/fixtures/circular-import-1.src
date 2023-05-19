@@ -1,1 +1,1 @@
-import_code("/":"./circular-import-2")
+import_code("./circular-import-2")
