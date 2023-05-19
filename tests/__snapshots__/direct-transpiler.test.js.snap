@@ -323,34 +323,43 @@ N=O"
 `;
 
 exports[`parse default scripts envar.src 1`] = `
-"myvar=\\"\\"foo\\"\\"
+"#include \\"../fixtures/envar-include.src\\";
+myvar=\\"\\"foo\\"\\"
 print(\\"0.2\\")"
 `;
 
 exports[`parse default scripts envar.src beautify 1`] = `
-"myvar = \\"\\"foo\\"\\"
+"#include \\"../fixtures/envar-include.src\\";
+myvar = \\"\\"foo\\"\\"
 print(\\"0.2\\")"
 `;
 
 exports[`parse default scripts envar.src uglify 1`] = `
-"I=\\"\\"foo\\"\\"
+"#include \\"../fixtures/envar-include.src\\";
+I=\\"\\"foo\\"\\"
 print(\\"0.2\\")"
 `;
 
 exports[`parse default scripts greybel-utils.src 1`] = `
-"foo = __REQUIRE(\\"undefined\\")
+"#import \\"foo from ./ascii\\";
+#include \\"./ascii\\";
+#include \\"../fixtures/sub-import\\";
 \\"true\\"
 //debugger"
 `;
 
 exports[`parse default scripts greybel-utils.src beautify 1`] = `
-"foo = __REQUIRE(\\"undefined\\")
+"#import \\"foo from ./ascii\\";
+#include \\"./ascii\\";
+#include \\"../fixtures/sub-import\\";
 \\"true\\"
 //debugger"
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
-"I=E(\\"undefined\\")
+"#import \\"I from ./ascii\\";
+#include \\"./ascii\\";
+#include \\"../fixtures/sub-import\\";
 \\"true\\"
 //debugger"
 `;
