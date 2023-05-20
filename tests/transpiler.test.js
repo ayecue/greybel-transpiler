@@ -16,6 +16,7 @@ describe('parse', function () {
 
       test(path.basename(filepath), async () => {
         const result = await new Transpiler({
+          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: filepath,
           environmentVariables,
           obfuscation: false
@@ -26,6 +27,7 @@ describe('parse', function () {
 
       test(path.basename(filepath) + ' uglify', async () => {
         const result = await new Transpiler({
+          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: filepath,
           buildType: BuildType.UGLIFY,
           environmentVariables,
@@ -37,6 +39,7 @@ describe('parse', function () {
 
       test(path.basename(filepath) + ' beautify', async () => {
         const result = await new Transpiler({
+          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: filepath,
           buildType: BuildType.BEAUTIFY,
           environmentVariables
@@ -53,6 +56,7 @@ describe('parse', function () {
 
       expect(() => {
         return new Transpiler({
+          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: testFile,
           environmentVariables,
           obfuscation: false
@@ -65,6 +69,7 @@ describe('parse', function () {
 
       expect(() => {
         return new Transpiler({
+          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: testFile,
           environmentVariables,
           obfuscation: false

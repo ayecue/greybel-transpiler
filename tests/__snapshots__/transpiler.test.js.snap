@@ -518,9 +518,9 @@ end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
+import_code(\\"/fixtures/envar-include.src\\")
+import_code(\\"/fixtures/sub-sub-sub-import.src\\")
+import_code(\\"/fixtures/sub-sub-import.src\\")
 print(123)
 \\"true\\"
 //debugger",
@@ -699,9 +699,9 @@ AsciiGen.gen = function(str, colors)
 end function
 
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
+import_code(\\"/fixtures/envar-include.src\\")
+import_code(\\"/fixtures/sub-sub-sub-import.src\\")
+import_code(\\"/fixtures/sub-sub-import.src\\")
 print(123)
 \\"true\\"
 //debugger",
@@ -885,9 +885,9 @@ end if
 return [b[AK].join(AN),b[AL].join(AN),b[AM].join(AN)].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
+import_code(\\"/fixtures/envar-include.src\\")
+import_code(\\"/fixtures/sub-sub-sub-import.src\\")
+import_code(\\"/fixtures/sub-sub-import.src\\")
 print(AO)
 \\"true\\"
 //debugger",
@@ -928,11 +928,11 @@ print(locals.hasIndex(\\"J\\"))",
 
 exports[`parse default scripts import-code.src 1`] = `
 Array [
-  "import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/scripts/ascii.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-import.src\\")
+  "import_code(\\"/scripts/ascii.src\\")
+import_code(\\"/fixtures/sub-sub-sub-import.src\\")
+import_code(\\"/fixtures/sub-sub-import.src\\")
+import_code(\\"/fixtures/envar-include.src\\")
+import_code(\\"/fixtures/sub-import.src\\")
 print(123)",
   "AsciiGen={}
 map={}
@@ -1008,11 +1008,11 @@ x=123",
 
 exports[`parse default scripts import-code.src beautify 1`] = `
 Array [
-  "import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/scripts/ascii.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-import.src\\")
+  "import_code(\\"/scripts/ascii.src\\")
+import_code(\\"/fixtures/sub-sub-sub-import.src\\")
+import_code(\\"/fixtures/sub-sub-import.src\\")
+import_code(\\"/fixtures/envar-include.src\\")
+import_code(\\"/fixtures/sub-import.src\\")
 print(123)",
   "AsciiGen = {}
 map = {}
@@ -1108,11 +1108,11 @@ H.z=\\"  \\"
 H._A=\\"<color=#\\"
 H.AC=\\">\\"
 H.AB=\\"</color>\\"
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/scripts/ascii.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-sub-import.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/envar-include.src\\")
-import_code(\\"/Users/_ac/workspace/greybel-transpiler/tests/fixtures/sub-import.src\\")
+import_code(\\"/scripts/ascii.src\\")
+import_code(\\"/fixtures/sub-sub-sub-import.src\\")
+import_code(\\"/fixtures/sub-sub-import.src\\")
+import_code(\\"/fixtures/envar-include.src\\")
+import_code(\\"/fixtures/sub-import.src\\")
 print(AD)",
   "I={}
 map={}
