@@ -9,11 +9,19 @@ export interface ContextOptions {
   modulesCharset?: string;
 }
 
+export enum ContextDataProperty {
+  ASTRefDependencyMap = 'astRefDependencyMap',
+  ProcessImportPathCallback = 'processImportPathCallback',
+  ResourceDependencyMap = 'resourceDependencyMap',
+  DependencyCallStack = 'dependencyCallStack',
+  ASTRefsVisited = 'astRefsVisited'
+}
+
 export class Context {
   modules: NamespaceGenerator;
   variables: NamespaceGenerator;
   literals: LiteralsMapper;
-  data: Map<string, any>;
+  data: Map<ContextDataProperty, any>;
 
   constructor(options: ContextOptions) {
     const me = this;
@@ -50,7 +58,7 @@ export class Context {
     return this.modules.createNamespace(id);
   }
 
-  getOrCreateData<T>(key: string, onCreate: () => T): T {
+  getOrCreateData<T>(key: ContextDataProperty, onCreate: () => T): T {
     const me = this;
 
     if (me.data.has(key)) {
@@ -60,5 +68,14 @@ export class Context {
     const v = onCreate();
     me.data.set(key, v);
     return v;
+  }
+
+  set<T>(key: ContextDataProperty, value: T): Context {
+    this.data.set(key, value);
+    return this;
+  }
+
+  get<T>(key: ContextDataProperty): T {
+    return this.data.get(key);
   }
 }

@@ -2,10 +2,11 @@ import EventEmitter from 'events';
 import { ASTChunkAdvanced, Parser } from 'greybel-core';
 import { ASTLiteral } from 'greyscript-core';
 
-import { Context } from './context';
-import { Dependency, DependencyRef, DependencyType } from './dependency';
+import { Context, ContextDataProperty } from './context';
+import { Dependency, DependencyType } from './dependency';
 import { ResourceHandler } from './resource';
 import { BuildError } from './utils/error';
+import { AstRefDependencyMap } from './utils/inject-imports';
 
 export interface TargetOptions {
   target: string;
@@ -70,15 +71,17 @@ export class Target extends EventEmitter {
       const { namespaces, literals } = await dependency.findDependencies();
 
       const parsedImports: Map<string, TargetParseResultItem> = new Map();
-      const astDepMap = me.context.getOrCreateData<
-        Map<DependencyRef, Set<Dependency>>
-      >('astDepMap', () => new Map());
+      const astRefDependencyMap =
+        me.context.getOrCreateData<AstRefDependencyMap>(
+          ContextDataProperty.ASTRefDependencyMap,
+          () => new Map()
+        );
 
       for (const item of dependency.dependencies) {
         if (item.type === DependencyType.NativeImport) {
-          const subImports = item.fetchNativeImports();
+          const relatedImports = item.fetchNativeImports();
 
-          for (const subImport of subImports) {
+          for (const subImport of relatedImports) {
             parsedImports.set(subImport.target, {
               chunk: subImport.chunk,
               dependency: subImport
@@ -90,7 +93,10 @@ export class Target extends EventEmitter {
             dependency: item
           });
 
-          astDepMap.set(item.ref, subImports);
+          astRefDependencyMap.set(item.ref, {
+            main: item,
+            imports: relatedImports
+          });
         }
       }
 
