@@ -1,11 +1,12 @@
 import { MODULE_BOILERPLATE } from './boilerplates';
 import { BuildType, getFactory } from './build-map';
-import { Context } from './context';
+import { Context, ContextDataProperty } from './context';
 import { Dependency, DependencyType } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
 import { Target, TargetParseResult, TargetParseResultItem } from './target';
 import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
+import { ProcessImportPathCallback } from './utils/inject-imports';
 import { OutputProcessor } from './utils/output-processor';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -13,6 +14,7 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 export interface TranspilerOptions {
   target: string;
   context?: Context;
+  resourceHandler?: ResourceHandler;
 
   obfuscation?: boolean;
   buildType?: BuildType;
@@ -22,7 +24,7 @@ export interface TranspilerOptions {
   disableNamespacesOptimization?: boolean;
   environmentVariables?: Map<string, string>;
 
-  resourceHandler?: ResourceHandler;
+  processImportPathCallback?: ProcessImportPathCallback;
 }
 
 export interface TranspilerParseResult {
@@ -59,6 +61,10 @@ export class Transpiler {
       modulesCharset: charsetMap.modules
     });
 
+    if (options.processImportPathCallback) {
+      me.context.set(ContextDataProperty.ProcessImportPathCallback, options.processImportPathCallback);
+    }
+
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.installer = options.installer || false;
     me.disableLiteralsOptimization =
@@ -82,8 +88,6 @@ export class Transpiler {
       disableLiteralsOptimization: me.disableLiteralsOptimization,
       disableNamespacesOptimization: me.disableNamespacesOptimization
     });
-
-    context.variables.createNamespace('globals');
 
     // create builder
     const transformer = new Transformer(

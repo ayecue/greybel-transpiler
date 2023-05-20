@@ -8,7 +8,7 @@ import {
 } from 'greybel-core';
 import { ASTBase, ASTImportCodeExpression } from 'greyscript-core';
 
-import { Context } from './context';
+import { Context, ContextDataProperty } from './context';
 import { ResourceHandler } from './resource';
 import { BuildError } from './utils/error';
 import { fetchNamespaces } from './utils/fetch-namespaces';
@@ -76,14 +76,14 @@ export class Dependency extends EventEmitter {
     const namespace = me.context.createModuleNamespace(me.id);
     const resourceDependencyMap =
       me.context.getOrCreateData<ResourceDependencyMap>(
-        'resourceDependencyMap',
+        ContextDataProperty.ResourceDependencyMap,
         () => new Map()
       );
 
     resourceDependencyMap.set(namespace, me);
 
     me.context.getOrCreateData<DependencyCallStack>(
-      'dependencyCallStack',
+      ContextDataProperty.DependencyCallStack,
       () => []
     );
   }
@@ -117,9 +117,9 @@ export class Dependency extends EventEmitter {
   ): Promise<Dependency> {
     const me = this;
     const context = me.context;
-    const { data, modules } = context;
-    const resourceDependencyMap: ResourceDependencyMap = data.get(
-      'resourceDependencyMap'
+    const { modules } = context;
+    const resourceDependencyMap = context.get<ResourceDependencyMap>(
+      ContextDataProperty.ResourceDependencyMap
     );
     const resourceHandler = me.resourceHandler;
     const subTarget = await resourceHandler.getTargetRelativeTo(
@@ -170,10 +170,9 @@ export class Dependency extends EventEmitter {
   async findDependencies(): Promise<DependencyFindResult> {
     const me = this;
     const { imports, includes, nativeImports } = me.chunk;
-    const { data } = me.context;
     const sourceNamespace = me.getNamespace();
-    const dependencyCallStack: DependencyCallStack = data.get(
-      'dependencyCallStack'
+    const dependencyCallStack = me.context.get<DependencyCallStack>(
+      ContextDataProperty.DependencyCallStack
     );
     const namespaces: string[] = [...fetchNamespaces(me.chunk)];
     const literals: ASTBase[] = [...me.chunk.literals];

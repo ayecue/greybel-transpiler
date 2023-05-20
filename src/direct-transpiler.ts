@@ -82,8 +82,6 @@ export class DirectTranspiler extends EventEmitter {
       literals.forEach((literal: ASTLiteral) => context.literals.add(literal));
     }
 
-    context.variables.createNamespace('globals');
-
     const transformer = new Transformer(
       mapFactory,
       context,
