@@ -81,26 +81,26 @@ export class Target extends EventEmitter {
       >('astRefDependencyMap', () => new Map());
 
       for (const item of dependency.dependencies) {
-        const relatedImports = item.fetchNativeImports();
-
-        for (const subImport of relatedImports) {
-          parsedImports.set(subImport.target, {
-            chunk: subImport.chunk,
-            dependency: subImport
-          });
-        }
-
         if (item.type === DependencyType.NativeImport) {
+          const relatedImports = item.fetchNativeImports();
+
+          for (const subImport of relatedImports) {
+            parsedImports.set(subImport.target, {
+              chunk: subImport.chunk,
+              dependency: subImport
+            });
+          }
+
           parsedImports.set(item.target, {
             chunk: item.chunk,
             dependency: item
           });
-        }
 
-        astRefDependencyMap.set(item.ref, {
-          main: item,
-          imports: relatedImports
-        });
+          astRefDependencyMap.set(item.ref, {
+            main: item,
+            imports: relatedImports
+          });
+        }
       }
 
       if (!options.disableNamespacesOptimization) {
