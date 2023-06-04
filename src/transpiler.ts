@@ -62,7 +62,10 @@ export class Transpiler {
     });
 
     if (options.processImportPathCallback) {
-      me.context.set(ContextDataProperty.ProcessImportPathCallback, options.processImportPathCallback);
+      me.context.set(
+        ContextDataProperty.ProcessImportPathCallback,
+        options.processImportPathCallback
+      );
     }
 
     me.buildType = options.buildType || BuildType.DEFAULT;

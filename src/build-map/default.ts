@@ -55,6 +55,13 @@ export function defaultFactory(
       return '(' + expr + ')';
     },
     Comment: (item: ASTComment, _data: TransformerDataObject): string => {
+      if (item.isMultiline) {
+        return item.value
+          .split('\n')
+          .map((line) => `//${line}`)
+          .join('\n');
+      }
+
       return '//' + item.value;
     },
     AssignmentStatement: (

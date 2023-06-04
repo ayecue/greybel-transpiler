@@ -488,6 +488,40 @@ L={N:\\"foo\\"}
 M={123:\\"bar\\"}"
 `;
 
+exports[`parse default scripts multiline-comment.src 1`] = `
+"//
+//
+//
+//my Test
+//
+//  **
+print(\\"test\\")
+//
+//
+//  another comment
+//
+//  
+// one line comment "
+`;
+
+exports[`parse default scripts multiline-comment.src beautify 1`] = `
+"//
+//
+//
+//my Test
+//
+//  **
+print(\\"test\\")
+//
+//
+//  another comment
+//
+//  
+// one line comment "
+`;
+
+exports[`parse default scripts multiline-comment.src uglify 1`] = `"print(\\"test\\")"`;
+
 exports[`parse default scripts negation.src 1`] = `
 "test=-1+2+-2+3
 foo=[-1,-2+4,(-2)+-4+6]
