@@ -162,7 +162,8 @@ export class Dependency extends EventEmitter {
       }
 
       throw new BuildError(err.message, {
-        target: subTarget
+        target: subTarget,
+        range: err.range
       });
     }
   }
