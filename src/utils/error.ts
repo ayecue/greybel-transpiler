@@ -6,12 +6,12 @@ interface BuildContext {
 }
 
 export class BuildError extends Error {
-  relatedTarget: string;
-  range: ASTRange;
+  target: string;
+  range?: ASTRange;
 
   constructor(message: string, context: BuildContext) {
     super(message);
-    this.relatedTarget = context.target;
+    this.target = context.target;
     this.range = context.range;
   }
 }
