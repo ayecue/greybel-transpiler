@@ -224,7 +224,7 @@ a=a-b
 a=a+b
 bitwise(\\"<<\\",a,b)
 bitwise(\\">>\\",a,b)
-w=bitwise(\\">>>\\",a,bitwise(\\">>\\",(bitwise(\\"<<\\",b,c)),a))
+w=bitwise(\\">>\\",bitwise(\\">>>\\",a,(bitwise(\\"<<\\",b,c))),a)
 bitwise(\\"|\\",a,b)
 bitwise(\\"&\\",a,b)
 a^b
@@ -239,7 +239,7 @@ a = a - b
 a = a + b
 bitwise(\\"<<\\", a, b)
 bitwise(\\">>\\", a, b)
-w = bitwise(\\">>>\\", a, bitwise(\\">>\\", (bitwise(\\"<<\\", b, c)), a))
+w = bitwise(\\">>\\", bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c))), a)
 bitwise(\\"|\\", a, b)
 bitwise(\\"&\\", a, b)
 a ^ b
@@ -254,7 +254,7 @@ I=I-J
 I=I+J
 bitwise(\\"<<\\",I,J)
 bitwise(\\">>\\",I,J)
-K=bitwise(\\">>>\\",I,bitwise(\\">>\\",(bitwise(\\"<<\\",J,L)),I))
+K=bitwise(\\">>\\",bitwise(\\">>>\\",I,(bitwise(\\"<<\\",J,L))),I)
 bitwise(\\"|\\",I,J)
 bitwise(\\"&\\",I,J)
 I^J
