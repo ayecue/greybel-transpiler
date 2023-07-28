@@ -1203,7 +1203,8 @@ print([1,2,3] isa map)
 print({} isa number)
 print({} isa string)
 print({} isa list)
-print({} isa map)",
+print({} isa map)
+print({} isa funcRef)",
 ]
 `;
 
@@ -1224,7 +1225,8 @@ print([1, 2, 3] isa map)
 print({} isa number)
 print({} isa string)
 print({} isa list)
-print({} isa map)",
+print({} isa map)
+print({} isa funcRef)",
 ]
 `;
 
@@ -1247,7 +1249,8 @@ print([1,2,3] isa map)
 print({} isa number)
 print({} isa string)
 print({} isa list)
-print({} isa map)",
+print({} isa map)
+print({} isa funcRef)",
 ]
 `;
 

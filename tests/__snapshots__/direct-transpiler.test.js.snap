@@ -419,7 +419,8 @@ print([1,2,3] isa map)
 print({} isa number)
 print({} isa string)
 print({} isa list)
-print({} isa map)"
+print({} isa map)
+print({} isa funcRef)"
 `;
 
 exports[`parse default scripts isa.src beautify 1`] = `
@@ -438,7 +439,8 @@ print([1, 2, 3] isa map)
 print({} isa number)
 print({} isa string)
 print({} isa list)
-print({} isa map)"
+print({} isa map)
+print({} isa funcRef)"
 `;
 
 exports[`parse default scripts isa.src uglify 1`] = `
@@ -459,7 +461,8 @@ print([1,2,3] isa map)
 print({} isa number)
 print({} isa string)
 print({} isa list)
-print({} isa map)"
+print({} isa map)
+print({} isa funcRef)"
 `;
 
 exports[`parse default scripts map.src 1`] = `
