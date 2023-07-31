@@ -103,7 +103,7 @@ export class Dependency extends EventEmitter {
 
     for (const item of me.dependencies) {
       if (item.type === DependencyType.NativeImport) {
-        result.unshift(item, ...item.fetchNativeImports());
+        result.push(...item.fetchNativeImports(), item);
       }
     }
 

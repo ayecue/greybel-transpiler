@@ -524,8 +524,8 @@ import_code(\\"/fixtures/sub-sub-import.src\\")
 print(123)
 \\"true\\"
 //debugger",
-  "lastimport=\\"hi\\"",
   "myvar2=\\"\\"foo\\"\\"",
+  "lastimport=\\"hi\\"",
   "test=123
 was=123
 x=123",
@@ -705,8 +705,8 @@ import_code(\\"/fixtures/sub-sub-import.src\\")
 print(123)
 \\"true\\"
 //debugger",
-  "lastimport = \\"hi\\"",
   "myvar2 = \\"\\"foo\\"\\"",
+  "lastimport = \\"hi\\"",
   "test = 123
 was = 123
 x = 123",
@@ -891,8 +891,8 @@ import_code(\\"/fixtures/sub-sub-import.src\\")
 print(AO)
 \\"true\\"
 //debugger",
-  "r=\\"hi\\"",
   "o=\\"\\"foo\\"\\"",
+  "r=\\"hi\\"",
   "p=AO
 q=AO
 h=AO",
@@ -997,11 +997,11 @@ end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))",
+  "myvar2=\\"\\"foo\\"\\"",
+  "lastimport=\\"hi\\"",
   "test=123
 was=123
 x=123",
-  "lastimport=\\"hi\\"",
-  "myvar2=\\"\\"foo\\"\\"",
   "print(123)",
 ]
 `;
@@ -1083,11 +1083,11 @@ AsciiGen.gen = function(str, colors)
 end function
 
 print(AsciiGen.gen(\\"Hallo\\"))",
+  "myvar2 = \\"\\"foo\\"\\"",
+  "lastimport = \\"hi\\"",
   "test = 123
 was = 123
 x = 123",
-  "lastimport = \\"hi\\"",
-  "myvar2 = \\"\\"foo\\"\\"",
   "print(123)",
 ]
 `;
@@ -1177,11 +1177,11 @@ end if
 return [a[0].join(\\"\\"),a[1].join(\\"\\"),a[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(I.gen(\\"Hallo\\"))",
+  "n=\\"\\"foo\\"\\"",
+  "q=\\"hi\\"",
   "o=AD
 p=AD
 g=AD",
-  "q=\\"hi\\"",
-  "n=\\"\\"foo\\"\\"",
   "print(AD)",
 ]
 `;

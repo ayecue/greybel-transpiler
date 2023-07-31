@@ -44,9 +44,7 @@ export function injectImport(
     for (const importEntry of entry.imports) {
       if (astRefsVisited.has(importEntry.target)) continue;
       if (importEntry.ref instanceof ASTImportCodeExpression) {
-        lines.unshift(
-          `import_code("${processImportPath(importEntry.target)}")`
-        );
+        lines.push(`import_code("${processImportPath(importEntry.target)}")`);
       }
 
       astRefsVisited.add(importEntry.target);
