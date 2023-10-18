@@ -1,4 +1,4 @@
-import { ASTBase, ASTChunk } from 'greyscript-core';
+import { ASTBase, ASTChunk } from 'miniscript-core';
 
 import { BuildMap } from './build-map/default';
 import { Context } from './context';

@@ -1,12 +1,11 @@
 import EventEmitter from 'events';
 import { ASTChunkAdvanced, Parser } from 'greybel-core';
-import { ASTLiteral } from 'greyscript-core';
+import { ASTLiteral } from 'miniscript-core';
 
-import { Context, ContextDataProperty } from './context';
-import { Dependency, DependencyType } from './dependency';
+import { Context } from './context';
+import { Dependency } from './dependency';
 import { ResourceHandler } from './resource';
 import { BuildError } from './utils/error';
-import { AstRefDependencyMap } from './utils/inject-imports';
 
 export interface TargetOptions {
   target: string;
@@ -26,7 +25,6 @@ export interface TargetParseResultItem {
 
 export interface TargetParseResult {
   main: TargetParseResultItem;
-  nativeImports: Map<string, TargetParseResultItem>;
 }
 
 export class Target extends EventEmitter {
@@ -70,36 +68,6 @@ export class Target extends EventEmitter {
 
       const { namespaces, literals } = await dependency.findDependencies();
 
-      const parsedImports: Map<string, TargetParseResultItem> = new Map();
-      const astRefDependencyMap =
-        me.context.getOrCreateData<AstRefDependencyMap>(
-          ContextDataProperty.ASTRefDependencyMap,
-          () => new Map()
-        );
-
-      for (const item of dependency.dependencies) {
-        if (item.type === DependencyType.NativeImport) {
-          const relatedImports = item.fetchNativeImports();
-
-          for (const subImport of relatedImports) {
-            parsedImports.set(subImport.target, {
-              chunk: subImport.chunk,
-              dependency: subImport
-            });
-          }
-
-          parsedImports.set(item.target, {
-            chunk: item.chunk,
-            dependency: item
-          });
-
-          astRefDependencyMap.set(item.ref, {
-            main: item,
-            imports: relatedImports
-          });
-        }
-      }
-
       if (!options.disableNamespacesOptimization) {
         const uniqueNamespaces = new Set(namespaces);
 
@@ -118,8 +86,7 @@ export class Target extends EventEmitter {
         main: {
           chunk,
           dependency
-        },
-        nativeImports: parsedImports
+        }
       };
     } catch (err: any) {
       if (err instanceof BuildError) {

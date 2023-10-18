@@ -1,12 +1,11 @@
 import { MODULE_BOILERPLATE } from './boilerplates';
 import { BuildType, getFactory } from './build-map';
-import { Context, ContextDataProperty } from './context';
+import { Context } from './context';
 import { Dependency, DependencyType } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
-import { Target, TargetParseResult, TargetParseResultItem } from './target';
+import { Target, TargetParseResult } from './target';
 import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
-import { ProcessImportPathCallback } from './utils/inject-imports';
 import { OutputProcessor } from './utils/output-processor';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -23,8 +22,6 @@ export interface TranspilerOptions {
   disableLiteralsOptimization?: boolean;
   disableNamespacesOptimization?: boolean;
   environmentVariables?: Map<string, string>;
-
-  processImportPathCallback?: ProcessImportPathCallback;
 }
 
 export interface TranspilerParseResult {
@@ -61,13 +58,6 @@ export class Transpiler {
       modulesCharset: charsetMap.modules
     });
 
-    if (options.processImportPathCallback) {
-      me.context.set(
-        ContextDataProperty.ProcessImportPathCallback,
-        options.processImportPathCallback
-      );
-    }
-
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.installer = options.installer || false;
     me.disableLiteralsOptimization =
@@ -102,8 +92,7 @@ export class Transpiler {
     const moduleBoilerplate = transformer.transform(MODULE_BOILERPLATE);
     const build = (
       mainDependency: Dependency,
-      optimizeLiterals: boolean,
-      isNativeImport: boolean
+      optimizeLiterals: boolean
     ): string => {
       const mainNamespace = context.modules.get(mainDependency.getId());
       const modules: { [key: string]: string } = {};
@@ -124,9 +113,7 @@ export class Transpiler {
         }
 
         for (const subItem of item.dependencies) {
-          if (item.type !== DependencyType.NativeImport) {
-            iterator(subItem);
-          }
+          iterator(subItem);
         }
       };
 
@@ -134,10 +121,8 @@ export class Transpiler {
 
       const output = new OutputProcessor(context, transformer);
 
-      if (!isNativeImport) {
-        if (optimizeLiterals) output.addLiteralsOptimization();
-        if (moduleCount > 0) output.addHeader();
-      }
+      if (optimizeLiterals) output.addLiteralsOptimization();
+      if (moduleCount > 0) output.addHeader();
 
       Object.keys(modules).forEach((moduleKey: string) =>
         output.addCode(modules[moduleKey])
@@ -145,30 +130,13 @@ export class Transpiler {
 
       const code = transformer.transform(mainDependency.chunk);
 
-      output.addCode(code, !isNativeImport);
+      output.addCode(code, true);
 
       return output.build();
     };
 
     return {
-      [me.target]: build(
-        mainModule.dependency,
-        !me.disableLiteralsOptimization,
-        false
-      ),
-      ...Array.from(targetParseResult.nativeImports.values()).reduce(
-        (result: TranspilerParseResult, value: TargetParseResultItem) => {
-          return {
-            ...result,
-            [value.dependency.target]: build(
-              value.dependency,
-              !me.disableLiteralsOptimization,
-              true
-            )
-          };
-        },
-        {}
-      )
+      [me.target]: build(mainModule.dependency, !me.disableLiteralsOptimization)
     };
   }
 }

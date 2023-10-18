@@ -6,7 +6,7 @@ import {
   ASTFeatureIncludeExpression,
   Parser
 } from 'greybel-core';
-import { ASTBase, ASTImportCodeExpression } from 'greyscript-core';
+import { ASTBase } from 'miniscript-core';
 
 import { Context, ContextDataProperty } from './context';
 import { ResourceHandler } from './resource';
@@ -16,12 +16,10 @@ import { fetchNamespaces } from './utils/fetch-namespaces';
 export enum DependencyType {
   Main,
   Import,
-  Include,
-  NativeImport
+  Include
 }
 
 export type DependencyRef =
-  | ASTImportCodeExpression
   | ASTFeatureIncludeExpression
   | ASTFeatureImportExpression;
 
@@ -97,19 +95,6 @@ export class Dependency extends EventEmitter {
     return me.context.modules.get(me.id);
   }
 
-  fetchNativeImports(): Set<Dependency> {
-    const me = this;
-    const result = [];
-
-    for (const item of me.dependencies) {
-      if (item.type === DependencyType.NativeImport) {
-        result.push(...item.fetchNativeImports(), item);
-      }
-    }
-
-    return new Set<Dependency>(result);
-  }
-
   private async resolve(
     path: string,
     type: DependencyType,
@@ -170,7 +155,7 @@ export class Dependency extends EventEmitter {
 
   async findDependencies(): Promise<DependencyFindResult> {
     const me = this;
-    const { imports, includes, nativeImports } = me.chunk;
+    const { imports, includes } = me.chunk;
     const sourceNamespace = me.getNamespace();
     const dependencyCallStack = me.context.get<DependencyCallStack>(
       ContextDataProperty.DependencyCallStack
@@ -180,28 +165,6 @@ export class Dependency extends EventEmitter {
     const result: Dependency[] = [];
 
     dependencyCallStack.push(sourceNamespace);
-
-    // handle native imports
-    for (const nativeImport of nativeImports) {
-      const dependency = await me.resolve(
-        nativeImport.directory,
-        DependencyType.NativeImport,
-        nativeImport
-      );
-      const namespace = dependency.getNamespace();
-
-      if (dependencyCallStack.includes(namespace)) {
-        throw new Error(
-          `Circular dependency from ${me.target} to ${dependency.target} detected.`
-        );
-      }
-
-      const relatedDependencies = await dependency.findDependencies();
-
-      namespaces.push(...relatedDependencies.namespaces);
-      literals.push(...relatedDependencies.literals);
-      result.push(dependency);
-    }
 
     // handle internal includes/imports
     const items = [...imports, ...includes];
@@ -227,7 +190,6 @@ export class Dependency extends EventEmitter {
 
       const relatedDependencies = await dependency.findDependencies();
 
-      result.push(...dependency.fetchNativeImports());
       namespaces.push(...relatedDependencies.namespaces);
       literals.push(...relatedDependencies.literals);
       result.push(dependency);

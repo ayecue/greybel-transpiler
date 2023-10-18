@@ -1,4 +1,5 @@
 const { Transpiler, BuildType } = require('../dist');
+const { excludedNamespaces } = require('./utils');
 const fs = require('fs');
 const path = require('path');
 const testFolder = path.resolve(__dirname, 'scripts');
@@ -16,10 +17,10 @@ describe('parse', function () {
 
       test(path.basename(filepath), async () => {
         const result = await new Transpiler({
-          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: filepath,
           environmentVariables,
-          obfuscation: false
+          obfuscation: false,
+          excludedNamespaces
         }).parse();
 
         expect(Object.values(result)).toMatchSnapshot();
@@ -27,11 +28,11 @@ describe('parse', function () {
 
       test(path.basename(filepath) + ' uglify', async () => {
         const result = await new Transpiler({
-          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: filepath,
           buildType: BuildType.UGLIFY,
           environmentVariables,
-          obfuscation: false
+          obfuscation: false,
+          excludedNamespaces
         }).parse();
 
         expect(Object.values(result)).toMatchSnapshot();
@@ -39,10 +40,10 @@ describe('parse', function () {
 
       test(path.basename(filepath) + ' beautify', async () => {
         const result = await new Transpiler({
-          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: filepath,
           buildType: BuildType.BEAUTIFY,
-          environmentVariables
+          environmentVariables,
+          excludedNamespaces
         }).parse();
 
         expect(Object.values(result)).toMatchSnapshot();
@@ -56,10 +57,10 @@ describe('parse', function () {
 
       expect(() => {
         return new Transpiler({
-          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: testFile,
           environmentVariables,
-          obfuscation: false
+          obfuscation: false,
+          excludedNamespaces
         }).parse();
       }).rejects.toThrowError(/^Circular dependency/);
     });
@@ -69,10 +70,10 @@ describe('parse', function () {
 
       expect(() => {
         return new Transpiler({
-          processImportPathCallback: (path) => path.replace(/^.*?tests/i, ''),
           target: testFile,
           environmentVariables,
-          obfuscation: false
+          obfuscation: false,
+          excludedNamespaces
         }).parse();
       }).rejects.toThrowError(/^Circular dependency/);
     });

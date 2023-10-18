@@ -1,1 +1,1 @@
-import_code("./long-circular-import-2")
+#include ./long-circular-import-2

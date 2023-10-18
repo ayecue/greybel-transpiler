@@ -1,3 +1,0 @@
-import_code("./ascii")
-import_code("../fixtures/sub-import")
-print(123)

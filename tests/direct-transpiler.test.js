@@ -1,4 +1,5 @@
 const { DirectTranspiler, BuildType } = require('../dist');
+const { excludedNamespaces } = require('./utils');
 const fs = require('fs');
 const path = require('path');
 const testFolder = path.resolve(__dirname, 'scripts');
@@ -17,7 +18,8 @@ describe('parse', function () {
       test(path.basename(filepath), async () => {
         const result = new DirectTranspiler({
           code: fs.readFileSync(filepath, 'utf-8'),
-          environmentVariables
+          environmentVariables,
+          excludedNamespaces
         }).parse();
 
         expect(result).toMatchSnapshot();
@@ -27,7 +29,8 @@ describe('parse', function () {
         const result = new DirectTranspiler({
           code: fs.readFileSync(filepath, 'utf-8'),
           buildType: BuildType.UGLIFY,
-          environmentVariables
+          environmentVariables,
+          excludedNamespaces
         }).parse();
 
         expect(result).toMatchSnapshot();
@@ -37,7 +40,8 @@ describe('parse', function () {
         const result = new DirectTranspiler({
           code: fs.readFileSync(filepath, 'utf-8'),
           buildType: BuildType.BEAUTIFY,
-          environmentVariables
+          environmentVariables,
+          excludedNamespaces
         }).parse();
 
         expect(result).toMatchSnapshot();

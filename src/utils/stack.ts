@@ -1,4 +1,4 @@
-import { ASTBase } from 'greyscript-core';
+import { ASTBase } from 'miniscript-core';
 
 export class Stack {
   currentStack: ASTBase[];

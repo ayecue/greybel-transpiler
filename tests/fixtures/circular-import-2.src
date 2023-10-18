@@ -1,1 +1,1 @@
-import_code("./circular-import-1")
+#include ./circular-import-1

@@ -1,5 +1,3 @@
-import { ParserValidator } from 'greyscript-core';
-
 import { LiteralsMapper } from './utils/literals-mapper';
 import { NamespaceGenerator } from './utils/namespace-generator';
 
@@ -10,11 +8,8 @@ export interface ContextOptions {
 }
 
 export enum ContextDataProperty {
-  ASTRefDependencyMap = 'astRefDependencyMap',
-  ProcessImportPathCallback = 'processImportPathCallback',
   ResourceDependencyMap = 'resourceDependencyMap',
-  DependencyCallStack = 'dependencyCallStack',
-  ASTRefsVisited = 'astRefsVisited'
+  DependencyCallStack = 'dependencyCallStack'
 }
 
 export class Context {
@@ -43,9 +38,15 @@ export class Context {
         'globals'
       ],
       forbidden: [
-        ...new ParserValidator()
-          .getNatives()
-          .filter((item: string) => item !== 'globals'),
+        'locals',
+        'outer',
+        'self',
+        'super',
+        'string',
+        'list',
+        'map',
+        'number',
+        'funcRef',
         ...(options.variablesExcluded || [])
       ]
     });

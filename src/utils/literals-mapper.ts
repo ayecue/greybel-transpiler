@@ -1,5 +1,5 @@
 import md5 from 'blueimp-md5';
-import { ASTLiteral } from 'greyscript-core';
+import { ASTLiteral } from 'miniscript-core';
 
 import { NamespaceGenerator } from './namespace-generator';
 

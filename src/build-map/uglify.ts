@@ -17,7 +17,6 @@ import {
   ASTIdentifier,
   ASTIfClause,
   ASTIfStatement,
-  ASTImportCodeExpression,
   ASTIndexExpression,
   ASTListConstructorExpression,
   ASTListValue,
@@ -30,11 +29,10 @@ import {
   ASTSliceExpression,
   ASTUnaryExpression,
   ASTWhileStatement
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
-import { injectImport } from '../utils/inject-imports';
 import { BuildMap } from './default';
 
 export function uglifyFactory(
@@ -523,12 +521,6 @@ export function uglifyFactory(
       }
 
       return body.join('\n');
-    },
-    ImportCodeExpression: (
-      item: ASTImportCodeExpression,
-      _data: TransformerDataObject
-    ): string => {
-      return injectImport(context, item);
     }
   };
 }
