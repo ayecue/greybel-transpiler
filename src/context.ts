@@ -16,7 +16,7 @@ export class Context {
   modules: NamespaceGenerator;
   variables: NamespaceGenerator;
   literals: LiteralsMapper;
-  data: Map<ContextDataProperty, any>;
+  data: Map<ContextDataProperty | string, any>;
 
   constructor(options: ContextOptions) {
     const me = this;
@@ -59,7 +59,7 @@ export class Context {
     return this.modules.createNamespace(id);
   }
 
-  getOrCreateData<T>(key: ContextDataProperty, onCreate: () => T): T {
+  getOrCreateData<T>(key: ContextDataProperty | string, onCreate: () => T): T {
     const me = this;
 
     if (me.data.has(key)) {
@@ -71,7 +71,7 @@ export class Context {
     return v;
   }
 
-  set<T>(key: ContextDataProperty, value: T): Context {
+  set<T>(key: ContextDataProperty | string, value: T): Context {
     this.data.set(key, value);
     return this;
   }
