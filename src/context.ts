@@ -76,7 +76,7 @@ export class Context {
     return this;
   }
 
-  get<T>(key: ContextDataProperty): T {
+  get<T>(key: ContextDataProperty | string): T {
     return this.data.get(key);
   }
 }
