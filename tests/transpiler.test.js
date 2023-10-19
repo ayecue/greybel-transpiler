@@ -1,5 +1,5 @@
 const { Transpiler, BuildType } = require('../dist');
-const { excludedNamespaces } = require('./utils');
+const { miniscriptMeta } = require('miniscript-meta');
 const fs = require('fs');
 const path = require('path');
 const testFolder = path.resolve(__dirname, 'scripts');
@@ -20,7 +20,7 @@ describe('parse', function () {
           target: filepath,
           environmentVariables,
           obfuscation: false,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
 
         expect(Object.values(result)).toMatchSnapshot();
@@ -32,7 +32,7 @@ describe('parse', function () {
           buildType: BuildType.UGLIFY,
           environmentVariables,
           obfuscation: false,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
 
         expect(Object.values(result)).toMatchSnapshot();
@@ -43,7 +43,7 @@ describe('parse', function () {
           target: filepath,
           buildType: BuildType.BEAUTIFY,
           environmentVariables,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
 
         expect(Object.values(result)).toMatchSnapshot();
@@ -60,7 +60,7 @@ describe('parse', function () {
           target: testFile,
           environmentVariables,
           obfuscation: false,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
       }).rejects.toThrowError(/^Circular dependency/);
     });
@@ -73,7 +73,7 @@ describe('parse', function () {
           target: testFile,
           environmentVariables,
           obfuscation: false,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
       }).rejects.toThrowError(/^Circular dependency/);
     });

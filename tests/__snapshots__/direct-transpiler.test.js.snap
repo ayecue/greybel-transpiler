@@ -140,57 +140,57 @@ print(AsciiGen.gen(\\"Hallo\\"))"
 
 exports[`parse default scripts ascii.src uglify 1`] = `
 "globals.H=globals
-H.x=\\"||¯|| \\"
-H.w=\\"||_|| \\"
-H.t=\\"|| || \\"
-H.r=\\"||¯ \\"
-H.v=\\"||  \\"
-H.s=\\"||_ \\"
-H.y=\\"||¯\\\\\\\\ \\"
-H.u=\\"|| \\"
-H.z=\\"  \\"
-H._=\\"<color=#\\"
-H.ϩ=\\">\\"
-H.Ϩ=\\"</color>\\"
+H.u=\\"||¯|| \\"
+H.t=\\"||_|| \\"
+H.q=\\"|| || \\"
+H.o=\\"||¯ \\"
+H.s=\\"||  \\"
+H.p=\\"||_ \\"
+H.v=\\"||¯\\\\\\\\ \\"
+H.r=\\"|| \\"
+H.w=\\"  \\"
+H.x=\\"<color=#\\"
+H.z=\\">\\"
+H.y=\\"</color>\\"
 I={}
 map={}
-map.a=[x,w,t]
+map.a=[u,t,q]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[r,v,s]
-map.d=[y,\\"|| // \\",\\"||//  \\"]
-map.e=[r,\\"||- \\",s]
-map.f=[r,s,v]
-map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",w]
-map.h=[t,\\"||-|| \\",t]
-map.i=[u,u,u]
+map.c=[o,s,p]
+map.d=[v,\\"|| // \\",\\"||//  \\"]
+map.e=[o,\\"||- \\",p]
+map.f=[o,p,s]
+map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",t]
+map.h=[q,\\"||-|| \\",q]
+map.i=[r,r,r]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",y]
-map.l=[v,v,s]
+map.k=[\\"||  / \\",\\"|| /  \\",v]
+map.l=[s,s,p]
 map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[x,t,w]
-map.p=[x,w,\\"||    \\"]
+map.o=[u,q,t]
+map.p=[u,t,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[x,y,t]
+map.r=[u,v,q]
 map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
 map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
-map.u=[t,t,w]
+map.u=[q,q,t]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",s]
-map[\\"0\\"]=[x,\\"||x|| \\",w]
+map.z=[\\"¯// \\",\\"//  \\",p]
+map[\\"0\\"]=[u,\\"||x|| \\",t]
 map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
 map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[\\"||¯¯  \\",x,w]
+map[\\"6\\"]=[\\"||¯¯  \\",u,t]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[x,\\"||-|| \\",w]
-map[\\"9\\"]=[x,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[z,z,z]
+map[\\"8\\"]=[u,\\"||-|| \\",t]
+map[\\"9\\"]=[u,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[w,w,w]
 I.MAP=map
 I.gen=function(str,l)
 a=[[],[],[]]
@@ -203,14 +203,14 @@ a[1].push(m[char][1])
 a[2].push(m[char][2])
 end if
 end for
-if (typeof(l)==\\"string\\") then
-a[0]=[_+l+ϩ]+a[0]+[Ϩ]
-a[1]=[_+l+ϩ]+a[1]+[Ϩ]
-a[2]=[_+l+ϩ]+a[2]+[Ϩ]
-else if (typeof(l)==\\"list\\") then
-a[0]=[_+l[0]+ϩ]+a[0]+[Ϩ]
-a[1]=[_+l[1]+ϩ]+a[1]+[Ϩ]
-a[2]=[_+l[2]+ϩ]+a[2]+[Ϩ]
+if (n(l)==\\"string\\") then
+a[0]=[x+l+z]+a[0]+[y]
+a[1]=[x+l+z]+a[1]+[y]
+a[2]=[x+l+z]+a[2]+[y]
+else if (n(l)==\\"list\\") then
+a[0]=[x+l[0]+z]+a[0]+[y]
+a[1]=[x+l[1]+z]+a[1]+[y]
+a[2]=[x+l[2]+z]+a[2]+[y]
 end if
 return [a[0].join(\\"\\"),a[1].join(\\"\\"),a[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
@@ -405,8 +405,8 @@ print(locals.hasIndex(\\"foo\\"))"
 exports[`parse default scripts has-index.src uglify 1`] = `
 "H.I=\\"was\\"
 locals.J=\\"moo\\"
-print(H.K(\\"test\\"))
-print(locals.K(\\"foo\\"))"
+print(H.hasIndex(\\"I\\"))
+print(locals.hasIndex(\\"J\\"))"
 `;
 
 exports[`parse default scripts isa.src 1`] = `
@@ -747,7 +747,7 @@ J=0
 K=function
 L
 M=\\"<mark=green><color=black>\\"+outer.J
-print(outer.N(\\"num\\"))
+print(outer.hasIndex(\\"J\\"))
 if (outer.J>20) then
 M=\\"<mark=yellow><color=green>\\"+outer.J
 end if
@@ -761,13 +761,13 @@ if (outer.J<-40) then
 M=\\"<mark=yellow><color=red>\\"+outer.J
 end if
 print(M)
-O=user_input(\\"test\\",false,true)
-if (O==\\"UpArrow\\") then
+N=O(\\"test\\",false,true)
+if (N==\\"UpArrow\\") then
 outer.J=outer.J+1
-else if (O==\\"DownArrow\\") then
+else if (N==\\"DownArrow\\") then
 outer.J=outer.J-1
 else
-exit(\\"bye\\")
+P(\\"bye\\")
 end if
 end function
 while (true)
@@ -920,58 +920,58 @@ I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
 I.NUMBER_CHARACTERS=\\"0123456789\\"
 I.ALPHA_NUMERIC=I.ALPHABETIC_CHARACTERS+I.ALPHABETIC_CHARACTERS.upper+I.NUMBER_CHARACTERS
 I.constructor=function
-W=self
-W.buffer=[0]
-W.characters=W.ALPHA_NUMERIC
-return W
+U=self
+U.buffer=[0]
+U.characters=U.ALPHA_NUMERIC
+return U
 end function
-I.increaseBuffer=function(Z)
-W=self
-a=W.buffer
-b=W.characters.len
-if (Z==null) then
-Z=a.len-1
+I.increaseBuffer=function(X)
+U=self
+Y=U.buffer
+Z=U.characters.len
+if (X==null) then
+X=Y.len-1
 end if
-d=a[Z]
-d=d+1
-a[Z]=d
-if (d==b) then
-a[Z]=0
-if (Z==0) then
-a.push(0)
+a=Y[X]
+a=a+1
+Y[X]=a
+if (a==Z) then
+Y[X]=0
+if (X==0) then
+Y.push(0)
 else
-W.increaseBuffer(Z-1)
+U.increaseBuffer(X-1)
 end if
 end if
 end function
 I.gen=function
-W=self
-a=W.buffer
-e=W.characters
-f=\\"\\"
-S=0
-while S<a.len
-g=a[S]
-f=f+e[g]
-if (S==a.len-1) then
+U=self
+Y=U.buffer
+b=U.characters
+c=\\"\\"
+R=0
+while R<Y.len
+d=Y[R]
+c=c+b[d]
+if (R==Y.len-1) then
 self.increaseBuffer
 end if
-S=S+1
+R=R+1
 end while
-if (a.len>W.MAX_PASSWORD_LENGTH) then
+if (Y.len>U.MAX_PASSWORD_LENGTH) then
 return null
 end if
-return f
+return c
 end function
-R=(new I).constructor
-S=0
-T=10
-U=[]
-while (S<T)
-U.push(R.gen)
-S=S+1
+Q=(new I).constructor
+R=0
+S=10
+T=[]
+while (R<S)
+T.push(Q.gen)
+R=R+1
 end while
-print(U)"
+print(T)"
 `;
 
 exports[`parse default scripts pseudo-crypto.src 1`] = `
@@ -1429,35 +1429,35 @@ print(decrypted)"
 
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 "globals.H=globals
-H.Ј=1
-H.І=null
-H.Ї=63
+H.Ͻ=1
+H.ϻ=null
+H.ϼ=63
 I={}
 I.constructor=function(str)
 self.str=str
 return self
 end function
 I.parse=function(values)
-h=self.str
-i=0
-j=values.len
-while i<j
-h=h.replace(\\"$\\"+i,values[i])
-i=i+Ј
+d=self.str
+e=0
+f=values.len
+while e<f
+d=d.replace(\\"$\\"+e,values[e])
+e=e+Ͻ
 end while
-return (new self).constructor(h)
+return (new self).constructor(d)
 end function
 I.startsWith=function(str)
 return self.str.indexOf(str)==0
 end function
-I.substr=function(l,s)
-return (new self).constructor(n(self.str,l,s))
+I.substr=function(g,h)
+return (new self).constructor(slice(self.str,g,h))
 end function
 I.indexOf=function(str)
 return self.str.indexOf(str)
 end function
-I.replace=function(str,o)
-return (new self).constructor(self.str.replace(str,o))
+I.replace=function(str,i)
+return (new self).constructor(self.str.replace(str,i))
 end function
 I.remove=function(str)
 return (new self).constructor(self.str.remove(str))
@@ -1468,169 +1468,169 @@ end function
 I.length=function
 return self.str.len
 end function
-I.split=function(p)
-return self.str.split(p)
+I.split=function(j)
+return self.str.split(j)
 end function
-I.trim=function(p)
+I.trim=function(j)
 return (new self).constructor(self.str.trim)
 end function
-U={}
-U.String=I
-U.constructor=function(q,values)
-r=self
-r.message=q
-if (values!=І) then
-r.message=(new r.String).constructor(q).parse(values).toString
+Q={}
+Q.String=I
+Q.constructor=function(k,values)
+l=self
+l.message=k
+if (values!=ϻ) then
+l.message=(new l.String).constructor(k).parse(values).toString
 end if
-return r
+return l
 end function
-U.throw=function
-exit(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
+Q.throw=function
+m(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
 end function
-W={}
-W.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
-W.defaultSecret=\\"test123\\"
-W.maxCharCode=55295
-W.Error=U
-W.constructor=function(Y,t,u)
-Ͻ=self
-Ͻ.defaultSecret=Y
-Ͻ.table=u
-Ͻ.hashFn=@t
-if (@t==І) then
-Ͻ.hashFn=@_
+S={}
+S.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
+S.defaultSecret=\\"test123\\"
+S.maxCharCode=55295
+S.Error=Q
+S.constructor=function(U,n,o)
+p=self
+p.defaultSecret=U
+p.table=o
+p.hashFn=@n
+if (@n==ϻ) then
+p.hashFn=@r
 end if
-if u==І then
-Ͻ.table=Ͻ.defaultCharset
+if o==ϻ then
+p.table=p.defaultCharset
 end if
-if Ͻ.table.len!=64 then
-(new Ͻ.Error).constructor(\\"Invalid charset $0...\\",[Ͻ.table]).throw
+if p.table.len!=64 then
+(new p.Error).constructor(\\"Invalid charset $0...\\",[p.table]).throw
 end if
-return Ͻ
+return p
 end function
-W.getHash=function(y)
-Ͻ=self
+S.getHash=function(s)
+p=self
 hash=[]
-z=Ͻ.hashFn(y)
-for char in z
+t=p.hashFn(s)
+for char in t
 hash.push(char.code)
 end for
 hash.reverse
 return hash
 end function
-W.encrypt=function(str,y)
-Ͻ=self
-if (y==І) then
-y=Ͻ.defaultSecret
+S.encrypt=function(str,s)
+p=self
+if (s==ϻ) then
+s=p.defaultSecret
 end if
-hash=Ͻ.getHash(y)
-ϫ=0
-Ϭ=[]
-ϭ=0
-Ϯ=str.len%3
-ϯ=str.len-Ϯ
-ϰ=function(ϼ)
-if (not Ͻ.table.hasIndex(ϼ)) then
-(new Ͻ.Error).constructor(\\"Invalid index $0...\\",[ϼ]).throw
+hash=p.getHash(s)
+ϳ=0
+w=[]
+x=0
+y=str.len%3
+z=str.len-y
+_=function(ϲ)
+if (not p.table.hasIndex(ϲ)) then
+(new p.Error).constructor(\\"Invalid index $0...\\",[ϲ]).throw
 end if
-return Ͻ.table[ϼ]
+return p.table[ϲ]
 end function
-ϱ=function(ϴ,϶)
-return bitwise(\\"&\\",ϴ,϶)
+Ϩ=function(ϫ,ϭ)
+return bitwise(\\"&\\",ϫ,ϭ)
 end function
-ϲ=function(ϴ,϶)
-return bitwise(\\"<<\\",ϴ,϶)
+ϩ=function(ϫ,ϭ)
+return bitwise(\\"<<\\",ϫ,ϭ)
 end function
-ϳ=function(ϴ,϶)
-return bitwise(\\">>\\",ϴ,϶)
+Ϫ=function(ϫ,ϭ)
+return bitwise(\\">>\\",ϫ,ϭ)
 end function
-while ϭ<ϯ
-r=hash[ϭ%hash.len-Ј]
-ϴ=ϲ(str[ϭ].code+r,16)
-϶=ϲ(str[ϭ+Ј].code+r,8)
-ϸ=str[ϭ+2].code+r
-Ϻ=ϴ+϶+ϸ
-Ϭ.push(ϰ(ϱ(ϳ(Ϻ,18),Ї)))
-Ϭ.push(ϰ(ϱ(ϳ(Ϻ,12),Ї)))
-Ϭ.push(ϰ(ϱ(ϳ(Ϻ,6),Ї)))
-Ϭ.push(ϰ(ϱ(Ϻ,Ї)))
-ϭ=ϭ+3
+while x<z
+l=hash[x%hash.len-Ͻ]
+ϫ=ϩ(str[x].code+l,16)
+ϭ=ϩ(str[x+Ͻ].code+l,8)
+ϯ=str[x+2].code+l
+ϱ=ϫ+ϭ+ϯ
+w.push(_(Ϩ(Ϫ(ϱ,18),ϼ)))
+w.push(_(Ϩ(Ϫ(ϱ,12),ϼ)))
+w.push(_(Ϩ(Ϫ(ϱ,6),ϼ)))
+w.push(_(Ϩ(ϱ,ϼ)))
+x=x+3
 end while
-if (Ϯ==2) then
-r=hash[ϭ%hash.len-Ј]
-ϴ=ϲ(str[ϭ].code+r,8)
-϶=str[ϭ+Ј].code+r
-Ϻ=ϴ+϶
-Ϭ.push(ϰ(ϳ(Ϻ,10)))
-Ϭ.push(ϰ(ϱ(ϳ(Ϻ,4),Ї)))
-Ϭ.push(ϰ(ϱ(ϲ(Ϻ,2),Ї)))
-Ϭ.push(\\"=\\")
-else if (Ϯ==Ј) then
-r=hash[ϭ%hash.len-Ј]
-Ϻ=str[ϭ].code+r
-Ϭ.push(ϰ(ϳ(Ϻ,2)))
-Ϭ.push(ϰ(ϱ(ϲ(Ϻ,4),Ї)))
-Ϭ.push(\\"==\\")
+if (y==2) then
+l=hash[x%hash.len-Ͻ]
+ϫ=ϩ(str[x].code+l,8)
+ϭ=str[x+Ͻ].code+l
+ϱ=ϫ+ϭ
+w.push(_(Ϫ(ϱ,10)))
+w.push(_(Ϩ(Ϫ(ϱ,4),ϼ)))
+w.push(_(Ϩ(ϩ(ϱ,2),ϼ)))
+w.push(\\"=\\")
+else if (y==Ͻ) then
+l=hash[x%hash.len-Ͻ]
+ϱ=str[x].code+l
+w.push(_(Ϫ(ϱ,2)))
+w.push(_(Ϩ(ϩ(ϱ,4),ϼ)))
+w.push(\\"==\\")
 end if
-return Ϭ.join(\\"\\")
+return w.join(\\"\\")
 end function
-W.decrypt=function(str,y)
-Ͻ=self
-if (y==І) then
-y=Ͻ.defaultSecret
+S.decrypt=function(str,s)
+p=self
+if (s==ϻ) then
+s=p.defaultSecret
 end if
-hash=Ͻ.getHash(y)
-ϫ=0
-Ͽ=hash.len
-Ϭ=[]
-Ѐ=0
-Ё=0
-ϭ=0
-ϫ=0
-ϯ=str.len
-ϱ=function(ϴ,϶)
-return bitwise(\\"&\\",ϴ,϶)
+hash=p.getHash(s)
+ϳ=0
+ϴ=hash.len
+w=[]
+ϵ=0
+϶=0
+x=0
+ϳ=0
+z=str.len
+Ϩ=function(ϫ,ϭ)
+return bitwise(\\"&\\",ϫ,ϭ)
 end function
-ϳ=function(ϴ,϶)
-return bitwise(\\">>\\",ϴ,϶)
+Ϫ=function(ϫ,ϭ)
+return bitwise(\\">>\\",ϫ,ϭ)
 end function
-while ϭ<ϯ
-Ϻ=Ͻ.table.indexOf(str[ϭ])
-Ђ=Ѐ
-Ѐ=Ѐ+Ј
-if (Ђ%4) then
-Ё=Ё*64+Ϻ
+while x<z
+ϱ=p.table.indexOf(str[x])
+Ϸ=ϵ
+ϵ=ϵ+Ͻ
+if (Ϸ%4) then
+϶=϶*64+ϱ
 else
-Ё=Ϻ
+϶=ϱ
 end if
-if (Ђ%4) then
-Ѓ=(floor(ϫ/3)*3)%Ͽ-Ј
-if (not hash.hasIndex(Ѓ)) then
+if (Ϸ%4) then
+ϸ=(floor(ϳ/3)*3)%ϴ-Ͻ
+if (not hash.hasIndex(ϸ)) then
 break
 end if
-r=hash[Ѓ]
-Є=ϱ(-2*Ѐ,6)
-Є=ϳ(Ё,Є)
-Є=ϱ(255,Є)
-if (Є!=0) then
-Ѕ=Є-r
-if (Ѕ>Ͻ.maxCharCode) then
+l=hash[ϸ]
+Ϲ=Ϩ(-2*ϵ,6)
+Ϲ=Ϫ(϶,Ϲ)
+Ϲ=Ϩ(255,Ϲ)
+if (Ϲ!=0) then
+Ϻ=Ϲ-l
+if (Ϻ>p.maxCharCode) then
 break
 end if
-Ϭ.push(char(Ѕ))
+w.push(char(Ϻ))
 end if
-ϫ=ϫ+Ј
+ϳ=ϳ+Ͻ
 end if
-ϭ=ϭ+Ј
+x=x+Ͻ
 end while
-return Ϭ.join(\\"\\")
+return w.join(\\"\\")
 end function
-d=(new W).constructor(\\"test\\")
-e=\\"abcde\\"
-f=d.encrypt(e)
-g=d.decrypt(f)
-print(f)
-print(g)"
+Z=(new S).constructor(\\"test\\")
+Ϭ=\\"abcde\\"
+Ϯ=Z.encrypt(Ϭ)
+ϰ=Z.decrypt(Ϯ)
+print(Ϯ)
+print(ϰ)"
 `;
 
 exports[`parse default scripts random.src 1`] = `
@@ -1787,46 +1787,46 @@ S=S-1
 end for
 return R
 end function
-I.gen=function(V,W,Q,X)
-Y=self
-J=Y.pool
-if (X==null) then
-X=true
+I.gen=function(T,U,Q,V)
+W=self
+J=W.pool
+if (V==null) then
+V=true
 end if
 if (Q==null) then
-Q=Y.defaultSeed
+Q=W.defaultSeed
 end if
 if (J.hasIndex(Q)) then
-a=J[Q]
-if (not X) then
-return a.value
+X=J[Q]
+if (not V) then
+return X.value
 end if
-a.generation=a.generation+1
-val=floor((rnd(a.value+a.generation)*(W-V))+V)
-a.value=val
+X.generation=X.generation+1
+val=floor((rnd(X.value+X.generation)*(U-T))+T)
+X.value=val
 return val
 end if
-R=Y.calcSeed(Q)
-val=floor((rnd(R)*(W-V))+V)
-J[Q]=Y.createPool(R,val)
+R=W.calcSeed(Q)
+val=floor((rnd(R)*(U-T))+T)
+J[Q]=W.createPool(R,val)
 return val
 end function
-I.seq=function(V,W,Q,d,e)
-Y=self
-f=0
-g=[]
-while f<d
-h=Y.gen(V,W,Q)
-g.push(h)
-f=f+1
+I.seq=function(T,U,Q,a,b)
+W=self
+c=0
+d=[]
+while c<a
+e=W.gen(T,U,Q)
+d.push(e)
+c=c+1
 end while
-if (e!=true) then
-Y.pool.remove(Q)
+if (b!=true) then
+W.pool.remove(Q)
 end if
-return g
+return d
 end function
-I.get=function(V,W)
-return self.gen(V,W)
+I.get=function(T,U)
+return self.gen(T,U)
 end function
 print(I.get(100,500))
 print(I.seq(100,500,\\"test\\",10))"
@@ -1900,13 +1900,13 @@ exports[`parse default scripts slice.src uglify 1`] = `
 "I=function(str,J)
 K=0
 L=str.len
-N=[]
+M=[]
 while K<L
-O=K+J
-N.push(str[K:O])
-K=O
+N=K+J
+M.push(str[K:N])
+K=N
 end while
-return N
+return M
 end function
 print(I(\\"blahhblahhblahhblahhblahhblahhgad\\",5))"
 `;
@@ -1938,15 +1938,15 @@ print(-(1 + 2))"
 
 exports[`parse default scripts unary.src uglify 1`] = `
 "globals.H=globals
-H.L=\\"was\\"
-H.K=false
+H.K=\\"was\\"
+H.J=false
 I=function
 return null
 end function
-print(@L.split and (K or not K))
-print(@(L.split and (K or not K)))
-print(not L.split and (K or not K))
-print(not (L.split and (K or not K)))
+print(@K.split and (J or not J))
+print(@(K.split and (J or not J)))
+print(not K.split and (J or not J))
+print(not (K.split and (J or not J)))
 print(-1+2)
 print(-(1+2))"
 `;

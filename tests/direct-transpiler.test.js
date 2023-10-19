@@ -1,5 +1,5 @@
 const { DirectTranspiler, BuildType } = require('../dist');
-const { excludedNamespaces } = require('./utils');
+const { miniscriptMeta } = require('miniscript-meta');
 const fs = require('fs');
 const path = require('path');
 const testFolder = path.resolve(__dirname, 'scripts');
@@ -19,7 +19,7 @@ describe('parse', function () {
         const result = new DirectTranspiler({
           code: fs.readFileSync(filepath, 'utf-8'),
           environmentVariables,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
 
         expect(result).toMatchSnapshot();
@@ -30,7 +30,7 @@ describe('parse', function () {
           code: fs.readFileSync(filepath, 'utf-8'),
           buildType: BuildType.UGLIFY,
           environmentVariables,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
 
         expect(result).toMatchSnapshot();
@@ -41,7 +41,7 @@ describe('parse', function () {
           code: fs.readFileSync(filepath, 'utf-8'),
           buildType: BuildType.BEAUTIFY,
           environmentVariables,
-          excludedNamespaces
+          excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getSignaturesByType('general')))
         }).parse();
 
         expect(result).toMatchSnapshot();

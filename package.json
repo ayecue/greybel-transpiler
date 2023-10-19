@@ -45,7 +45,8 @@
         "jest": "^27.4.5",
         "nodemon": "^2.0.15",
         "ts-node": "^10.4.0",
-        "typescript": "^5.0.4"
+        "typescript": "^5.0.4",
+        "miniscript-meta": "^0.1.0"
     },
     "dependencies": {
         "blueimp-md5": "^2.19.0",
