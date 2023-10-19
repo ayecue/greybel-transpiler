@@ -2,7 +2,6 @@ import md5 from 'blueimp-md5';
 import EventEmitter from 'events';
 import {
   ASTChunkAdvanced,
-  ASTFeatureImportExpression,
   ASTFeatureIncludeExpression,
   Parser
 } from 'greybel-core';
@@ -14,14 +13,10 @@ import { BuildError } from './utils/error';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 
 export enum DependencyType {
-  Main,
-  Import,
-  Include
+  Main = 0,
+  Import = 1,
+  Include = 2
 }
-
-export type DependencyRef =
-  | ASTFeatureIncludeExpression
-  | ASTFeatureImportExpression;
 
 export interface DependencyOptions {
   target: string;
@@ -29,8 +24,8 @@ export interface DependencyOptions {
   chunk: ASTChunkAdvanced;
   context: Context;
 
-  type?: DependencyType;
-  ref?: DependencyRef;
+  type?: DependencyType | number;
+  ref?: ASTBase;
 }
 
 export interface DependencyFindResult {
@@ -54,8 +49,8 @@ export class Dependency extends EventEmitter {
   dependencies: Set<Dependency>;
   context: Context;
 
-  type: DependencyType;
-  ref?: DependencyRef;
+  type: DependencyType | number;
+  ref?: ASTBase;
 
   constructor(options: DependencyOptions) {
     super();
@@ -98,7 +93,7 @@ export class Dependency extends EventEmitter {
   private async resolve(
     path: string,
     type: DependencyType,
-    ref?: DependencyRef
+    ref?: ASTBase
   ): Promise<Dependency> {
     const me = this;
     const context = me.context;

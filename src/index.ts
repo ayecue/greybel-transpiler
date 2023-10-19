@@ -5,7 +5,6 @@ export {
   DependencyCallStack,
   DependencyFindResult,
   DependencyOptions,
-  DependencyRef,
   DependencyType,
   ResourceDependencyMap
 } from './dependency';
@@ -24,4 +23,13 @@ export {
   TranspilerOptions,
   TranspilerParseResult
 } from './transpiler';
+export { CharsetMap, generateCharsetMap } from './utils/charset-generator';
 export { BuildError } from './utils/error';
+export { fetchNamespaces } from './utils/fetch-namespaces';
+export { LiteralMetaData, LiteralsMapper } from './utils/literals-mapper';
+export {
+  NamespaceGenerator,
+  NamespaceGeneratorOptions
+} from './utils/namespace-generator';
+export { OutputProcessor } from './utils/output-processor';
+export { Stack } from './utils/stack';
