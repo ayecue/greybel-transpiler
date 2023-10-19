@@ -1,6 +1,6 @@
 {
     "name": "greybel-transpiler",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Transpiler",
     "main": "dist/index",
     "typings": "dist/index",
