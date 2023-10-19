@@ -1,6 +1,14 @@
 export { BuildMap, BuildType, getFactory } from './build-map';
-export { Context, ContextOptions } from './context';
-export { Dependency, DependencyOptions } from './dependency';
+export { Context, ContextDataProperty, ContextOptions } from './context';
+export {
+  Dependency,
+  DependencyCallStack,
+  DependencyFindResult,
+  DependencyOptions,
+  DependencyRef,
+  DependencyType,
+  ResourceDependencyMap
+} from './dependency';
 export { DirectTranspiler, DirectTranspilerOptions } from './direct-transpiler';
 export * from './resource';
 export {
