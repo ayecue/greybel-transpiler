@@ -376,7 +376,8 @@ Array [
 EXPORTED={}
 __REQUIRE=function(r)
 if (not MODULES.hasIndex(r)) then
-exit(\\"Module \\"+r+\\" cannot be found...\\")
+print(\\"Module \\"+r+\\" cannot be found...\\")
+return null
 end if
 module=@MODULES[r]
 return @module(r).exports
@@ -537,7 +538,8 @@ EXPORTED = {}
 
 __REQUIRE = function(r)
 	if (not MODULES.hasIndex(r)) then
-		exit(\\"Module \\" + r + \\" cannot be found...\\")
+		print(\\"Module \\" + r + \\" cannot be found...\\")
+		return null
 	end if
 
 	module = @MODULES[r]
@@ -739,7 +741,8 @@ C={}
 D={}
 E=function(b)
 if (not C.hasIndex(b)) then
-exit(\\"Module \\"+b+\\" cannot be found...\\")
+print(\\"Module \\"+b+\\" cannot be found...\\")
+return null
 end if
 G=@C[b]
 return @G(b).exports
@@ -899,7 +902,8 @@ Array [
 EXPORTED={}
 __REQUIRE=function(r)
 if (not MODULES.hasIndex(r)) then
-exit(\\"Module \\"+r+\\" cannot be found...\\")
+print(\\"Module \\"+r+\\" cannot be found...\\")
+return null
 end if
 module=@MODULES[r]
 return @module(r).exports
@@ -1060,7 +1064,8 @@ EXPORTED = {}
 
 __REQUIRE = function(r)
 	if (not MODULES.hasIndex(r)) then
-		exit(\\"Module \\" + r + \\" cannot be found...\\")
+		print(\\"Module \\" + r + \\" cannot be found...\\")
+		return null
 	end if
 
 	module = @MODULES[r]
@@ -1262,7 +1267,8 @@ C={}
 D={}
 E=function(b)
 if (not C.hasIndex(b)) then
-exit(\\"Module \\"+b+\\" cannot be found...\\")
+print(\\"Module \\"+b+\\" cannot be found...\\")
+return null
 end if
 G=@C[b]
 return @G(b).exports
