@@ -1,6 +1,13 @@
+import { ASTChunk } from 'miniscript-core';
+
 import { HEADER_BOILERPLATE, MAIN_BOILERPLATE } from '../boilerplates';
 import { Context } from '../context';
 import { Transformer } from '../transformer';
+
+export interface OutputProcessorBoilerplateOptions {
+  header?: ASTChunk;
+  main?: ASTChunk;
+}
 
 export class OutputProcessor {
   private processed: string[];
@@ -9,12 +16,19 @@ export class OutputProcessor {
   private headerBoilerplate: string;
   private mainBoilerplate: string;
 
-  constructor(context: Context, transformer: Transformer) {
+  constructor(
+    context: Context,
+    transformer: Transformer,
+    {
+      header = HEADER_BOILERPLATE,
+      main = MAIN_BOILERPLATE
+    }: OutputProcessorBoilerplateOptions = {}
+  ) {
     this.context = context;
     this.transformer = transformer;
     this.processed = [];
-    this.headerBoilerplate = this.transformer.transform(HEADER_BOILERPLATE);
-    this.mainBoilerplate = this.transformer.transform(MAIN_BOILERPLATE);
+    this.headerBoilerplate = this.transformer.transform(header);
+    this.mainBoilerplate = this.transformer.transform(main);
   }
 
   addLiteralsOptimization() {
