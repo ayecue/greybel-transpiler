@@ -1,6 +1,6 @@
 {
     "name": "greybel-transpiler",
-    "version": "2.0.6",
+    "version": "2.0.7",
     "description": "Transpiler",
     "main": "dist/index",
     "typings": "dist/index",
@@ -53,7 +53,6 @@
         "greybel-core": "^1.0.0"
     },
     "keywords": [
-        "greyscript",
-        "greyhack"
+        "miniscript"
     ]
 }
