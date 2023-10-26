@@ -1447,35 +1447,35 @@ print(decrypted)"
 
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 "globals.H=globals
-H.ϻ=1
-H.Ϲ=null
-H.Ϻ=63
+H.Ϲ=1
+H.Ϸ=null
+H.ϸ=63
 I={}
 I.constructor=function(str)
 self.str=str
 return self
 end function
 I.parse=function(values)
-d=self.str
-e=0
-f=values.len
-while e<f
-d=d.replace(\\"$\\"+e,values[e])
-e=e+ϻ
+Ϭ=self.str
+d=0
+e=values.len
+while d<e
+Ϭ=Ϭ.replace(\\"$\\"+d,values[d])
+d=d+Ϲ
 end while
-return (new self).constructor(d)
+return (new self).constructor(Ϭ)
 end function
 I.startsWith=function(str)
 return self.str.indexOf(str)==0
 end function
-I.substr=function(g,h)
-return (new self).constructor(slice(self.str,g,h))
+I.substr=function(f,g)
+return (new self).constructor(slice(self.str,f,g))
 end function
 I.indexOf=function(str)
 return self.str.indexOf(str)
 end function
-I.replace=function(str,i)
-return (new self).constructor(self.str.replace(str,i))
+I.replace=function(str,h)
+return (new self).constructor(self.str.replace(str,h))
 end function
 I.remove=function(str)
 return (new self).constructor(self.str.remove(str))
@@ -1486,169 +1486,169 @@ end function
 I.length=function
 return self.str.len
 end function
-I.split=function(j)
-return self.str.split(j)
+I.split=function(i)
+return self.str.split(i)
 end function
-I.trim=function(j)
+I.trim=function(i)
 return (new self).constructor(self.str.trim)
 end function
-Q={}
-Q.String=I
-Q.constructor=function(k,values)
-l=self
-l.message=k
-if (values!=Ϲ) then
-l.message=(new l.String).constructor(k).parse(values).toString
+P={}
+P.String=I
+P.constructor=function(j,values)
+k=self
+k.message=j
+if (values!=Ϸ) then
+k.message=(new k.String).constructor(j).parse(values).toString
 end if
-return l
+return k
 end function
-Q.throw=function
+P.throw=function
 exit(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
 end function
-S={}
-S.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
-S.defaultSecret=\\"test123\\"
-S.maxCharCode=55295
-S.Error=Q
-S.constructor=function(U,m,n)
-o=self
-o.defaultSecret=U
-o.table=n
-o.hashFn=@m
-if (@m==Ϲ) then
-o.hashFn=@md5
+R={}
+R.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
+R.defaultSecret=\\"test123\\"
+R.maxCharCode=55295
+R.Error=P
+R.constructor=function(T,l,m)
+n=self
+n.defaultSecret=T
+n.table=m
+n.hashFn=@l
+if (@l==Ϸ) then
+n.hashFn=@md5
 end if
-if n==Ϲ then
-o.table=o.defaultCharset
+if m==Ϸ then
+n.table=n.defaultCharset
 end if
-if o.table.len!=64 then
-(new o.Error).constructor(\\"Invalid charset $0...\\",[o.table]).throw
+if n.table.len!=64 then
+(new n.Error).constructor(\\"Invalid charset $0...\\",[n.table]).throw
 end if
-return o
+return n
 end function
-S.getHash=function(q)
-o=self
+R.getHash=function(p)
+n=self
 hash=[]
-r=o.hashFn(q)
-for char in r
+q=n.hashFn(p)
+for char in q
 hash.push(char.code)
 end for
 hash.reverse
 return hash
 end function
-S.encrypt=function(str,q)
-o=self
-if (q==Ϲ) then
-q=o.defaultSecret
+R.encrypt=function(str,p)
+n=self
+if (p==Ϸ) then
+p=n.defaultSecret
 end if
-hash=o.getHash(q)
+hash=n.getHash(p)
+r=0
+s=[]
 t=0
-u=[]
-ϱ=0
-w=str.len%3
-x=str.len-w
-y=function(ϰ)
-if (not o.table.hasIndex(ϰ)) then
-(new o.Error).constructor(\\"Invalid index $0...\\",[ϰ]).throw
+u=str.len%3
+ϯ=str.len-u
+w=function(Ϯ)
+if (not n.table.hasIndex(Ϯ)) then
+(new n.Error).constructor(\\"Invalid index $0...\\",[Ϯ]).throw
 end if
-return o.table[ϰ]
+return n.table[Ϯ]
 end function
-z=function(ϩ,ϫ)
-return bitwise(\\"&\\",ϩ,ϫ)
+x=function(_,ϩ)
+return bitwise(\\"&\\",_,ϩ)
 end function
-_=function(ϩ,ϫ)
-return bitwise(\\"<<\\",ϩ,ϫ)
+y=function(_,ϩ)
+return bitwise(\\"<<\\",_,ϩ)
 end function
-Ϩ=function(ϩ,ϫ)
-return bitwise(\\">>\\",ϩ,ϫ)
+z=function(_,ϩ)
+return bitwise(\\">>\\",_,ϩ)
 end function
-while ϱ<x
-l=hash[ϱ%hash.len-ϻ]
-ϩ=_(str[ϱ].code+l,16)
-ϫ=_(str[ϱ+ϻ].code+l,8)
-ϭ=str[ϱ+2].code+l
-ϯ=ϩ+ϫ+ϭ
-u.push(y(z(Ϩ(ϯ,18),Ϻ)))
-u.push(y(z(Ϩ(ϯ,12),Ϻ)))
-u.push(y(z(Ϩ(ϯ,6),Ϻ)))
-u.push(y(z(ϯ,Ϻ)))
-ϱ=ϱ+3
+while t<ϯ
+k=hash[t%hash.len-Ϲ]
+_=y(str[t].code+k,16)
+ϩ=y(str[t+Ϲ].code+k,8)
+ϫ=str[t+2].code+k
+ϭ=_+ϩ+ϫ
+s.push(w(x(z(ϭ,18),ϸ)))
+s.push(w(x(z(ϭ,12),ϸ)))
+s.push(w(x(z(ϭ,6),ϸ)))
+s.push(w(x(ϭ,ϸ)))
+t=t+3
 end while
-if (w==2) then
-l=hash[ϱ%hash.len-ϻ]
-ϩ=_(str[ϱ].code+l,8)
-ϫ=str[ϱ+ϻ].code+l
-ϯ=ϩ+ϫ
-u.push(y(Ϩ(ϯ,10)))
-u.push(y(z(Ϩ(ϯ,4),Ϻ)))
-u.push(y(z(_(ϯ,2),Ϻ)))
-u.push(\\"=\\")
-else if (w==ϻ) then
-l=hash[ϱ%hash.len-ϻ]
-ϯ=str[ϱ].code+l
-u.push(y(Ϩ(ϯ,2)))
-u.push(y(z(_(ϯ,4),Ϻ)))
-u.push(\\"==\\")
+if (u==2) then
+k=hash[t%hash.len-Ϲ]
+_=y(str[t].code+k,8)
+ϩ=str[t+Ϲ].code+k
+ϭ=_+ϩ
+s.push(w(z(ϭ,10)))
+s.push(w(x(z(ϭ,4),ϸ)))
+s.push(w(x(y(ϭ,2),ϸ)))
+s.push(\\"=\\")
+else if (u==Ϲ) then
+k=hash[t%hash.len-Ϲ]
+ϭ=str[t].code+k
+s.push(w(z(ϭ,2)))
+s.push(w(x(y(ϭ,4),ϸ)))
+s.push(\\"==\\")
 end if
-return u.join(\\"\\")
+return s.join(\\"\\")
 end function
-S.decrypt=function(str,q)
-o=self
-if (q==Ϲ) then
-q=o.defaultSecret
+R.decrypt=function(str,p)
+n=self
+if (p==Ϸ) then
+p=n.defaultSecret
 end if
-hash=o.getHash(q)
-t=0
-ϲ=hash.len
-u=[]
-ϳ=0
-ϴ=0
+hash=n.getHash(p)
+r=0
+ϰ=hash.len
+s=[]
 ϱ=0
+ϲ=0
 t=0
-x=str.len
-z=function(ϩ,ϫ)
-return bitwise(\\"&\\",ϩ,ϫ)
+r=0
+ϯ=str.len
+x=function(_,ϩ)
+return bitwise(\\"&\\",_,ϩ)
 end function
-Ϩ=function(ϩ,ϫ)
-return bitwise(\\">>\\",ϩ,ϫ)
+z=function(_,ϩ)
+return bitwise(\\">>\\",_,ϩ)
 end function
-while ϱ<x
-ϯ=o.table.indexOf(str[ϱ])
-ϵ=ϳ
-ϳ=ϳ+ϻ
-if (ϵ%4) then
-ϴ=ϴ*64+ϯ
+while t<ϯ
+ϭ=n.table.indexOf(str[t])
+ϳ=ϱ
+ϱ=ϱ+Ϲ
+if (ϳ%4) then
+ϲ=ϲ*64+ϭ
 else
-ϴ=ϯ
+ϲ=ϭ
 end if
-if (ϵ%4) then
-϶=(floor(t/3)*3)%ϲ-ϻ
-if (not hash.hasIndex(϶)) then
+if (ϳ%4) then
+ϴ=(floor(r/3)*3)%ϰ-Ϲ
+if (not hash.hasIndex(ϴ)) then
 break
 end if
-l=hash[϶]
-Ϸ=z(-2*ϳ,6)
-Ϸ=Ϩ(ϴ,Ϸ)
-Ϸ=z(255,Ϸ)
-if (Ϸ!=0) then
-ϸ=Ϸ-l
-if (ϸ>o.maxCharCode) then
+k=hash[ϴ]
+ϵ=x(-2*ϱ,6)
+ϵ=z(ϲ,ϵ)
+ϵ=x(255,ϵ)
+if (ϵ!=0) then
+϶=ϵ-k
+if (϶>n.maxCharCode) then
 break
 end if
-u.push(char(ϸ))
+s.push(char(϶))
 end if
-t=t+ϻ
+r=r+Ϲ
 end if
-ϱ=ϱ+ϻ
+t=t+Ϲ
 end while
-return u.join(\\"\\")
+return s.join(\\"\\")
 end function
-Z=(new S).constructor(\\"test\\")
-Ϫ=\\"abcde\\"
-Ϭ=Z.encrypt(Ϫ)
-Ϯ=Z.decrypt(Ϭ)
-print(Ϭ)
-print(Ϯ)"
+Y=(new R).constructor(\\"test\\")
+Z=\\"abcde\\"
+Ϩ=Y.encrypt(Z)
+Ϫ=Y.decrypt(Ϩ)
+print(Ϩ)
+print(Ϫ)"
 `;
 
 exports[`parse default scripts random.src 1`] = `
