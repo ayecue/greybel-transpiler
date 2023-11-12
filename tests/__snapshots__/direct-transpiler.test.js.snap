@@ -222,11 +222,8 @@ exports[`parse default scripts binary-expressions.src 1`] = `
 a=a*b
 a=a-b
 a=a+b
-bitwise(\\"<<\\",a,b)
-bitwise(\\">>\\",a,b)
-w=bitwise(\\">>\\",bitwise(\\">>>\\",a,(bitwise(\\"<<\\",b,c))),a)
-bitwise(\\"|\\",a,b)
-bitwise(\\"&\\",a,b)
+bitOr(a,b)
+bitAnd(a,b)
 a^b
 a and b
 a or b"
@@ -237,11 +234,8 @@ exports[`parse default scripts binary-expressions.src beautify 1`] = `
 a = a * b
 a = a - b
 a = a + b
-bitwise(\\"<<\\", a, b)
-bitwise(\\">>\\", a, b)
-w = bitwise(\\">>\\", bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c))), a)
-bitwise(\\"|\\", a, b)
-bitwise(\\"&\\", a, b)
+bitOr(a, b)
+bitAnd(a, b)
 a ^ b
 a and b
 a or b"
@@ -252,11 +246,8 @@ exports[`parse default scripts binary-expressions.src uglify 1`] = `
 I=I*J
 I=I-J
 I=I+J
-bitwise(\\"<<\\",I,J)
-bitwise(\\">>\\",I,J)
-K=bitwise(\\">>\\",bitwise(\\">>>\\",I,(bitwise(\\"<<\\",J,L))),I)
-bitwise(\\"|\\",I,J)
-bitwise(\\"&\\",I,J)
+bitOr(I,J)
+bitAnd(I,J)
 I^J
 I and J
 I or J"

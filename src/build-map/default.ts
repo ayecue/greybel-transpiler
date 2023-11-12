@@ -440,15 +440,12 @@ export function defaultFactory(
       const operator = item.operator;
       let expression = left + operator + right;
 
-      if (
-        operator === '<<' ||
-        operator === '>>' ||
-        operator === '>>>' ||
-        operator === '|' ||
-        operator === '&'
-      ) {
-        expression =
-          'bitwise(' + ['"' + operator + '"', left, right].join(',') + ')';
+      if (operator === '|') {
+        expression = 'bitOr(' + [left, right].join(',') + ')';
+      } else if (operator === '&') {
+        expression = 'bitAnd(' + [left, right].join(',') + ')';
+      } else if (operator === '<<' || operator === '>>' || operator === '>>>') {
+        throw new Error('Operators in binary expression are not supported');
       }
 
       return expression;
