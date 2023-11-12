@@ -2,11 +2,10 @@ import md5 from 'blueimp-md5';
 import EventEmitter from 'events';
 import {
   ASTChunkAdvanced,
-  ASTFeatureImportExpression,
   ASTFeatureIncludeExpression,
   Parser
 } from 'greybel-core';
-import { ASTBase, ASTImportCodeExpression } from 'greyscript-core';
+import { ASTBase } from 'miniscript-core';
 
 import { Context, ContextDataProperty } from './context';
 import { ResourceHandler } from './resource';
@@ -14,16 +13,10 @@ import { BuildError } from './utils/error';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 
 export enum DependencyType {
-  Main,
-  Import,
-  Include,
-  NativeImport
+  Main = 0,
+  Import = 1,
+  Include = 2
 }
-
-export type DependencyRef =
-  | ASTImportCodeExpression
-  | ASTFeatureIncludeExpression
-  | ASTFeatureImportExpression;
 
 export interface DependencyOptions {
   target: string;
@@ -31,8 +24,8 @@ export interface DependencyOptions {
   chunk: ASTChunkAdvanced;
   context: Context;
 
-  type?: DependencyType;
-  ref?: DependencyRef;
+  type?: DependencyType | number;
+  ref?: ASTBase;
 }
 
 export interface DependencyFindResult {
@@ -56,8 +49,8 @@ export class Dependency extends EventEmitter {
   dependencies: Set<Dependency>;
   context: Context;
 
-  type: DependencyType;
-  ref?: DependencyRef;
+  type: DependencyType | number;
+  ref?: ASTBase;
 
   constructor(options: DependencyOptions) {
     super();
@@ -97,23 +90,10 @@ export class Dependency extends EventEmitter {
     return me.context.modules.get(me.id);
   }
 
-  fetchNativeImports(): Set<Dependency> {
-    const me = this;
-    const result = [];
-
-    for (const item of me.dependencies) {
-      if (item.type === DependencyType.NativeImport) {
-        result.push(...item.fetchNativeImports(), item);
-      }
-    }
-
-    return new Set<Dependency>(result);
-  }
-
   private async resolve(
     path: string,
     type: DependencyType,
-    ref?: DependencyRef
+    ref?: ASTBase
   ): Promise<Dependency> {
     const me = this;
     const context = me.context;
@@ -170,7 +150,7 @@ export class Dependency extends EventEmitter {
 
   async findDependencies(): Promise<DependencyFindResult> {
     const me = this;
-    const { imports, includes, nativeImports } = me.chunk;
+    const { imports, includes } = me.chunk;
     const sourceNamespace = me.getNamespace();
     const dependencyCallStack = me.context.get<DependencyCallStack>(
       ContextDataProperty.DependencyCallStack
@@ -180,28 +160,6 @@ export class Dependency extends EventEmitter {
     const result: Dependency[] = [];
 
     dependencyCallStack.push(sourceNamespace);
-
-    // handle native imports
-    for (const nativeImport of nativeImports) {
-      const dependency = await me.resolve(
-        nativeImport.directory,
-        DependencyType.NativeImport,
-        nativeImport
-      );
-      const namespace = dependency.getNamespace();
-
-      if (dependencyCallStack.includes(namespace)) {
-        throw new Error(
-          `Circular dependency from ${me.target} to ${dependency.target} detected.`
-        );
-      }
-
-      const relatedDependencies = await dependency.findDependencies();
-
-      namespaces.push(...relatedDependencies.namespaces);
-      literals.push(...relatedDependencies.literals);
-      result.push(dependency);
-    }
 
     // handle internal includes/imports
     const items = [...imports, ...includes];
@@ -227,7 +185,6 @@ export class Dependency extends EventEmitter {
 
       const relatedDependencies = await dependency.findDependencies();
 
-      result.push(...dependency.fetchNativeImports());
       namespaces.push(...relatedDependencies.namespaces);
       literals.push(...relatedDependencies.literals);
       result.push(dependency);

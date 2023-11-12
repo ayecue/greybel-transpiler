@@ -1,6 +1,6 @@
 {
     "name": "greybel-transpiler",
-    "version": "1.2.0",
+    "version": "2.3.0",
     "description": "Transpiler",
     "main": "dist/index",
     "typings": "dist/index",
@@ -45,15 +45,14 @@
         "jest": "^27.4.5",
         "nodemon": "^2.0.15",
         "ts-node": "^10.4.0",
-        "typescript": "^5.0.4"
+        "typescript": "^5.0.4",
+        "miniscript-meta": "^0.1.2"
     },
     "dependencies": {
         "blueimp-md5": "^2.19.0",
-        "greybel-core": "^0.10.0",
-        "greyscript-core": "^0.10.0"
+        "greybel-core": "^1.3.0"
     },
     "keywords": [
-        "greyscript",
-        "greyhack"
+        "miniscript"
     ]
 }

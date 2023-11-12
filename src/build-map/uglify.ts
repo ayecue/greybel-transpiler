@@ -17,7 +17,6 @@ import {
   ASTIdentifier,
   ASTIfClause,
   ASTIfStatement,
-  ASTImportCodeExpression,
   ASTIndexExpression,
   ASTListConstructorExpression,
   ASTListValue,
@@ -30,11 +29,10 @@ import {
   ASTSliceExpression,
   ASTUnaryExpression,
   ASTWhileStatement
-} from 'greyscript-core';
+} from 'miniscript-core';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
-import { injectImport } from '../utils/inject-imports';
 import { BuildMap } from './default';
 
 export function uglifyFactory(
@@ -490,15 +488,12 @@ export function uglifyFactory(
       const operator = item.operator;
       let expression = left + operator + right;
 
-      if (
-        operator === '<<' ||
-        operator === '>>' ||
-        operator === '>>>' ||
-        operator === '|' ||
-        operator === '&'
-      ) {
-        expression =
-          'bitwise(' + ['"' + operator + '"', left, right].join(',') + ')';
+      if (operator === '|') {
+        expression = 'bitOr(' + [left, right].join(',') + ')';
+      } else if (operator === '&') {
+        expression = 'bitAnd(' + [left, right].join(',') + ')';
+      } else if (operator === '<<' || operator === '>>' || operator === '>>>') {
+        throw new Error('Operators in binary expression are not supported');
       }
 
       return expression;
@@ -523,12 +518,6 @@ export function uglifyFactory(
       }
 
       return body.join('\n');
-    },
-    ImportCodeExpression: (
-      item: ASTImportCodeExpression,
-      _data: TransformerDataObject
-    ): string => {
-      return injectImport(context, item);
     }
   };
 }

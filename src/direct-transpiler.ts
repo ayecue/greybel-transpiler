@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import { ASTChunkAdvanced, Parser } from 'greybel-core';
-import { ASTLiteral } from 'greyscript-core';
+import { ASTLiteral } from 'miniscript-core';
 
 import { BuildType, getFactory } from './build-map';
 import { Context } from './context';

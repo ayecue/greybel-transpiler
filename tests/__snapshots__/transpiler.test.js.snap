@@ -145,57 +145,57 @@ print(AsciiGen.gen(\\"Hallo\\"))",
 exports[`parse default scripts ascii.src uglify 1`] = `
 Array [
   "globals.H=globals
-H.t=\\"||¯|| \\"
-H.s=\\"||_|| \\"
-H.p=\\"|| || \\"
-H.n=\\"||¯ \\"
-H.r=\\"||  \\"
-H.o=\\"||_ \\"
-H.u=\\"||¯\\\\\\\\ \\"
-H.q=\\"|| \\"
-H.v=\\"  \\"
-H.w=\\"<color=#\\"
-H.y=\\">\\"
-H.x=\\"</color>\\"
+H.u=\\"||¯|| \\"
+H.t=\\"||_|| \\"
+H.q=\\"|| || \\"
+H.o=\\"||¯ \\"
+H.s=\\"||  \\"
+H.p=\\"||_ \\"
+H.v=\\"||¯\\\\\\\\ \\"
+H.r=\\"|| \\"
+H.w=\\"  \\"
+H.x=\\"<color=#\\"
+H.z=\\">\\"
+H.y=\\"</color>\\"
 I={}
 map={}
-map.a=[t,s,p]
+map.a=[u,t,q]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[n,r,o]
-map.d=[u,\\"|| // \\",\\"||//  \\"]
-map.e=[n,\\"||- \\",o]
-map.f=[n,o,r]
-map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",s]
-map.h=[p,\\"||-|| \\",p]
-map.i=[q,q,q]
+map.c=[o,s,p]
+map.d=[v,\\"|| // \\",\\"||//  \\"]
+map.e=[o,\\"||- \\",p]
+map.f=[o,p,s]
+map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",t]
+map.h=[q,\\"||-|| \\",q]
+map.i=[r,r,r]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",u]
-map.l=[r,r,o]
+map.k=[\\"||  / \\",\\"|| /  \\",v]
+map.l=[s,s,p]
 map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[t,p,s]
-map.p=[t,s,\\"||    \\"]
+map.o=[u,q,t]
+map.p=[u,t,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[t,u,p]
+map.r=[u,v,q]
 map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
 map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
-map.u=[p,p,s]
+map.u=[q,q,t]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",o]
-map[\\"0\\"]=[t,\\"||x|| \\",s]
+map.z=[\\"¯// \\",\\"//  \\",p]
+map[\\"0\\"]=[u,\\"||x|| \\",t]
 map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
 map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[\\"||¯¯  \\",t,s]
+map[\\"6\\"]=[\\"||¯¯  \\",u,t]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[t,\\"||-|| \\",s]
-map[\\"9\\"]=[t,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[v,v,v]
+map[\\"8\\"]=[u,\\"||-|| \\",t]
+map[\\"9\\"]=[u,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[w,w,w]
 I.MAP=map
 I.gen=function(str,l)
 a=[[],[],[]]
@@ -208,14 +208,14 @@ a[1].push(m[char][1])
 a[2].push(m[char][2])
 end if
 end for
-if (typeof(l)==\\"string\\") then
-a[0]=[w+l+y]+a[0]+[x]
-a[1]=[w+l+y]+a[1]+[x]
-a[2]=[w+l+y]+a[2]+[x]
-else if (typeof(l)==\\"list\\") then
-a[0]=[w+l[0]+y]+a[0]+[x]
-a[1]=[w+l[1]+y]+a[1]+[x]
-a[2]=[w+l[2]+y]+a[2]+[x]
+if (n(l)==\\"string\\") then
+a[0]=[x+l+z]+a[0]+[y]
+a[1]=[x+l+z]+a[1]+[y]
+a[2]=[x+l+z]+a[2]+[y]
+else if (n(l)==\\"list\\") then
+a[0]=[x+l[0]+z]+a[0]+[y]
+a[1]=[x+l[1]+z]+a[1]+[y]
+a[2]=[x+l[2]+z]+a[2]+[y]
 end if
 return [a[0].join(\\"\\"),a[1].join(\\"\\"),a[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
@@ -229,11 +229,8 @@ Array [
 a=a*b
 a=a-b
 a=a+b
-bitwise(\\"<<\\",a,b)
-bitwise(\\">>\\",a,b)
-w=bitwise(\\">>\\",bitwise(\\">>>\\",a,(bitwise(\\"<<\\",b,c))),a)
-bitwise(\\"|\\",a,b)
-bitwise(\\"&\\",a,b)
+bitOr(a,b)
+bitAnd(a,b)
 a^b
 a and b
 a or b",
@@ -246,11 +243,8 @@ Array [
 a = a * b
 a = a - b
 a = a + b
-bitwise(\\"<<\\", a, b)
-bitwise(\\">>\\", a, b)
-w = bitwise(\\">>\\", bitwise(\\">>>\\", a, (bitwise(\\"<<\\", b, c))), a)
-bitwise(\\"|\\", a, b)
-bitwise(\\"&\\", a, b)
+bitOr(a, b)
+bitAnd(a, b)
 a ^ b
 a and b
 a or b",
@@ -263,11 +257,8 @@ Array [
 I=I*J
 I=I-J
 I=I+J
-bitwise(\\"<<\\",I,J)
-bitwise(\\">>\\",I,J)
-K=bitwise(\\">>\\",bitwise(\\">>>\\",I,(bitwise(\\"<<\\",J,L))),I)
-bitwise(\\"|\\",I,J)
-bitwise(\\"&\\",I,J)
+bitOr(I,J)
+bitAnd(I,J)
 I^J
 I and J
 I or J",
@@ -376,7 +367,8 @@ Array [
 EXPORTED={}
 __REQUIRE=function(r)
 if (not MODULES.hasIndex(r)) then
-exit(\\"Module \\"+r+\\" cannot be found...\\")
+print(\\"Module \\"+r+\\" cannot be found...\\")
+return null
 end if
 module=@MODULES[r]
 return @module(r).exports
@@ -518,17 +510,15 @@ end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
+myvar2=\\"\\"foo\\"\\"
+myvar2=\\"\\"foo\\"\\"
+lastimport=\\"hi\\"
+test=123
+was=123
+x=123
 print(123)
 \\"true\\"
 //debugger",
-  "myvar2=\\"\\"foo\\"\\"",
-  "lastimport=\\"hi\\"",
-  "test=123
-was=123
-x=123",
 ]
 `;
 
@@ -539,7 +529,8 @@ EXPORTED = {}
 
 __REQUIRE = function(r)
 	if (not MODULES.hasIndex(r)) then
-		exit(\\"Module \\" + r + \\" cannot be found...\\")
+		print(\\"Module \\" + r + \\" cannot be found...\\")
+		return null
 	end if
 
 	module = @MODULES[r]
@@ -699,51 +690,50 @@ AsciiGen.gen = function(str, colors)
 end function
 
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
+myvar2 = \\"\\"foo\\"\\"
+myvar2 = \\"\\"foo\\"\\"
+lastimport = \\"hi\\"
+test = 123
+was = 123
+x = 123
 print(123)
 \\"true\\"
 //debugger",
-  "myvar2 = \\"\\"foo\\"\\"",
-  "lastimport = \\"hi\\"",
-  "test = 123
-was = 123
-x = 123",
 ]
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
 Array [
   "globals.H=globals
-H.y=\\"||¯|| \\"
-H.x=\\"||_|| \\"
-H.u=\\"|| || \\"
-H.s=\\"||¯ \\"
-H.w=\\"||  \\"
-H.t=\\"||_ \\"
-H.z=\\"||¯\\\\\\\\ \\"
-H.AE=\\"||¯¯  \\"
-H.AF=\\"||-|| \\"
-H.v=\\"|| \\"
-H.AG=\\"||   || \\"
-H.AH=\\"||¯¯ \\"
-H.AI=\\" ||  \\"
-H.AJ=\\" || \\"
-H._A=\\"  \\"
-H.AK=0
-H.AL=1
-H.AM=2
-H.AB=\\"<color=#\\"
-H.AD=\\">\\"
-H.AC=\\"</color>\\"
-H.AN=\\"\\"
-H.AO=123
+H.z=\\"||¯|| \\"
+H.y=\\"||_|| \\"
+H.v=\\"|| || \\"
+H.t=\\"||¯ \\"
+H.x=\\"||  \\"
+H.u=\\"||_ \\"
+H._A=\\"||¯\\\\\\\\ \\"
+H.AF=\\"||¯¯  \\"
+H.AG=\\"||-|| \\"
+H.w=\\"|| \\"
+H.AH=\\"||   || \\"
+H.AI=\\"||¯¯ \\"
+H.AJ=\\" ||  \\"
+H.AK=\\" || \\"
+H.AB=\\"  \\"
+H.AL=0
+H.AM=1
+H.AN=2
+H.AC=\\"<color=#\\"
+H.AE=\\">\\"
+H.AD=\\"</color>\\"
+H.AO=\\"\\"
+H.AP=123
 C={}
 D={}
 E=function(b)
 if (not C.hasIndex(b)) then
-exit(\\"Module \\"+b+\\" cannot be found...\\")
+print(\\"Module \\"+b+\\" cannot be found...\\")
+return null
 end if
 G=@C[b]
 return @G(b).exports
@@ -756,43 +746,43 @@ end if
 if (not G.hasIndex(\\"exports\\")) then
 J={}
 map={}
-map.a=[y,x,u]
+map.a=[z,y,v]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[s,w,t]
-map.d=[z,\\"|| // \\",\\"||//  \\"]
-map.e=[s,\\"||- \\",t]
-map.f=[s,t,w]
-map.g=[AE,\\"|| \\\\\\\\ \\",x]
-map.h=[u,AF,u]
-map.i=[v,v,v]
+map.c=[t,x,u]
+map.d=[_A,\\"|| // \\",\\"||//  \\"]
+map.e=[t,\\"||- \\",u]
+map.f=[t,u,x]
+map.g=[AF,\\"|| \\\\\\\\ \\",y]
+map.h=[v,AG,v]
+map.i=[w,w,w]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",z]
-map.l=[w,w,t]
-map.m=[\\"||\\\\\\\\/|| \\",AG,AG]
+map.k=[\\"||  / \\",\\"|| /  \\",_A]
+map.l=[x,x,u]
+map.m=[\\"||\\\\\\\\/|| \\",AH,AH]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[y,u,x]
-map.p=[y,x,\\"||    \\"]
+map.o=[z,v,y]
+map.p=[z,y,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[y,z,u]
-map.s=[AH,\\" \\\\\\\\  \\",\\"__|| \\"]
-map.t=[\\"¯||¯ \\",AI,AI]
-map.u=[u,u,x]
+map.r=[z,_A,v]
+map.s=[AI,\\" \\\\\\\\  \\",\\"__|| \\"]
+map.t=[\\"¯||¯ \\",AJ,AJ]
+map.u=[v,v,y]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",t]
-map[\\"0\\"]=[y,\\"||x|| \\",x]
-map[\\"1\\"]=[\\"'|| \\",AJ,AJ]
+map.z=[\\"¯// \\",\\"//  \\",u]
+map[\\"0\\"]=[z,\\"||x|| \\",y]
+map[\\"1\\"]=[\\"'|| \\",AK,AK]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
-map[\\"5\\"]=[AH,\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[AE,y,x]
+map[\\"5\\"]=[AI,\\" ¯|| \\",\\" _|| \\"]
+map[\\"6\\"]=[AF,z,y]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[y,AF,x]
-map[\\"9\\"]=[y,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[_A,_A,_A]
+map[\\"8\\"]=[z,AG,y]
+map[\\"9\\"]=[z,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[AB,AB,AB]
 J.MAP=map
 J.gen=function(str,m)
 b=[[],[],[]]
@@ -800,21 +790,21 @@ n=self.MAP
 for char in str
 char=char.lower
 if (n.hasIndex(char)) then
-b[AK].push(n[char][AK])
 b[AL].push(n[char][AL])
 b[AM].push(n[char][AM])
+b[AN].push(n[char][AN])
 end if
 end for
-if (typeof(m)==\\"string\\") then
-b[AK]=[AB+m+AD]+b[AK]+[AC]
-b[AL]=[AB+m+AD]+b[AL]+[AC]
-b[AM]=[AB+m+AD]+b[AM]+[AC]
-else if (typeof(m)==\\"list\\") then
-b[AK]=[AB+m[AK]+AD]+b[AK]+[AC]
-b[AL]=[AB+m[AL]+AD]+b[AL]+[AC]
-b[AM]=[AB+m[AM]+AD]+b[AM]+[AC]
+if (o(m)==\\"string\\") then
+b[AL]=[AC+m+AE]+b[AL]+[AD]
+b[AM]=[AC+m+AE]+b[AM]+[AD]
+b[AN]=[AC+m+AE]+b[AN]+[AD]
+else if (o(m)==\\"list\\") then
+b[AL]=[AC+m[AL]+AE]+b[AL]+[AD]
+b[AM]=[AC+m[AM]+AE]+b[AM]+[AD]
+b[AN]=[AC+m[AN]+AE]+b[AN]+[AD]
 end if
-return [b[AK].join(AN),b[AL].join(AN),b[AM].join(AN)].join(\\"\\\\n\\")
+return [b[AL].join(AO),b[AM].join(AO),b[AN].join(AO)].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
 end if
@@ -824,43 +814,43 @@ end function
 I=E(\\"B\\")
 J={}
 map={}
-map.a=[y,x,u]
+map.a=[z,y,v]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[s,w,t]
-map.d=[z,\\"|| // \\",\\"||//  \\"]
-map.e=[s,\\"||- \\",t]
-map.f=[s,t,w]
-map.g=[AE,\\"|| \\\\\\\\ \\",x]
-map.h=[u,AF,u]
-map.i=[v,v,v]
+map.c=[t,x,u]
+map.d=[_A,\\"|| // \\",\\"||//  \\"]
+map.e=[t,\\"||- \\",u]
+map.f=[t,u,x]
+map.g=[AF,\\"|| \\\\\\\\ \\",y]
+map.h=[v,AG,v]
+map.i=[w,w,w]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",z]
-map.l=[w,w,t]
-map.m=[\\"||\\\\\\\\/|| \\",AG,AG]
+map.k=[\\"||  / \\",\\"|| /  \\",_A]
+map.l=[x,x,u]
+map.m=[\\"||\\\\\\\\/|| \\",AH,AH]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[y,u,x]
-map.p=[y,x,\\"||    \\"]
+map.o=[z,v,y]
+map.p=[z,y,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[y,z,u]
-map.s=[AH,\\" \\\\\\\\  \\",\\"__|| \\"]
-map.t=[\\"¯||¯ \\",AI,AI]
-map.u=[u,u,x]
+map.r=[z,_A,v]
+map.s=[AI,\\" \\\\\\\\  \\",\\"__|| \\"]
+map.t=[\\"¯||¯ \\",AJ,AJ]
+map.u=[v,v,y]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",t]
-map[\\"0\\"]=[y,\\"||x|| \\",x]
-map[\\"1\\"]=[\\"'|| \\",AJ,AJ]
+map.z=[\\"¯// \\",\\"//  \\",u]
+map[\\"0\\"]=[z,\\"||x|| \\",y]
+map[\\"1\\"]=[\\"'|| \\",AK,AK]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
-map[\\"5\\"]=[AH,\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[AE,y,x]
+map[\\"5\\"]=[AI,\\" ¯|| \\",\\" _|| \\"]
+map[\\"6\\"]=[AF,z,y]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[y,AF,x]
-map[\\"9\\"]=[y,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[_A,_A,_A]
+map[\\"8\\"]=[z,AG,y]
+map[\\"9\\"]=[z,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[AB,AB,AB]
 J.MAP=map
 J.gen=function(str,m)
 b=[[],[],[]]
@@ -868,34 +858,32 @@ n=self.MAP
 for char in str
 char=char.lower
 if (n.hasIndex(char)) then
-b[AK].push(n[char][AK])
 b[AL].push(n[char][AL])
 b[AM].push(n[char][AM])
+b[AN].push(n[char][AN])
 end if
 end for
-if (typeof(m)==\\"string\\") then
-b[AK]=[AB+m+AD]+b[AK]+[AC]
-b[AL]=[AB+m+AD]+b[AL]+[AC]
-b[AM]=[AB+m+AD]+b[AM]+[AC]
-else if (typeof(m)==\\"list\\") then
-b[AK]=[AB+m[AK]+AD]+b[AK]+[AC]
-b[AL]=[AB+m[AL]+AD]+b[AL]+[AC]
-b[AM]=[AB+m[AM]+AD]+b[AM]+[AC]
+if (o(m)==\\"string\\") then
+b[AL]=[AC+m+AE]+b[AL]+[AD]
+b[AM]=[AC+m+AE]+b[AM]+[AD]
+b[AN]=[AC+m+AE]+b[AN]+[AD]
+else if (o(m)==\\"list\\") then
+b[AL]=[AC+m[AL]+AE]+b[AL]+[AD]
+b[AM]=[AC+m[AM]+AE]+b[AM]+[AD]
+b[AN]=[AC+m[AN]+AE]+b[AN]+[AD]
 end if
-return [b[AK].join(AN),b[AL].join(AN),b[AM].join(AN)].join(\\"\\\\n\\")
+return [b[AL].join(AO),b[AM].join(AO),b[AN].join(AO)].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
-print(AO)
+p=\\"\\"foo\\"\\"
+p=\\"\\"foo\\"\\"
+s=\\"hi\\"
+q=AP
+r=AP
+h=AP
+print(AP)
 \\"true\\"
 //debugger",
-  "o=\\"\\"foo\\"\\"",
-  "r=\\"hi\\"",
-  "p=AO
-q=AO
-h=AO",
 ]
 `;
 
@@ -905,7 +893,8 @@ Array [
 EXPORTED={}
 __REQUIRE=function(r)
 if (not MODULES.hasIndex(r)) then
-exit(\\"Module \\"+r+\\" cannot be found...\\")
+print(\\"Module \\"+r+\\" cannot be found...\\")
+return null
 end if
 module=@MODULES[r]
 return @module(r).exports
@@ -1047,17 +1036,15 @@ end if
 return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
+myvar2=\\"\\"foo\\"\\"
+myvar2=\\"\\"foo\\"\\"
+lastimport=\\"hi\\"
+test=123
+was=123
+x=123
 print(123)
 \\"true\\"
 //debugger",
-  "myvar2=\\"\\"foo\\"\\"",
-  "lastimport=\\"hi\\"",
-  "test=123
-was=123
-x=123",
 ]
 `;
 
@@ -1068,7 +1055,8 @@ EXPORTED = {}
 
 __REQUIRE = function(r)
 	if (not MODULES.hasIndex(r)) then
-		exit(\\"Module \\" + r + \\" cannot be found...\\")
+		print(\\"Module \\" + r + \\" cannot be found...\\")
+		return null
 	end if
 
 	module = @MODULES[r]
@@ -1228,51 +1216,50 @@ AsciiGen.gen = function(str, colors)
 end function
 
 print(AsciiGen.gen(\\"Hallo\\"))
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
+myvar2 = \\"\\"foo\\"\\"
+myvar2 = \\"\\"foo\\"\\"
+lastimport = \\"hi\\"
+test = 123
+was = 123
+x = 123
 print(123)
 \\"true\\"
 //debugger",
-  "myvar2 = \\"\\"foo\\"\\"",
-  "lastimport = \\"hi\\"",
-  "test = 123
-was = 123
-x = 123",
 ]
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src uglify 1`] = `
 Array [
   "globals.H=globals
-H.y=\\"||¯|| \\"
-H.x=\\"||_|| \\"
-H.u=\\"|| || \\"
-H.s=\\"||¯ \\"
-H.w=\\"||  \\"
-H.t=\\"||_ \\"
-H.z=\\"||¯\\\\\\\\ \\"
-H.AE=\\"||¯¯  \\"
-H.AF=\\"||-|| \\"
-H.v=\\"|| \\"
-H.AG=\\"||   || \\"
-H.AH=\\"||¯¯ \\"
-H.AI=\\" ||  \\"
-H.AJ=\\" || \\"
-H._A=\\"  \\"
-H.AK=0
-H.AL=1
-H.AM=2
-H.AB=\\"<color=#\\"
-H.AD=\\">\\"
-H.AC=\\"</color>\\"
-H.AN=\\"\\"
-H.AO=123
+H.z=\\"||¯|| \\"
+H.y=\\"||_|| \\"
+H.v=\\"|| || \\"
+H.t=\\"||¯ \\"
+H.x=\\"||  \\"
+H.u=\\"||_ \\"
+H._A=\\"||¯\\\\\\\\ \\"
+H.AF=\\"||¯¯  \\"
+H.AG=\\"||-|| \\"
+H.w=\\"|| \\"
+H.AH=\\"||   || \\"
+H.AI=\\"||¯¯ \\"
+H.AJ=\\" ||  \\"
+H.AK=\\" || \\"
+H.AB=\\"  \\"
+H.AL=0
+H.AM=1
+H.AN=2
+H.AC=\\"<color=#\\"
+H.AE=\\">\\"
+H.AD=\\"</color>\\"
+H.AO=\\"\\"
+H.AP=123
 C={}
 D={}
 E=function(b)
 if (not C.hasIndex(b)) then
-exit(\\"Module \\"+b+\\" cannot be found...\\")
+print(\\"Module \\"+b+\\" cannot be found...\\")
+return null
 end if
 G=@C[b]
 return @G(b).exports
@@ -1285,43 +1272,43 @@ end if
 if (not G.hasIndex(\\"exports\\")) then
 J={}
 map={}
-map.a=[y,x,u]
+map.a=[z,y,v]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[s,w,t]
-map.d=[z,\\"|| // \\",\\"||//  \\"]
-map.e=[s,\\"||- \\",t]
-map.f=[s,t,w]
-map.g=[AE,\\"|| \\\\\\\\ \\",x]
-map.h=[u,AF,u]
-map.i=[v,v,v]
+map.c=[t,x,u]
+map.d=[_A,\\"|| // \\",\\"||//  \\"]
+map.e=[t,\\"||- \\",u]
+map.f=[t,u,x]
+map.g=[AF,\\"|| \\\\\\\\ \\",y]
+map.h=[v,AG,v]
+map.i=[w,w,w]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",z]
-map.l=[w,w,t]
-map.m=[\\"||\\\\\\\\/|| \\",AG,AG]
+map.k=[\\"||  / \\",\\"|| /  \\",_A]
+map.l=[x,x,u]
+map.m=[\\"||\\\\\\\\/|| \\",AH,AH]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[y,u,x]
-map.p=[y,x,\\"||    \\"]
+map.o=[z,v,y]
+map.p=[z,y,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[y,z,u]
-map.s=[AH,\\" \\\\\\\\  \\",\\"__|| \\"]
-map.t=[\\"¯||¯ \\",AI,AI]
-map.u=[u,u,x]
+map.r=[z,_A,v]
+map.s=[AI,\\" \\\\\\\\  \\",\\"__|| \\"]
+map.t=[\\"¯||¯ \\",AJ,AJ]
+map.u=[v,v,y]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",t]
-map[\\"0\\"]=[y,\\"||x|| \\",x]
-map[\\"1\\"]=[\\"'|| \\",AJ,AJ]
+map.z=[\\"¯// \\",\\"//  \\",u]
+map[\\"0\\"]=[z,\\"||x|| \\",y]
+map[\\"1\\"]=[\\"'|| \\",AK,AK]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
-map[\\"5\\"]=[AH,\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[AE,y,x]
+map[\\"5\\"]=[AI,\\" ¯|| \\",\\" _|| \\"]
+map[\\"6\\"]=[AF,z,y]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[y,AF,x]
-map[\\"9\\"]=[y,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[_A,_A,_A]
+map[\\"8\\"]=[z,AG,y]
+map[\\"9\\"]=[z,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[AB,AB,AB]
 J.MAP=map
 J.gen=function(str,m)
 b=[[],[],[]]
@@ -1329,21 +1316,21 @@ n=self.MAP
 for char in str
 char=char.lower
 if (n.hasIndex(char)) then
-b[AK].push(n[char][AK])
 b[AL].push(n[char][AL])
 b[AM].push(n[char][AM])
+b[AN].push(n[char][AN])
 end if
 end for
-if (typeof(m)==\\"string\\") then
-b[AK]=[AB+m+AD]+b[AK]+[AC]
-b[AL]=[AB+m+AD]+b[AL]+[AC]
-b[AM]=[AB+m+AD]+b[AM]+[AC]
-else if (typeof(m)==\\"list\\") then
-b[AK]=[AB+m[AK]+AD]+b[AK]+[AC]
-b[AL]=[AB+m[AL]+AD]+b[AL]+[AC]
-b[AM]=[AB+m[AM]+AD]+b[AM]+[AC]
+if (o(m)==\\"string\\") then
+b[AL]=[AC+m+AE]+b[AL]+[AD]
+b[AM]=[AC+m+AE]+b[AM]+[AD]
+b[AN]=[AC+m+AE]+b[AN]+[AD]
+else if (o(m)==\\"list\\") then
+b[AL]=[AC+m[AL]+AE]+b[AL]+[AD]
+b[AM]=[AC+m[AM]+AE]+b[AM]+[AD]
+b[AN]=[AC+m[AN]+AE]+b[AN]+[AD]
 end if
-return [b[AK].join(AN),b[AL].join(AN),b[AM].join(AN)].join(\\"\\\\n\\")
+return [b[AL].join(AO),b[AM].join(AO),b[AN].join(AO)].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
 end if
@@ -1353,43 +1340,43 @@ end function
 I=E(\\"B\\")
 J={}
 map={}
-map.a=[y,x,u]
+map.a=[z,y,v]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[s,w,t]
-map.d=[z,\\"|| // \\",\\"||//  \\"]
-map.e=[s,\\"||- \\",t]
-map.f=[s,t,w]
-map.g=[AE,\\"|| \\\\\\\\ \\",x]
-map.h=[u,AF,u]
-map.i=[v,v,v]
+map.c=[t,x,u]
+map.d=[_A,\\"|| // \\",\\"||//  \\"]
+map.e=[t,\\"||- \\",u]
+map.f=[t,u,x]
+map.g=[AF,\\"|| \\\\\\\\ \\",y]
+map.h=[v,AG,v]
+map.i=[w,w,w]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",z]
-map.l=[w,w,t]
-map.m=[\\"||\\\\\\\\/|| \\",AG,AG]
+map.k=[\\"||  / \\",\\"|| /  \\",_A]
+map.l=[x,x,u]
+map.m=[\\"||\\\\\\\\/|| \\",AH,AH]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[y,u,x]
-map.p=[y,x,\\"||    \\"]
+map.o=[z,v,y]
+map.p=[z,y,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[y,z,u]
-map.s=[AH,\\" \\\\\\\\  \\",\\"__|| \\"]
-map.t=[\\"¯||¯ \\",AI,AI]
-map.u=[u,u,x]
+map.r=[z,_A,v]
+map.s=[AI,\\" \\\\\\\\  \\",\\"__|| \\"]
+map.t=[\\"¯||¯ \\",AJ,AJ]
+map.u=[v,v,y]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",t]
-map[\\"0\\"]=[y,\\"||x|| \\",x]
-map[\\"1\\"]=[\\"'|| \\",AJ,AJ]
+map.z=[\\"¯// \\",\\"//  \\",u]
+map[\\"0\\"]=[z,\\"||x|| \\",y]
+map[\\"1\\"]=[\\"'|| \\",AK,AK]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
-map[\\"5\\"]=[AH,\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[AE,y,x]
+map[\\"5\\"]=[AI,\\" ¯|| \\",\\" _|| \\"]
+map[\\"6\\"]=[AF,z,y]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[y,AF,x]
-map[\\"9\\"]=[y,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[_A,_A,_A]
+map[\\"8\\"]=[z,AG,y]
+map[\\"9\\"]=[z,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[AB,AB,AB]
 J.MAP=map
 J.gen=function(str,m)
 b=[[],[],[]]
@@ -1397,34 +1384,32 @@ n=self.MAP
 for char in str
 char=char.lower
 if (n.hasIndex(char)) then
-b[AK].push(n[char][AK])
 b[AL].push(n[char][AL])
 b[AM].push(n[char][AM])
+b[AN].push(n[char][AN])
 end if
 end for
-if (typeof(m)==\\"string\\") then
-b[AK]=[AB+m+AD]+b[AK]+[AC]
-b[AL]=[AB+m+AD]+b[AL]+[AC]
-b[AM]=[AB+m+AD]+b[AM]+[AC]
-else if (typeof(m)==\\"list\\") then
-b[AK]=[AB+m[AK]+AD]+b[AK]+[AC]
-b[AL]=[AB+m[AL]+AD]+b[AL]+[AC]
-b[AM]=[AB+m[AM]+AD]+b[AM]+[AC]
+if (o(m)==\\"string\\") then
+b[AL]=[AC+m+AE]+b[AL]+[AD]
+b[AM]=[AC+m+AE]+b[AM]+[AD]
+b[AN]=[AC+m+AE]+b[AN]+[AD]
+else if (o(m)==\\"list\\") then
+b[AL]=[AC+m[AL]+AE]+b[AL]+[AD]
+b[AM]=[AC+m[AM]+AE]+b[AM]+[AD]
+b[AN]=[AC+m[AN]+AE]+b[AN]+[AD]
 end if
-return [b[AK].join(AN),b[AL].join(AN),b[AM].join(AN)].join(\\"\\\\n\\")
+return [b[AL].join(AO),b[AM].join(AO),b[AN].join(AO)].join(\\"\\\\n\\")
 end function
 print(J.gen(\\"Hallo\\"))
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
-print(AO)
+p=\\"\\"foo\\"\\"
+p=\\"\\"foo\\"\\"
+s=\\"hi\\"
+q=AP
+r=AP
+h=AP
+print(AP)
 \\"true\\"
 //debugger",
-  "o=\\"\\"foo\\"\\"",
-  "r=\\"hi\\"",
-  "p=AO
-q=AO
-h=AO",
 ]
 `;
 
@@ -1452,266 +1437,6 @@ Array [
 locals.J=\\"moo\\"
 print(H.hasIndex(\\"I\\"))
 print(locals.hasIndex(\\"J\\"))",
-]
-`;
-
-exports[`parse default scripts import-code.src 1`] = `
-Array [
-  "import_code(\\"/scripts/ascii.src\\")
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-import.src\\")
-print(123)",
-  "AsciiGen={}
-map={}
-map.a=[\\"||¯|| \\",\\"||_|| \\",\\"|| || \\"]
-map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[\\"||¯ \\",\\"||  \\",\\"||_ \\"]
-map.d=[\\"||¯\\\\\\\\ \\",\\"|| // \\",\\"||//  \\"]
-map.e=[\\"||¯ \\",\\"||- \\",\\"||_ \\"]
-map.f=[\\"||¯ \\",\\"||_ \\",\\"||  \\"]
-map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",\\"||_|| \\"]
-map.h=[\\"|| || \\",\\"||-|| \\",\\"|| || \\"]
-map.i=[\\"|| \\",\\"|| \\",\\"|| \\"]
-map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",\\"||¯\\\\\\\\ \\"]
-map.l=[\\"||  \\",\\"||  \\",\\"||_ \\"]
-map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
-map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[\\"||¯|| \\",\\"|| || \\",\\"||_|| \\"]
-map.p=[\\"||¯|| \\",\\"||_|| \\",\\"||    \\"]
-map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[\\"||¯|| \\",\\"||¯\\\\\\\\ \\",\\"|| || \\"]
-map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
-map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
-map.u=[\\"|| || \\",\\"|| || \\",\\"||_|| \\"]
-map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
-map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
-map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
-map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",\\"||_ \\"]
-map[\\"0\\"]=[\\"||¯|| \\",\\"||x|| \\",\\"||_|| \\"]
-map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
-map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
-map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
-map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
-map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[\\"||¯¯  \\",\\"||¯|| \\",\\"||_|| \\"]
-map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[\\"||¯|| \\",\\"||-|| \\",\\"||_|| \\"]
-map[\\"9\\"]=[\\"||¯|| \\",\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[\\"  \\",\\"  \\",\\"  \\"]
-AsciiGen.MAP=map
-AsciiGen.gen=function(str,colors)
-r=[[],[],[]]
-signs=self.MAP
-for char in str
-char=char.lower
-if (signs.hasIndex(char)) then
-r[0].push(signs[char][0])
-r[1].push(signs[char][1])
-r[2].push(signs[char][2])
-end if
-end for
-if (typeof(colors)==\\"string\\") then
-r[0]=[\\"<color=#\\"+colors+\\">\\"]+r[0]+[\\"</color>\\"]
-r[1]=[\\"<color=#\\"+colors+\\">\\"]+r[1]+[\\"</color>\\"]
-r[2]=[\\"<color=#\\"+colors+\\">\\"]+r[2]+[\\"</color>\\"]
-else if (typeof(colors)==\\"list\\") then
-r[0]=[\\"<color=#\\"+colors[0]+\\">\\"]+r[0]+[\\"</color>\\"]
-r[1]=[\\"<color=#\\"+colors[1]+\\">\\"]+r[1]+[\\"</color>\\"]
-r[2]=[\\"<color=#\\"+colors[2]+\\">\\"]+r[2]+[\\"</color>\\"]
-end if
-return [r[0].join(\\"\\"),r[1].join(\\"\\"),r[2].join(\\"\\")].join(\\"\\\\n\\")
-end function
-print(AsciiGen.gen(\\"Hallo\\"))",
-  "myvar2=\\"\\"foo\\"\\"",
-  "lastimport=\\"hi\\"",
-  "test=123
-was=123
-x=123",
-  "print(123)",
-]
-`;
-
-exports[`parse default scripts import-code.src beautify 1`] = `
-Array [
-  "import_code(\\"/scripts/ascii.src\\")
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-import.src\\")
-print(123)",
-  "AsciiGen = {}
-map = {}
-map.a = [\\"||¯|| \\", \\"||_|| \\", \\"|| || \\"]
-map.b = [\\"||¯/ \\", \\"|| \\\\ \\", \\"||_/ \\"]
-map.c = [\\"||¯ \\", \\"||  \\", \\"||_ \\"]
-map.d = [\\"||¯\\\\\\\\ \\", \\"|| // \\", \\"||//  \\"]
-map.e = [\\"||¯ \\", \\"||- \\", \\"||_ \\"]
-map.f = [\\"||¯ \\", \\"||_ \\", \\"||  \\"]
-map.g = [\\"||¯¯  \\", \\"|| \\\\\\\\ \\", \\"||_|| \\"]
-map.h = [\\"|| || \\", \\"||-|| \\", \\"|| || \\"]
-map.i = [\\"|| \\", \\"|| \\", \\"|| \\"]
-map.j = [\\" ¯||¯ \\", \\"  ||  \\", \\"|_||  \\"]
-map.k = [\\"||  / \\", \\"|| /  \\", \\"||¯\\\\\\\\ \\"]
-map.l = [\\"||  \\", \\"||  \\", \\"||_ \\"]
-map.m = [\\"||\\\\\\\\/|| \\", \\"||   || \\", \\"||   || \\"]
-map.n = [\\"||\\\\\\\\ || \\", \\"|| \\\\\\\\|| \\", \\"||  \\\\|| \\"]
-map.o = [\\"||¯|| \\", \\"|| || \\", \\"||_|| \\"]
-map.p = [\\"||¯|| \\", \\"||_|| \\", \\"||    \\"]
-map.q = [\\"||¯||  \\", \\"|| ||  \\", \\"||_||¬ \\"]
-map.r = [\\"||¯|| \\", \\"||¯\\\\\\\\ \\", \\"|| || \\"]
-map.s = [\\"||¯¯ \\", \\" \\\\\\\\  \\", \\"__|| \\"]
-map.t = [\\"¯||¯ \\", \\" ||  \\", \\" ||  \\"]
-map.u = [\\"|| || \\", \\"|| || \\", \\"||_|| \\"]
-map.v = [\\"\\\\\\\\ || \\", \\" \\\\\\\\|| \\", \\"  \\\\\\\\| \\"]
-map.w = [\\"\\\\\\\\ |\\\\\\\\ | \\", \\" \\\\\\\\| \\\\\\\\| \\", \\"  \\\\\\\\  \\\\\\\\ \\"]
-map.x = [\\"\\\\\\\\  / \\", \\" \\\\\\\\/  \\", \\" //\\\\  \\"]
-map.y = [\\"\\\\\\\\  // \\", \\" \\\\\\\\//  \\", \\"  ||   \\"]
-map.z = [\\"¯// \\", \\"//  \\", \\"||_ \\"]
-map[\\"0\\"] = [\\"||¯|| \\", \\"||x|| \\", \\"||_|| \\"]
-map[\\"1\\"] = [\\"'|| \\", \\" || \\", \\" || \\"]
-map[\\"2\\"] = [\\"¯¯|| \\", \\"||¯  \\", \\"||_  \\"]
-map[\\"3\\"] = [\\"¯|| \\", \\"-|| \\", \\"_|| \\"]
-map[\\"4\\"] = [\\" /|| \\", \\"/_|| \\", \\"  || \\"]
-map[\\"5\\"] = [\\"||¯¯ \\", \\" ¯|| \\", \\" _|| \\"]
-map[\\"6\\"] = [\\"||¯¯  \\", \\"||¯|| \\", \\"||_|| \\"]
-map[\\"7\\"] = [\\"¯¯// \\", \\" //  \\", \\"//   \\"]
-map[\\"8\\"] = [\\"||¯|| \\", \\"||-|| \\", \\"||_|| \\"]
-map[\\"9\\"] = [\\"||¯|| \\", \\"  ¯|| \\", \\"  //  \\"]
-map[\\" \\"] = [\\"  \\", \\"  \\", \\"  \\"]
-AsciiGen.MAP = map
-
-AsciiGen.gen = function(str, colors)
-	r = [[], [], []]
-	signs = self.MAP
-
-	for char in str
-		char = char.lower
-
-		if (signs.hasIndex(char)) then
-			r[0].push(signs[char][0])
-			r[1].push(signs[char][1])
-			r[2].push(signs[char][2])
-		end if
-	end for
-
-	if (typeof(colors) == \\"string\\") then
-		r[0] = [\\"<color=#\\" + colors + \\">\\"] + r[0] + [\\"</color>\\"]
-		r[1] = [\\"<color=#\\" + colors + \\">\\"] + r[1] + [\\"</color>\\"]
-		r[2] = [\\"<color=#\\" + colors + \\">\\"] + r[2] + [\\"</color>\\"]
-	else if (typeof(colors) == \\"list\\") then
-		r[0] = [\\"<color=#\\" + colors[0] + \\">\\"] + r[0] + [\\"</color>\\"]
-		r[1] = [\\"<color=#\\" + colors[1] + \\">\\"] + r[1] + [\\"</color>\\"]
-		r[2] = [\\"<color=#\\" + colors[2] + \\">\\"] + r[2] + [\\"</color>\\"]
-	end if
-
-	return [r[0].join(\\"\\"), r[1].join(\\"\\"), r[2].join(\\"\\")].join(\\"\\\\n\\")
-end function
-
-print(AsciiGen.gen(\\"Hallo\\"))",
-  "myvar2 = \\"\\"foo\\"\\"",
-  "lastimport = \\"hi\\"",
-  "test = 123
-was = 123
-x = 123",
-  "print(123)",
-]
-`;
-
-exports[`parse default scripts import-code.src uglify 1`] = `
-Array [
-  "globals.H=globals
-H.AD=123
-H.x=\\"||¯|| \\"
-H.w=\\"||_|| \\"
-H.t=\\"|| || \\"
-H.r=\\"||¯ \\"
-H.v=\\"||  \\"
-H.s=\\"||_ \\"
-H.y=\\"||¯\\\\\\\\ \\"
-H.u=\\"|| \\"
-H.z=\\"  \\"
-H._A=\\"<color=#\\"
-H.AC=\\">\\"
-H.AB=\\"</color>\\"
-import_code(\\"/scripts/ascii.src\\")
-import_code(\\"/fixtures/envar-include.src\\")
-import_code(\\"/fixtures/sub-sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-sub-import.src\\")
-import_code(\\"/fixtures/sub-import.src\\")
-print(AD)",
-  "I={}
-map={}
-map.a=[x,w,t]
-map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[r,v,s]
-map.d=[y,\\"|| // \\",\\"||//  \\"]
-map.e=[r,\\"||- \\",s]
-map.f=[r,s,v]
-map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",w]
-map.h=[t,\\"||-|| \\",t]
-map.i=[u,u,u]
-map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",y]
-map.l=[v,v,s]
-map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
-map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[x,t,w]
-map.p=[x,w,\\"||    \\"]
-map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[x,y,t]
-map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
-map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
-map.u=[t,t,w]
-map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
-map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
-map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
-map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",s]
-map[\\"0\\"]=[x,\\"||x|| \\",w]
-map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
-map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
-map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
-map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
-map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[\\"||¯¯  \\",x,w]
-map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[x,\\"||-|| \\",w]
-map[\\"9\\"]=[x,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[z,z,z]
-I.MAP=map
-I.gen=function(str,l)
-a=[[],[],[]]
-m=self.MAP
-for char in str
-char=char.lower
-if (m.hasIndex(char)) then
-a[0].push(m[char][0])
-a[1].push(m[char][1])
-a[2].push(m[char][2])
-end if
-end for
-if (typeof(l)==\\"string\\") then
-a[0]=[_A+l+AC]+a[0]+[AB]
-a[1]=[_A+l+AC]+a[1]+[AB]
-a[2]=[_A+l+AC]+a[2]+[AB]
-else if (typeof(l)==\\"list\\") then
-a[0]=[_A+l[0]+AC]+a[0]+[AB]
-a[1]=[_A+l[1]+AC]+a[1]+[AB]
-a[2]=[_A+l[2]+AC]+a[2]+[AB]
-end if
-return [a[0].join(\\"\\"),a[1].join(\\"\\"),a[2].join(\\"\\")].join(\\"\\\\n\\")
-end function
-print(I.gen(\\"Hallo\\"))",
-  "n=\\"\\"foo\\"\\"",
-  "q=\\"hi\\"",
-  "o=AD
-p=AD
-g=AD",
-  "print(AD)",
 ]
 `;
 
@@ -2094,29 +1819,29 @@ Array [
   "I=function
 J=0
 K=function
-clear_screen
-L=\\"<mark=green><color=black>\\"+outer.J
+L
+M=\\"<mark=green><color=black>\\"+outer.J
 print(outer.hasIndex(\\"J\\"))
 if (outer.J>20) then
-L=\\"<mark=yellow><color=green>\\"+outer.J
+M=\\"<mark=yellow><color=green>\\"+outer.J
 end if
 if (outer.J>40) then
-L=\\"<mark=red><color=yellow>\\"+outer.J
+M=\\"<mark=red><color=yellow>\\"+outer.J
 end if
 if (outer.J<-20) then
-L=\\"<mark=green><color=yellow>\\"+outer.J
+M=\\"<mark=green><color=yellow>\\"+outer.J
 end if
 if (outer.J<-40) then
-L=\\"<mark=yellow><color=red>\\"+outer.J
+M=\\"<mark=yellow><color=red>\\"+outer.J
 end if
-print(L)
-M=user_input(\\"test\\",false,true)
-if (M==\\"UpArrow\\") then
+print(M)
+N=O(\\"test\\",false,true)
+if (N==\\"UpArrow\\") then
 outer.J=outer.J+1
-else if (M==\\"DownArrow\\") then
+else if (N==\\"DownArrow\\") then
 outer.J=outer.J-1
 else
-exit(\\"bye\\")
+P(\\"bye\\")
 end if
 end function
 while (true)
@@ -2790,35 +2515,35 @@ print(decrypted)",
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 Array [
   "globals.H=globals
-H.AS=1
-H.AQ=null
-H.AR=63
+H.AW=1
+H.AU=null
+H.AV=63
 I={}
 I.constructor=function(str)
 self.str=str
 return self
 end function
 I.parse=function(values)
-AF=self.str
-d=0
-e=values.len
-while d<e
-AF=AF.replace(\\"$\\"+d,values[d])
-d=d+AS
+d=self.str
+e=0
+f=values.len
+while e<f
+d=d.replace(\\"$\\"+e,values[e])
+e=e+AW
 end while
-return (new self).constructor(AF)
+return (new self).constructor(d)
 end function
 I.startsWith=function(str)
 return self.str.indexOf(str)==0
 end function
-I.substr=function(f,g)
-return (new self).constructor(slice(self.str,f,g))
+I.substr=function(g,h)
+return (new self).constructor(slice(self.str,g,h))
 end function
 I.indexOf=function(str)
 return self.str.indexOf(str)
 end function
-I.replace=function(str,h)
-return (new self).constructor(self.str.replace(str,h))
+I.replace=function(str,i)
+return (new self).constructor(self.str.replace(str,i))
 end function
 I.remove=function(str)
 return (new self).constructor(self.str.remove(str))
@@ -2829,169 +2554,169 @@ end function
 I.length=function
 return self.str.len
 end function
-I.split=function(i)
-return self.str.split(i)
+I.split=function(j)
+return self.str.split(j)
 end function
-I.trim=function(i)
+I.trim=function(j)
 return (new self).constructor(self.str.trim)
 end function
-P={}
-P.String=I
-P.constructor=function(j,values)
-k=self
-k.message=j
-if (values!=AQ) then
-k.message=(new k.String).constructor(j).parse(values).toString
+Q={}
+Q.String=I
+Q.constructor=function(k,values)
+l=self
+l.message=k
+if (values!=AU) then
+l.message=(new l.String).constructor(k).parse(values).toString
 end if
-return k
+return l
 end function
-P.throw=function
-exit(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
+Q.throw=function
+m(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
 end function
-R={}
-R.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
-R.defaultSecret=\\"test123\\"
-R.maxCharCode=55295
-R.Error=P
-R.constructor=function(T,l,m)
-n=self
-n.defaultSecret=T
-n.table=m
-n.hashFn=@l
-if (@l==AQ) then
-n.hashFn=@md5
+S={}
+S.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
+S.defaultSecret=\\"test123\\"
+S.maxCharCode=55295
+S.Error=Q
+S.constructor=function(U,n,o)
+p=self
+p.defaultSecret=U
+p.table=o
+p.hashFn=@n
+if (@n==AU) then
+p.hashFn=@r
 end if
-if m==AQ then
-n.table=n.defaultCharset
+if o==AU then
+p.table=p.defaultCharset
 end if
-if n.table.len!=64 then
-(new n.Error).constructor(\\"Invalid charset $0...\\",[n.table]).throw
+if p.table.len!=64 then
+(new p.Error).constructor(\\"Invalid charset $0...\\",[p.table]).throw
 end if
-return n
+return p
 end function
-R.getHash=function(p)
-n=self
+S.getHash=function(s)
+p=self
 hash=[]
-q=n.hashFn(p)
-for char in q
+t=p.hashFn(s)
+for char in t
 hash.push(char.code)
 end for
 hash.reverse
 return hash
 end function
-R.encrypt=function(str,p)
-n=self
-if (p==AQ) then
-p=n.defaultSecret
+S.encrypt=function(str,s)
+p=self
+if (s==AU) then
+s=p.defaultSecret
 end if
-hash=n.getHash(p)
-r=0
-s=[]
-t=0
-u=str.len%3
-AI=str.len-u
-w=function(AH)
-if (not n.table.hasIndex(AH)) then
-(new n.Error).constructor(\\"Invalid index $0...\\",[AH]).throw
+hash=p.getHash(s)
+AM=0
+w=[]
+x=0
+y=str.len%3
+z=str.len-y
+_A=function(AL)
+if (not p.table.hasIndex(AL)) then
+(new p.Error).constructor(\\"Invalid index $0...\\",[AL]).throw
 end if
-return n.table[AH]
+return p.table[AL]
 end function
-x=function(_A,AC)
-return bitwise(\\"&\\",_A,AC)
+AB=function(AE,AG)
+return bitwise(\\"&\\",AE,AG)
 end function
-y=function(_A,AC)
-return bitwise(\\"<<\\",_A,AC)
+AC=function(AE,AG)
+return bitwise(\\"<<\\",AE,AG)
 end function
-z=function(_A,AC)
-return bitwise(\\">>\\",_A,AC)
+AD=function(AE,AG)
+return bitwise(\\">>\\",AE,AG)
 end function
-while t<AI
-k=hash[t%hash.len-AS]
-_A=y(str[t].code+k,16)
-AC=y(str[t+AS].code+k,8)
-AE=str[t+2].code+k
-AG=_A+AC+AE
-s.push(w(x(z(AG,18),AR)))
-s.push(w(x(z(AG,12),AR)))
-s.push(w(x(z(AG,6),AR)))
-s.push(w(x(AG,AR)))
-t=t+3
+while x<z
+l=hash[x%hash.len-AW]
+AE=AC(str[x].code+l,16)
+AG=AC(str[x+AW].code+l,8)
+AI=str[x+2].code+l
+AK=AE+AG+AI
+w.push(_A(AB(AD(AK,18),AV)))
+w.push(_A(AB(AD(AK,12),AV)))
+w.push(_A(AB(AD(AK,6),AV)))
+w.push(_A(AB(AK,AV)))
+x=x+3
 end while
-if (u==2) then
-k=hash[t%hash.len-AS]
-_A=y(str[t].code+k,8)
-AC=str[t+AS].code+k
-AG=_A+AC
-s.push(w(z(AG,10)))
-s.push(w(x(z(AG,4),AR)))
-s.push(w(x(y(AG,2),AR)))
-s.push(\\"=\\")
-else if (u==AS) then
-k=hash[t%hash.len-AS]
-AG=str[t].code+k
-s.push(w(z(AG,2)))
-s.push(w(x(y(AG,4),AR)))
-s.push(\\"==\\")
+if (y==2) then
+l=hash[x%hash.len-AW]
+AE=AC(str[x].code+l,8)
+AG=str[x+AW].code+l
+AK=AE+AG
+w.push(_A(AD(AK,10)))
+w.push(_A(AB(AD(AK,4),AV)))
+w.push(_A(AB(AC(AK,2),AV)))
+w.push(\\"=\\")
+else if (y==AW) then
+l=hash[x%hash.len-AW]
+AK=str[x].code+l
+w.push(_A(AD(AK,2)))
+w.push(_A(AB(AC(AK,4),AV)))
+w.push(\\"==\\")
 end if
-return s.join(\\"\\")
+return w.join(\\"\\")
 end function
-R.decrypt=function(str,p)
-n=self
-if (p==AQ) then
-p=n.defaultSecret
+S.decrypt=function(str,s)
+p=self
+if (s==AU) then
+s=p.defaultSecret
 end if
-hash=n.getHash(p)
-r=0
-AJ=hash.len
-s=[]
-AK=0
-AL=0
-t=0
-r=0
-AI=str.len
-x=function(_A,AC)
-return bitwise(\\"&\\",_A,AC)
+hash=p.getHash(s)
+AM=0
+AN=hash.len
+w=[]
+AO=0
+AP=0
+x=0
+AM=0
+z=str.len
+AB=function(AE,AG)
+return bitwise(\\"&\\",AE,AG)
 end function
-z=function(_A,AC)
-return bitwise(\\">>\\",_A,AC)
+AD=function(AE,AG)
+return bitwise(\\">>\\",AE,AG)
 end function
-while t<AI
-AG=n.table.indexOf(str[t])
-AM=AK
-AK=AK+AS
-if (AM%4) then
-AL=AL*64+AG
+while x<z
+AK=p.table.indexOf(str[x])
+AQ=AO
+AO=AO+AW
+if (AQ%4) then
+AP=AP*64+AK
 else
-AL=AG
+AP=AK
 end if
-if (AM%4) then
-AN=(floor(r/3)*3)%AJ-AS
-if (not hash.hasIndex(AN)) then
+if (AQ%4) then
+AR=(floor(AM/3)*3)%AN-AW
+if (not hash.hasIndex(AR)) then
 break
 end if
-k=hash[AN]
-AO=x(-2*AK,6)
-AO=z(AL,AO)
-AO=x(255,AO)
-if (AO!=0) then
-AP=AO-k
-if (AP>n.maxCharCode) then
+l=hash[AR]
+AS=AB(-2*AO,6)
+AS=AD(AP,AS)
+AS=AB(255,AS)
+if (AS!=0) then
+AT=AS-l
+if (AT>p.maxCharCode) then
 break
 end if
-s.push(char(AP))
+w.push(char(AT))
 end if
-r=r+AS
+AM=AM+AW
 end if
-t=t+AS
+x=x+AW
 end while
-return s.join(\\"\\")
+return w.join(\\"\\")
 end function
-Y=(new R).constructor(\\"test\\")
-Z=\\"abcde\\"
-AB=Y.encrypt(Z)
-AD=Y.decrypt(AB)
-print(AB)
-print(AD)",
+Z=(new S).constructor(\\"test\\")
+AF=\\"abcde\\"
+AH=Z.encrypt(AF)
+AJ=Z.decrypt(AH)
+print(AH)
+print(AJ)",
 ]
 `;
 

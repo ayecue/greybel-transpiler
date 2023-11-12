@@ -1,6 +1,13 @@
 export { BuildMap, BuildType, getFactory } from './build-map';
-export { Context, ContextOptions } from './context';
-export { Dependency, DependencyOptions } from './dependency';
+export { Context, ContextDataProperty, ContextOptions } from './context';
+export {
+  Dependency,
+  DependencyCallStack,
+  DependencyFindResult,
+  DependencyOptions,
+  DependencyType,
+  ResourceDependencyMap
+} from './dependency';
 export { DirectTranspiler, DirectTranspilerOptions } from './direct-transpiler';
 export * from './resource';
 export {
@@ -16,4 +23,13 @@ export {
   TranspilerOptions,
   TranspilerParseResult
 } from './transpiler';
+export { CharsetMap, generateCharsetMap } from './utils/charset-generator';
 export { BuildError } from './utils/error';
+export { fetchNamespaces } from './utils/fetch-namespaces';
+export { LiteralMetaData, LiteralsMapper } from './utils/literals-mapper';
+export {
+  NamespaceGenerator,
+  NamespaceGeneratorOptions
+} from './utils/namespace-generator';
+export { OutputProcessor } from './utils/output-processor';
+export { Stack } from './utils/stack';

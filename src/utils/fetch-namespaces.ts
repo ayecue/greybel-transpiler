@@ -1,4 +1,4 @@
-import { ASTBaseBlockWithScope, ASTChunk } from 'greyscript-core';
+import { ASTBaseBlockWithScope, ASTChunk } from 'miniscript-core';
 
 export function fetchNamespaces(chunk: ASTChunk): string[] {
   const allNamespaces = new Set<string>(chunk.namespaces);

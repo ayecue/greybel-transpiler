@@ -1,4 +1,4 @@
-import { ASTBase } from 'greyscript-core';
+import { ASTBase } from 'miniscript-core';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
