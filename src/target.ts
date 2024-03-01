@@ -57,7 +57,9 @@ export class Target extends EventEmitter {
     me.emit('parse-before', target);
 
     try {
-      const parser = new Parser(content);
+      const parser = new Parser(content, {
+        filename: target
+      });
       const chunk = parser.parseChunk() as ASTChunkAdvanced;
       const dependency = new Dependency({
         target,

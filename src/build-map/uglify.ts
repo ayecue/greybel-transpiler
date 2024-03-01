@@ -1,5 +1,6 @@
 import {
   ASTFeatureEnvarExpression,
+  ASTFeatureFileExpression,
   ASTFeatureImportExpression,
   ASTFeatureIncludeExpression
 } from 'greybel-core';
@@ -30,6 +31,7 @@ import {
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
+import { basename } from 'path';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
@@ -269,6 +271,18 @@ export function uglifyFactory(
       _data: TransformerDataObject
     ): string => {
       return '//debugger';
+    },
+    FeatureLineExpression: (
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): string => {
+      return `${item.start.line}`;
+    },
+    FeatureFileExpression: (
+      item: ASTFeatureFileExpression,
+      _data: TransformerDataObject
+    ): string => {
+      return `"${basename(item.filename).replace(/"/g, '"')}"`;
     },
     IfShortcutStatement: (
       item: ASTIfStatement,

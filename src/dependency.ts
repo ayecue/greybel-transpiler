@@ -122,7 +122,9 @@ export class Dependency extends EventEmitter {
     me.emit('parse-before', subTarget);
 
     try {
-      const parser = new Parser(content);
+      const parser = new Parser(content, {
+        filename: subTarget
+      });
       const chunk = parser.parseChunk() as ASTChunkAdvanced;
       const dependency = new Dependency({
         target: subTarget,

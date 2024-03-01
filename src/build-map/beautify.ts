@@ -1,5 +1,6 @@
 import {
   ASTFeatureEnvarExpression,
+  ASTFeatureFileExpression,
   ASTFeatureImportExpression,
   ASTFeatureIncludeExpression
 } from 'greybel-core';
@@ -30,6 +31,7 @@ import {
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
+import { basename } from 'path';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
@@ -39,7 +41,7 @@ const isBlock = (item: string) => {
   return /^[^\n]*(function|if|for|while)[^\n]*/.test(item);
 };
 
-export function beatuifyFactory(
+export function beautifyFactory(
   make: (item: ASTBase, _data?: TransformerDataObject) => string,
   context: Context,
   environmentVariables: Map<string, string>
@@ -514,6 +516,18 @@ export function beatuifyFactory(
       _data: TransformerDataObject
     ): string => {
       return '//debugger';
+    },
+    FeatureLineExpression: (
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): string => {
+      return `${item.start.line}`;
+    },
+    FeatureFileExpression: (
+      item: ASTFeatureFileExpression,
+      _data: TransformerDataObject
+    ): string => {
+      return `"${basename(item.filename).replace(/"/g, '"')}"`;
     },
     ListConstructorExpression: (
       item: ASTListConstructorExpression,

@@ -2,7 +2,7 @@ import { ASTBase } from 'miniscript-core';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
-import { beatuifyFactory } from './beautify';
+import { beautifyFactory } from './beautify';
 import { BuildMap, defaultFactory } from './default';
 import { uglifyFactory } from './uglify';
 
@@ -17,7 +17,7 @@ export { BuildMap } from './default';
 const FACTORIES = {
   [BuildType.DEFAULT]: defaultFactory,
   [BuildType.UGLIFY]: uglifyFactory,
-  [BuildType.BEAUTIFY]: beatuifyFactory
+  [BuildType.BEAUTIFY]: beautifyFactory
 };
 
 export function getFactory(

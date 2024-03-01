@@ -1,5 +1,7 @@
 import {
+  ASTChunkAdvancedOptions,
   ASTFeatureEnvarExpression,
+  ASTFeatureFileExpression,
   ASTFeatureImportExpression,
   ASTFeatureIncludeExpression
 } from 'greybel-core';
@@ -8,7 +10,6 @@ import {
   ASTBase,
   ASTCallExpression,
   ASTCallStatement,
-  ASTChunk,
   ASTComment,
   ASTElseClause,
   ASTEvaluationExpression,
@@ -30,6 +31,7 @@ import {
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
+import { basename } from 'path';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
@@ -388,6 +390,18 @@ export function defaultFactory(
     ): string => {
       return '//debugger';
     },
+    FeatureLineExpression: (
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): string => {
+      return `${item.start.line}`;
+    },
+    FeatureFileExpression: (
+      item: ASTFeatureFileExpression,
+      _data: TransformerDataObject
+    ): string => {
+      return `"${basename(item.filename).replace(/"/g, '"')}"`;
+    },
     ListConstructorExpression: (
       item: ASTListConstructorExpression,
       _data: TransformerDataObject
@@ -459,7 +473,10 @@ export function defaultFactory(
 
       return operator + arg;
     },
-    Chunk: (item: ASTChunk, _data: TransformerDataObject): string => {
+    Chunk: (
+      item: ASTChunkAdvancedOptions,
+      _data: TransformerDataObject
+    ): string => {
       const body = [];
       let bodyItem;
 

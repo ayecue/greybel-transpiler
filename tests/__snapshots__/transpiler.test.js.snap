@@ -517,8 +517,12 @@ test=123
 was=123
 x=123
 print(123)
+print(5)
+print(\\"sub-import.src\\")
 \\"true\\"
-//debugger",
+//debugger
+print(9)
+print(\\"greybel-utils.src\\")",
 ]
 `;
 
@@ -697,8 +701,12 @@ test = 123
 was = 123
 x = 123
 print(123)
+print(5)
+print(\\"sub-import.src\\")
 \\"true\\"
-//debugger",
+//debugger
+print(9)
+print(\\"greybel-utils.src\\")",
 ]
 `;
 
@@ -882,8 +890,12 @@ q=AP
 r=AP
 h=AP
 print(AP)
+print(5)
+print(\\"sub-import.src\\")
 \\"true\\"
-//debugger",
+//debugger
+print(9)
+print(\\"greybel-utils.src\\")",
 ]
 `;
 
@@ -1043,6 +1055,8 @@ test=123
 was=123
 x=123
 print(123)
+print(5)
+print(\\"sub-import.src\\")
 \\"true\\"
 //debugger",
 ]
@@ -1223,6 +1237,8 @@ test = 123
 was = 123
 x = 123
 print(123)
+print(5)
+print(\\"sub-import.src\\")
 \\"true\\"
 //debugger",
 ]
@@ -1408,6 +1424,8 @@ q=AP
 r=AP
 h=AP
 print(AP)
+print(5)
+print(\\"sub-import.src\\")
 \\"true\\"
 //debugger",
 ]
