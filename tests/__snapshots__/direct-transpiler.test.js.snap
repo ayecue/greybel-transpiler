@@ -331,6 +331,27 @@ I=\\"\\"foo\\"\\"
 print(\\"0.2\\")"
 `;
 
+exports[`parse default scripts expressions.src 1`] = `
+"\\"as\\"+\\"wa\\"
+print(\\"was\\")-print(\\"hallo\\")
+print(-123)
+print+123"
+`;
+
+exports[`parse default scripts expressions.src beautify 1`] = `
+"\\"as\\" + \\"wa\\"
+print(\\"was\\") - print(\\"hallo\\")
+print(-123)
+print + 123"
+`;
+
+exports[`parse default scripts expressions.src uglify 1`] = `
+"\\"as\\"+\\"wa\\"
+print(\\"was\\")-print(\\"hallo\\")
+print(-123)
+print+123"
+`;
+
 exports[`parse default scripts greybel-utils.src 1`] = `
 "#import \\"foo from ./ascii.src\\";
 #include \\"./ascii.src\\";
