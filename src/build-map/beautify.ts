@@ -7,6 +7,7 @@ import {
 import {
   ASTAssignmentStatement,
   ASTBase,
+  ASTBaseBlock,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
@@ -37,8 +38,28 @@ import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
 import { BuildMap } from './default';
 
-const isBlock = (item: string) => {
-  return /^[^\n]*(function|if|for|while)[^\n]*/.test(item);
+const processBlock = (
+  block: ASTBaseBlock,
+  process: (item: ASTBase) => string
+): string[] => {
+  const body: string[] = [];
+  let index = block.start.line + 1;
+  let bodyItem;
+
+  for (bodyItem of block.body) {
+    for (; index < bodyItem.start.line; index++) {
+      body.push('');
+    }
+
+    body.push(process(bodyItem));
+    index = bodyItem.end.line + 1;
+  }
+
+  for (; index < block.end.line; index++) {
+    body.push('');
+  }
+
+  return body;
 };
 
 export function beautifyFactory(
@@ -95,10 +116,7 @@ export function beautifyFactory(
       _data: TransformerDataObject
     ): string => {
       const parameters = [];
-      const body = [];
-      let index = item.body.length - 1;
       let parameterItem;
-      let bodyItem;
 
       incIndent();
 
@@ -106,23 +124,10 @@ export function beautifyFactory(
         parameters.push(make(parameterItem));
       }
 
-      for (bodyItem of item.body) {
+      const body = processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
-        if (transformed === '') continue;
-        if (
-          isBlock(transformed) &&
-          body.length > 0 &&
-          body[body.length - 1] !== ''
-        ) {
-          body.push('');
-        }
-
-        body.push(putIndent(transformed));
-
-        if (isBlock(transformed) && --index !== 0) {
-          body.push('');
-        }
-      }
+        return putIndent(transformed);
+      });
 
       decIndent();
 
@@ -178,29 +183,13 @@ export function beautifyFactory(
       _data: TransformerDataObject
     ): string => {
       const condition = make(item.condition);
-      const body = [];
-      let index = item.body.length - 1;
-      let bodyItem;
 
       incIndent();
 
-      for (bodyItem of item.body) {
+      const body = processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
-        if (transformed === '') continue;
-        if (
-          isBlock(transformed) &&
-          body.length > 0 &&
-          body[body.length - 1] !== ''
-        ) {
-          body.push('');
-        }
-
-        body.push(putIndent(transformed));
-
-        if (isBlock(transformed) && --index !== 0) {
-          body.push('');
-        }
-      }
+        return putIndent(transformed);
+      });
 
       decIndent();
 
@@ -335,29 +324,13 @@ export function beautifyFactory(
     ): string => {
       const variable = make(item.variable);
       const iterator = make(item.iterator);
-      const body = [];
-      let index = item.body.length - 1;
-      let bodyItem;
 
       incIndent();
 
-      for (bodyItem of item.body) {
+      const body = processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
-        if (transformed === '') continue;
-        if (
-          isBlock(transformed) &&
-          body.length > 0 &&
-          body[body.length - 1] !== ''
-        ) {
-          body.push('');
-        }
-
-        body.push(putIndent(transformed));
-
-        if (isBlock(transformed) && --index !== 0) {
-          body.push('');
-        }
-      }
+        return putIndent(transformed);
+      });
 
       decIndent();
 
@@ -387,29 +360,13 @@ export function beautifyFactory(
     },
     IfClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
       const condition = make(item.condition);
-      const body = [];
-      let index = item.body.length - 1;
-      let bodyItem;
 
       incIndent();
 
-      for (bodyItem of item.body) {
+      const body = processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
-        if (transformed === '') continue;
-        if (
-          isBlock(transformed) &&
-          body.length > 0 &&
-          body[body.length - 1] !== ''
-        ) {
-          body.push('');
-        }
-
-        body.push(putIndent(transformed));
-
-        if (isBlock(transformed) && --index !== 0) {
-          body.push('');
-        }
-      }
+        return putIndent(transformed);
+      });
 
       decIndent();
 
@@ -417,29 +374,13 @@ export function beautifyFactory(
     },
     ElseifClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
       const condition = make(item.condition);
-      const body = [];
-      let index = item.body.length - 1;
-      let bodyItem;
 
       incIndent();
 
-      for (bodyItem of item.body) {
+      const body = processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
-        if (transformed === '') continue;
-        if (
-          isBlock(transformed) &&
-          body.length > 0 &&
-          body[body.length - 1] !== ''
-        ) {
-          body.push('');
-        }
-
-        body.push(putIndent(transformed));
-
-        if (isBlock(transformed) && --index !== 0) {
-          body.push('');
-        }
-      }
+        return putIndent(transformed);
+      });
 
       decIndent();
 
@@ -448,29 +389,12 @@ export function beautifyFactory(
       );
     },
     ElseClause: (item: ASTElseClause, _data: TransformerDataObject): string => {
-      const body = [];
-      let index = item.body.length - 1;
-      let bodyItem;
-
       incIndent();
 
-      for (bodyItem of item.body) {
+      const body = processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
-        if (transformed === '') continue;
-        if (
-          isBlock(transformed) &&
-          body.length > 0 &&
-          body[body.length - 1] !== ''
-        ) {
-          body.push('');
-        }
-
-        body.push(putIndent(transformed));
-
-        if (isBlock(transformed) && --index !== 0) {
-          body.push('');
-        }
-      }
+        return putIndent(transformed);
+      });
 
       decIndent();
 
@@ -601,29 +525,10 @@ export function beautifyFactory(
       return operator + arg;
     },
     Chunk: (item: ASTChunk, _data: TransformerDataObject): string => {
-      const body = [];
-      let index = item.body.length - 1;
-      let bodyItem;
-
-      for (bodyItem of item.body) {
+      return processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
-        if (transformed === '') continue;
-        if (
-          isBlock(transformed) &&
-          body.length > 0 &&
-          body[body.length - 1] !== ''
-        ) {
-          body.push('');
-        }
-
-        body.push(putIndent(transformed));
-
-        if (isBlock(transformed) && --index !== 0) {
-          body.push('');
-        }
-      }
-
-      return body.join('\n');
+        return putIndent(transformed);
+      }).join('\n');
     }
   };
 }
