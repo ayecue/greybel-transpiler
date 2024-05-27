@@ -93,6 +93,9 @@ export function beautifyFactory(
   environmentVariables: Map<string, string>
 ): BuildMap {
   let indent = 0;
+  let isMultilineAllowed = true;
+  const disableMultiline = () => (isMultilineAllowed = false);
+  const enableMultiline = () => (isMultilineAllowed = true);
   const incIndent = () => indent++;
   const decIndent = () => indent--;
   const putIndent = (str: string, offset: number = 0) =>
@@ -163,11 +166,15 @@ export function beautifyFactory(
       const parameters = [];
       let parameterItem;
 
-      incIndent();
+      disableMultiline();
 
       for (parameterItem of item.parameters) {
         parameters.push(make(parameterItem));
       }
+
+      enableMultiline();
+
+      incIndent();
 
       const body = processBlock(item, (bodyItem) => {
         const transformed = make(bodyItem);
@@ -201,19 +208,29 @@ export function beautifyFactory(
       const fields = [];
       let fieldItem;
 
-      incIndent();
+      if (isMultilineAllowed) {
+        incIndent();
+
+        for (fieldItem of item.fields) {
+          fields.push(make(fieldItem));
+        }
+
+        decIndent();
+
+        return (
+          '{\n' +
+          fields.map((field) => putIndent(field, 1)).join(',\n') +
+          ',\n' +
+          putIndent('}')
+        );
+      }
 
       for (fieldItem of item.fields) {
         fields.push(make(fieldItem));
       }
 
-      decIndent();
-
       return (
-        '{\n' +
-        fields.map((field) => putIndent(field, 1)).join(',\n') +
-        ',\n' +
-        putIndent('}')
+        '{ ' + fields.map((field) => putIndent(field, 1)).join(', ') + ' }'
       );
     },
     MapKeyString: (
@@ -278,7 +295,7 @@ export function beautifyFactory(
       let argItem;
       const args = [];
 
-      if (item.arguments.length > 3) {
+      if (item.arguments.length > 3 && isMultilineAllowed) {
         incIndent();
 
         for (argItem of item.arguments) {
@@ -286,7 +303,7 @@ export function beautifyFactory(
         }
 
         decIndent();
-        
+
         return (
           base +
           '(\n' +
@@ -553,20 +570,28 @@ export function beautifyFactory(
       const fields = [];
       let fieldItem;
 
-      incIndent();
+      if (isMultilineAllowed) {
+        incIndent();
+
+        for (fieldItem of item.fields) {
+          fields.push(make(fieldItem));
+        }
+
+        decIndent();
+
+        return (
+          '[\n' +
+          fields.map((field) => putIndent(field, 1)).join(',\n') +
+          ',\n' +
+          putIndent(']')
+        );
+      }
 
       for (fieldItem of item.fields) {
         fields.push(make(fieldItem));
       }
 
-      decIndent();
-
-      return (
-        '[\n' +
-        fields.map((field) => putIndent(field, 1)).join(',\n') +
-        ',\n' +
-        putIndent(']')
-      );
+      return '[ ' + fields.join(', ') + ' ]';
     },
     ListValue: (item: ASTListValue, _data: TransformerDataObject): string => {
       return make(item.value);
