@@ -196,7 +196,18 @@ export function beautifyFactory(
         fields.push(make(fieldItem));
       }
 
-      return '{' + fields.join(', ') + '}';
+      if (fields.length === 0) {
+        return '{}';
+      }
+
+      if (fields.length === 1) {
+        return '{ ' + fields[0] + ' }'
+      }
+
+      return (
+        '{\n' + 
+        fields.map((field) =>  putIndent(field, 1)).join(',\n') + 
+        ',\n' + putIndent('}'));
     },
     MapKeyString: (
       item: ASTMapKeyString,
