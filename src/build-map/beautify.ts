@@ -189,20 +189,25 @@ export function beautifyFactory(
       item: ASTMapConstructorExpression,
       _data: TransformerDataObject
     ): string => {
+      if (item.fields.length === 0) {
+        return '{}';
+      }
+
+      if (item.fields.length === 1) {
+        const field = make(item.fields[0]);
+        return '{ ' + field + ' }';
+      }
+
       const fields = [];
       let fieldItem;
+
+      incIndent();
 
       for (fieldItem of item.fields) {
         fields.push(make(fieldItem));
       }
 
-      if (fields.length === 0) {
-        return '{}';
-      }
-
-      if (fields.length === 1) {
-        return '{ ' + fields[0] + ' }';
-      }
+      decIndent();
 
       return (
         '{\n' +
