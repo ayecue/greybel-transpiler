@@ -201,13 +201,15 @@ export function beautifyFactory(
       }
 
       if (fields.length === 1) {
-        return '{ ' + fields[0] + ' }'
+        return '{ ' + fields[0] + ' }';
       }
 
       return (
-        '{\n' + 
-        fields.map((field) =>  putIndent(field, 1)).join(',\n') + 
-        ',\n' + putIndent('}'));
+        '{\n' +
+        fields.map((field) => putIndent(field, 1)).join(',\n') +
+        ',\n' +
+        putIndent('}')
+      );
     },
     MapKeyString: (
       item: ASTMapKeyString,
@@ -532,7 +534,20 @@ export function beautifyFactory(
         fields.push(make(fieldItem));
       }
 
-      return '[' + fields.join(', ') + ']';
+      if (fields.length === 0) {
+        return '[]';
+      }
+
+      if (fields.length === 1) {
+        return '[ ' + fields[0] + ' ]';
+      }
+
+      return (
+        '[\n' +
+        fields.map((field) => putIndent(field, 1)).join(',\n') +
+        ',\n' +
+        putIndent(']')
+      );
     },
     ListValue: (item: ASTListValue, _data: TransformerDataObject): string => {
       return make(item.value);
