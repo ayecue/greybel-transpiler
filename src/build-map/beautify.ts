@@ -62,6 +62,31 @@ const processBlock = (
   return body;
 };
 
+const isShorthandAssignmentWithIdentifier = (item: ASTAssignmentStatement) => {
+  const varibale = item.variable;
+  const init = item.init;
+  return (
+    varibale instanceof ASTIdentifier &&
+    init instanceof ASTEvaluationExpression &&
+    init.left instanceof ASTIdentifier &&
+    varibale.name === init.left.name &&
+    ['*', '+', '-', '^', '/'].includes(init.operator)
+  );
+};
+
+const isShorthandAssignmentWithMemberExpression = (
+  item: ASTAssignmentStatement
+) => {
+  const varibale = item.variable;
+  const init = item.init;
+  return (
+    varibale instanceof ASTMemberExpression &&
+    init instanceof ASTEvaluationExpression &&
+    init.left instanceof ASTMemberExpression &&
+    ['*', '+', '-', '^', '/'].includes(init.operator)
+  );
+};
+
 export function beautifyFactory(
   make: (item: ASTBase, _data?: TransformerDataObject) => string,
   context: Context,
@@ -70,7 +95,8 @@ export function beautifyFactory(
   let indent = 0;
   const incIndent = () => indent++;
   const decIndent = () => indent--;
-  const putIndent = (str: string) => `${'\t'.repeat(indent)}${str}`;
+  const putIndent = (str: string, offset: number = 0) =>
+    `${'\t'.repeat(indent + offset)}${str}`;
 
   return {
     ParenthesisExpression: (
@@ -97,6 +123,25 @@ export function beautifyFactory(
     ): string => {
       const varibale = item.variable;
       const init = item.init;
+
+      // might can create shorthand for expression
+      if (isShorthandAssignmentWithIdentifier(item)) {
+        const expr = init as ASTEvaluationExpression;
+        const left = make(varibale);
+        const right = make(expr.right);
+
+        return left + ' ' + expr.operator + '= ' + right;
+      } else if (isShorthandAssignmentWithMemberExpression(item)) {
+        const expr = init as ASTEvaluationExpression;
+        const left = make(varibale);
+        const temp = make(expr.left);
+
+        if (left === temp) {
+          const right = make(expr.right);
+          return left + ' ' + expr.operator + '= ' + right;
+        }
+      }
+
       const left = make(varibale);
       const right = make(init);
 
@@ -218,7 +263,19 @@ export function beautifyFactory(
         return base;
       }
 
-      return base + '(' + args.join(', ') + ')';
+      const argStr = args.join(', ');
+
+      if (argStr.length > 15) {
+        return (
+          base +
+          '(\n' +
+          args.map((item) => putIndent(item, 1)).join(',\n') +
+          '\n' +
+          putIndent(')')
+        );
+      }
+
+      return base + '(' + argStr + ')';
     },
     StringLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
       return item.raw.toString();
