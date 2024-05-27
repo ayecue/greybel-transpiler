@@ -270,20 +270,23 @@ export function beautifyFactory(
       _data: TransformerDataObject
     ): string => {
       const base = make(item.base);
-      const args = [];
-      let argItem;
 
-      for (argItem of item.arguments) {
-        args.push(make(argItem));
-      }
-
-      if (args.length === 0) {
+      if (item.arguments.length === 0) {
         return base;
       }
 
-      const argStr = args.join(', ');
+      let argItem;
+      const args = [];
 
-      if (argStr.length > 15) {
+      if (item.arguments.length > 3) {
+        incIndent();
+
+        for (argItem of item.arguments) {
+          args.push(make(argItem));
+        }
+
+        decIndent();
+        
         return (
           base +
           '(\n' +
@@ -292,6 +295,12 @@ export function beautifyFactory(
           putIndent(')')
         );
       }
+
+      for (argItem of item.arguments) {
+        args.push(make(argItem));
+      }
+
+      const argStr = args.join(', ');
 
       return base + '(' + argStr + ')';
     },
