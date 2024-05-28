@@ -241,7 +241,7 @@ export function beautifyFactory(
     },
     CallExpression: (
       item: ASTCallExpression,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): string => {
       const base = make(item.base);
 
@@ -276,7 +276,13 @@ export function beautifyFactory(
 
       const argStr = args.join(', ');
 
-      return base + '(' + argStr + ')';
+      if (/\n/.test(argStr) && !/,(?!\n)/.test(argStr)) {
+        return base + '(\n' + putIndent(argStr, 1) + '\n' + putIndent(')');
+      }
+
+      return data.isCommand
+        ? base + ' ' + argStr + ' '
+        : base + '(' + argStr + ')';
     },
     StringLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
       return item.raw.toString();
@@ -386,7 +392,7 @@ export function beautifyFactory(
       incIndent();
 
       const body = processBlock(item, (bodyItem) => {
-        const transformed = make(bodyItem);
+        const transformed = make(bodyItem, { isCommand: true });
         return putIndent(transformed);
       });
 
@@ -422,7 +428,7 @@ export function beautifyFactory(
       incIndent();
 
       const body = processBlock(item, (bodyItem) => {
-        const transformed = make(bodyItem);
+        const transformed = make(bodyItem, { isCommand: true });
         return putIndent(transformed);
       });
 
@@ -436,7 +442,7 @@ export function beautifyFactory(
       incIndent();
 
       const body = processBlock(item, (bodyItem) => {
-        const transformed = make(bodyItem);
+        const transformed = make(bodyItem, { isCommand: true });
         return putIndent(transformed);
       });
 
@@ -450,7 +456,7 @@ export function beautifyFactory(
       incIndent();
 
       const body = processBlock(item, (bodyItem) => {
-        const transformed = make(bodyItem);
+        const transformed = make(bodyItem, { isCommand: true });
         return putIndent(transformed);
       });
 
@@ -658,7 +664,7 @@ export function beautifyFactory(
     },
     Chunk: (item: ASTChunk, _data: TransformerDataObject): string => {
       return processBlock(item, (bodyItem) => {
-        const transformed = make(bodyItem);
+        const transformed = make(bodyItem, { isCommand: true });
         return putIndent(transformed);
       }).join('\n');
     }
