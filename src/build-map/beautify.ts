@@ -7,7 +7,6 @@ import {
 import {
   ASTAssignmentStatement,
   ASTBase,
-  ASTBaseBlock,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
@@ -36,56 +35,13 @@ import { basename } from 'path';
 
 import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
+import {
+  countEvaluationExpressions,
+  isShorthandAssignmentWithIdentifier,
+  isShorthandAssignmentWithMemberExpression,
+  processBlock
+} from './beautify/utils';
 import { BuildMap } from './default';
-
-const processBlock = (
-  block: ASTBaseBlock,
-  process: (item: ASTBase) => string
-): string[] => {
-  const body: string[] = [];
-  let index = block.start.line + 1;
-  let bodyItem;
-
-  for (bodyItem of block.body) {
-    for (; index < bodyItem.start.line; index++) {
-      body.push('');
-    }
-
-    body.push(process(bodyItem));
-    index = bodyItem.end.line + 1;
-  }
-
-  for (; index < block.end.line; index++) {
-    body.push('');
-  }
-
-  return body;
-};
-
-const isShorthandAssignmentWithIdentifier = (item: ASTAssignmentStatement) => {
-  const varibale = item.variable;
-  const init = item.init;
-  return (
-    varibale instanceof ASTIdentifier &&
-    init instanceof ASTEvaluationExpression &&
-    init.left instanceof ASTIdentifier &&
-    varibale.name === init.left.name &&
-    ['*', '+', '-', '^', '/'].includes(init.operator)
-  );
-};
-
-const isShorthandAssignmentWithMemberExpression = (
-  item: ASTAssignmentStatement
-) => {
-  const varibale = item.variable;
-  const init = item.init;
-  return (
-    varibale instanceof ASTMemberExpression &&
-    init instanceof ASTEvaluationExpression &&
-    init.left instanceof ASTMemberExpression &&
-    ['*', '+', '-', '^', '/'].includes(init.operator)
-  );
-};
 
 export function beautifyFactory(
   make: (item: ASTBase, _data?: TransformerDataObject) => string,
@@ -616,19 +572,77 @@ export function beautifyFactory(
     },
     LogicalExpression: (
       item: ASTEvaluationExpression,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): string => {
-      const left = make(item.left);
-      const right = make(item.right);
+      const count = data.isInEvalExpression
+        ? 0
+        : countEvaluationExpressions(item);
+
+      if (count > 3 || data.isEvalMultiline) {
+        if (!data.isEvalMultiline) incIndent();
+
+        const left = make(item.left, {
+          isInEvalExpression: true,
+          isEvalMultiline: true
+        });
+        const right = make(item.right, {
+          isInEvalExpression: true,
+          isEvalMultiline: true
+        });
+        const operator = item.operator;
+        const expression = left + ' ' + operator + '\n' + putIndent(right);
+
+        if (!data.isEvalMultiline) decIndent();
+
+        return expression;
+      }
+
+      const left = make(item.left, { isInEvalExpression: true });
+      const right = make(item.right, { isInEvalExpression: true });
 
       return left + ' ' + item.operator + ' ' + right;
     },
     BinaryExpression: (
       item: ASTEvaluationExpression,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): string => {
-      const left = make(item.left);
-      const right = make(item.right);
+      const count = data.isInBinaryExpression
+        ? 0
+        : countEvaluationExpressions(item);
+
+      if (count > 3 || data.isEvalMultiline) {
+        if (!data.isEvalMultiline) incIndent();
+
+        const left = make(item.left, {
+          isInEvalExpression: true,
+          isEvalMultiline: true
+        });
+        const right = make(item.right, {
+          isInEvalExpression: true,
+          isEvalMultiline: true
+        });
+        const operator = item.operator;
+        let expression = left + ' ' + operator + '\n' + putIndent(right);
+
+        if (operator === '|') {
+          expression = 'bitOr(' + [left, right].join(', ') + ')';
+        } else if (operator === '&') {
+          expression = 'bitAnd(' + [left, right].join(', ') + ')';
+        } else if (
+          operator === '<<' ||
+          operator === '>>' ||
+          operator === '>>>'
+        ) {
+          throw new Error('Operators in binary expression are not supported');
+        }
+
+        if (!data.isEvalMultiline) decIndent();
+
+        return expression;
+      }
+
+      const left = make(item.left, { isInEvalExpression: true });
+      const right = make(item.right, { isInEvalExpression: true });
       const operator = item.operator;
       let expression = left + ' ' + operator + ' ' + right;
 
