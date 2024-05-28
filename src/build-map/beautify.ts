@@ -39,7 +39,8 @@ import {
   countEvaluationExpressions,
   isShorthandAssignmentWithIdentifier,
   isShorthandAssignmentWithMemberExpression,
-  processBlock
+  processBlock,
+  transformBitOperation
 } from './beautify/utils';
 import { BuildMap } from './default';
 
@@ -622,19 +623,12 @@ export function beautifyFactory(
           isEvalMultiline: true
         });
         const operator = item.operator;
-        let expression = left + ' ' + operator + '\n' + putIndent(right);
-
-        if (operator === '|') {
-          expression = 'bitOr(' + [left, right].join(', ') + ')';
-        } else if (operator === '&') {
-          expression = 'bitAnd(' + [left, right].join(', ') + ')';
-        } else if (
-          operator === '<<' ||
-          operator === '>>' ||
-          operator === '>>>'
-        ) {
-          throw new Error('Operators in binary expression are not supported');
-        }
+        const expression = transformBitOperation(
+          left + ' ' + operator + '\n' + putIndent(right),
+          left,
+          right,
+          operator
+        );
 
         if (!data.isEvalMultiline) decIndent();
 
@@ -644,15 +638,12 @@ export function beautifyFactory(
       const left = make(item.left, { isInEvalExpression: true });
       const right = make(item.right, { isInEvalExpression: true });
       const operator = item.operator;
-      let expression = left + ' ' + operator + ' ' + right;
-
-      if (operator === '|') {
-        expression = 'bitOr(' + [left, right].join(', ') + ')';
-      } else if (operator === '&') {
-        expression = 'bitAnd(' + [left, right].join(', ') + ')';
-      } else if (operator === '<<' || operator === '>>' || operator === '>>>') {
-        throw new Error('Operators in binary expression are not supported');
-      }
+      const expression = transformBitOperation(
+        left + ' ' + operator + ' ' + right,
+        left,
+        right,
+        operator
+      );
 
       return expression;
     },
