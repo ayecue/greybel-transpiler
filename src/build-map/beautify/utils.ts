@@ -4,8 +4,18 @@ import {
   ASTBaseBlock,
   ASTEvaluationExpression,
   ASTIdentifier,
-  ASTMemberExpression
+  ASTMemberExpression,
+  Operator
 } from 'miniscript-core';
+
+const SHORTHAND_OPERATORS = [
+  Operator.Plus,
+  Operator.Minus,
+  Operator.Asterik,
+  Operator.Slash,
+  Operator.Modulo,
+  Operator.Power
+] as string[];
 
 export const countEvaluationExpressions = (
   item: ASTEvaluationExpression
@@ -60,7 +70,7 @@ export const isShorthandAssignmentWithIdentifier = (
     init instanceof ASTEvaluationExpression &&
     init.left instanceof ASTIdentifier &&
     varibale.name === init.left.name &&
-    ['*', '+', '-', '^', '/'].includes(init.operator)
+    SHORTHAND_OPERATORS.includes(init.operator)
   );
 };
 
@@ -73,6 +83,6 @@ export const isShorthandAssignmentWithMemberExpression = (
     varibale instanceof ASTMemberExpression &&
     init instanceof ASTEvaluationExpression &&
     init.left instanceof ASTMemberExpression &&
-    ['*', '+', '-', '^', '/'].includes(init.operator)
+    SHORTHAND_OPERATORS.includes(init.operator)
   );
 };
