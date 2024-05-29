@@ -1,14 +1,6 @@
-import {
-  ASTAssignmentStatement,
-  ASTBase,
-  ASTBaseBlock,
-  ASTEvaluationExpression,
-  ASTIdentifier,
-  ASTMemberExpression,
-  Operator
-} from 'miniscript-core';
+import { ASTEvaluationExpression, Operator } from 'miniscript-core';
 
-const SHORTHAND_OPERATORS = [
+export const SHORTHAND_OPERATORS = [
   Operator.Plus,
   Operator.Minus,
   Operator.Asterik,
@@ -34,30 +26,6 @@ export const countEvaluationExpressions = (
   }
 
   return count;
-};
-
-export const processBlock = (
-  block: ASTBaseBlock,
-  process: (item: ASTBase) => string
-): string[] => {
-  const body: string[] = [];
-  let index = block.start.line + 1;
-  let bodyItem;
-
-  for (bodyItem of block.body) {
-    for (; index < bodyItem.start.line; index++) {
-      body.push('');
-    }
-
-    body.push(process(bodyItem));
-    index = bodyItem.end.line + 1;
-  }
-
-  for (; index < block.end.line; index++) {
-    body.push('');
-  }
-
-  return body;
 };
 
 export const transformBitOperation = (
