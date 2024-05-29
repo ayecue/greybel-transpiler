@@ -63,7 +63,11 @@ export function beautifyFactory(
       item: ASTParenthesisExpression,
       _data: TransformerDataObject
     ): string => {
-      const expr = make(item.expression);
+      let expr = make(item.expression);
+
+      if (/\n/.test(expr) && !/,(?!\n)/.test(expr)) {
+        return '(\n' + putIndent(expr, 1) + '\n' + putIndent(')');
+      }
 
       return '(' + expr + ')';
     },
@@ -343,41 +347,32 @@ export function beautifyFactory(
         clauses.push(make(clausesItem));
       }
 
-      return clauses.join('\n') + '\n' + putIndent('end if');
+      return clauses.join(' ');
     },
     IfShortcutClause: (
       item: ASTIfClause,
       _data: TransformerDataObject
     ): string => {
       const condition = make(item.condition);
-
-      incIndent();
       const statement = putIndent(make(item.body[0]));
-      decIndent();
 
-      return '\n' + putIndent('if ' + condition + ' then') + '\n' + statement;
+      return 'if ' + condition + ' then ' + statement;
     },
     ElseifShortcutClause: (
       item: ASTIfClause,
       _data: TransformerDataObject
     ): string => {
       const condition = make(item.condition);
-
-      incIndent();
       const statement = putIndent(make(item.body[0]));
-      decIndent();
 
-      return 'else if ' + condition + ' then\n' + statement;
+      return 'else if ' + condition + ' then ' + statement;
     },
     ElseShortcutClause: (
       item: ASTElseClause,
       _data: TransformerDataObject
     ): string => {
-      incIndent();
       const statement = putIndent(make(item.body[0]));
-      decIndent();
-
-      return 'else\n' + statement;
+      return 'else ' + statement;
     },
     NilLiteral: (_item: ASTLiteral, _data: TransformerDataObject): string => {
       return 'null';
