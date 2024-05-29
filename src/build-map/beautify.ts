@@ -62,6 +62,11 @@ export function beautifyFactory(
       _data: TransformerDataObject
     ): string => {
       const expr = make(item.expression);
+
+      if (/\n/.test(expr) && !/,(?!\n)/.test(expr)) {
+        return '\t(' + expr + ')';
+      }
+
       return '(' + expr + ')';
     },
     Comment: (item: ASTComment, _data: TransformerDataObject): string => {
@@ -246,6 +251,10 @@ export function beautifyFactory(
       }
 
       const argStr = args.join(', ');
+
+      if (/\n/.test(argStr) && !/,(?!\n)/.test(argStr)) {
+        return '\t(' + argStr + ')';
+      }
 
       return data.isCommand ? base + ' ' + argStr : base + '(' + argStr + ')';
     },
