@@ -37,8 +37,6 @@ import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
 import {
   countEvaluationExpressions,
-  isShorthandAssignmentWithIdentifier,
-  isShorthandAssignmentWithMemberExpression,
   processBlock,
   transformBitOperation
 } from './beautify/utils';
@@ -63,7 +61,7 @@ export function beautifyFactory(
       item: ASTParenthesisExpression,
       _data: TransformerDataObject
     ): string => {
-      let expr = make(item.expression);
+      const expr = make(item.expression);
 
       if (/\n/.test(expr) && !/,(?!\n)/.test(expr)) {
         return '(\n' + putIndent(expr, 1) + '\n' + putIndent(')');
@@ -87,27 +85,19 @@ export function beautifyFactory(
     ): string => {
       const varibale = item.variable;
       const init = item.init;
-
-      // might can create shorthand for expression
-      if (isShorthandAssignmentWithIdentifier(item)) {
-        const expr = init as ASTEvaluationExpression;
-        const left = make(varibale);
-        const right = make(expr.right);
-
-        return left + ' ' + expr.operator + '= ' + right;
-      } else if (isShorthandAssignmentWithMemberExpression(item)) {
-        const expr = init as ASTEvaluationExpression;
-        const left = make(varibale);
-        const temp = make(expr.left);
-
-        if (left === temp) {
-          const right = make(expr.right);
-          return left + ' ' + expr.operator + '= ' + right;
-        }
-      }
-
       const left = make(varibale);
       const right = make(init);
+
+      // might can create shorthand for expression
+      if (
+        (varibale instanceof ASTIdentifier ||
+          varibale instanceof ASTMemberExpression) &&
+        right.startsWith(left)
+      ) {
+        const segments = right.split(' ');
+        const [_, operator, ...rightSegments] = segments;
+        return left + ' ' + operator + '= ' + rightSegments.join(' ');
+      }
 
       return left + ' = ' + right;
     },
@@ -284,9 +274,7 @@ export function beautifyFactory(
         return base + '(\n' + putIndent(argStr, 1) + '\n' + putIndent(')');
       }
 
-      return data.isCommand
-        ? base + ' ' + argStr + ' '
-        : base + '(' + argStr + ')';
+      return data.isCommand ? base + ' ' + argStr : base + '(' + argStr + ')';
     },
     StringLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
       return item.raw.toString();

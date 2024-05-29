@@ -60,33 +60,6 @@ export const processBlock = (
   return body;
 };
 
-export const isShorthandAssignmentWithIdentifier = (
-  item: ASTAssignmentStatement
-) => {
-  const varibale = item.variable;
-  const init = item.init;
-  return (
-    varibale instanceof ASTIdentifier &&
-    init instanceof ASTEvaluationExpression &&
-    init.left instanceof ASTIdentifier &&
-    varibale.name === init.left.name &&
-    SHORTHAND_OPERATORS.includes(init.operator)
-  );
-};
-
-export const isShorthandAssignmentWithMemberExpression = (
-  item: ASTAssignmentStatement
-) => {
-  const varibale = item.variable;
-  const init = item.init;
-  return (
-    varibale instanceof ASTMemberExpression &&
-    init instanceof ASTEvaluationExpression &&
-    init.left instanceof ASTMemberExpression &&
-    SHORTHAND_OPERATORS.includes(init.operator)
-  );
-};
-
 export const transformBitOperation = (
   expression: string,
   left: string,
