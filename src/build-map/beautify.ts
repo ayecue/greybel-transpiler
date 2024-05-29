@@ -62,11 +62,6 @@ export function beautifyFactory(
       _data: TransformerDataObject
     ): string => {
       const expr = make(item.expression);
-
-      if (/\n/.test(expr) && !/,(?!\n)/.test(expr)) {
-        return '(\n' + putIndent(expr, 1) + '\n' + putIndent(')');
-      }
-
       return '(' + expr + ')';
     },
     Comment: (item: ASTComment, _data: TransformerDataObject): string => {
@@ -246,33 +241,11 @@ export function beautifyFactory(
       let argItem;
       const args = [];
 
-      if (item.arguments.length > 3 && isMultilineAllowed) {
-        incIndent();
-
-        for (argItem of item.arguments) {
-          args.push(make(argItem));
-        }
-
-        decIndent();
-
-        return (
-          base +
-          '(\n' +
-          args.map((item) => putIndent(item, 1)).join(',\n') +
-          '\n' +
-          putIndent(')')
-        );
-      }
-
       for (argItem of item.arguments) {
         args.push(make(argItem));
       }
 
       const argStr = args.join(', ');
-
-      if (/\n/.test(argStr) && !/,(?!\n)/.test(argStr)) {
-        return base + '(\n' + putIndent(argStr, 1) + '\n' + putIndent(')');
-      }
 
       return data.isCommand ? base + ' ' + argStr : base + '(' + argStr + ')';
     },
