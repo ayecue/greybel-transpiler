@@ -131,9 +131,9 @@ export function beautifyFactory(
 
       if (/\n/.test(expr) && !/,(?!\n)/.test(expr)) {
         incIndent();
-        const expr = make(item.expression);
+        const expr = putIndent(make(item.expression), 1);
         decIndent();
-        return '(\n' + putIndent(expr, 1) + ')';
+        return '(\n' + expr + ')';
       }
 
       return '(' + expr + ')';
@@ -335,8 +335,8 @@ export function beautifyFactory(
       if (/\n/.test(argStr) && !/,(?!\n)/.test(argStr)) {
         incIndent();
         const args = item.arguments.map((argItem) => make(argItem));
-        decIndent();
         const argStr = args.join(', ');
+        decIndent();
 
         return base + '(\n' + putIndent(argStr, 1) + ')';
       }
