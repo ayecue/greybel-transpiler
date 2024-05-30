@@ -223,17 +223,18 @@ export function beautifyFactory(
 
       if (isMultilineAllowed) {
         const fields = [];
-        let fieldItem;
         const blockEnd = putIndent(appendComment(item.start, '}'));
-        const blockStart = appendComment(item.start, '{');
 
         incIndent();
 
-        for (fieldItem of item.fields) {
-          fields.push(appendComment(fieldItem.end, make(fieldItem) + ','));
+        for (let index = item.fields.length - 1; index >= 0; index--) {
+          const fieldItem = item.fields[index];
+          fields.unshift(appendComment(fieldItem.end, make(fieldItem) + ','));
         }
 
         decIndent();
+
+        const blockStart = appendComment(item.start, '{');
 
         return (
           blockStart +
@@ -558,15 +559,17 @@ export function beautifyFactory(
 
       if (isMultilineAllowed) {
         const blockEnd = putIndent(appendComment(item.end, ']'));
-        const blockStart = appendComment(item.start, '[');
 
         incIndent();
 
-        for (fieldItem of item.fields) {
-          fields.push(appendComment(fieldItem.end, make(fieldItem) + ','));
+        for (let index = item.fields.length - 1; index >= 0; index--) {
+          const fieldItem = item.fields[index];
+          fields.unshift(appendComment(fieldItem.end, make(fieldItem) + ','));
         }
 
         decIndent();
+
+        const blockStart = appendComment(item.start, '[');
 
         return (
           blockStart +
