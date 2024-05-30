@@ -321,7 +321,7 @@ export function beautifyFactory(
       const argStr = args.join(', ');
 
       if (/\n/.test(argStr) && !/,(?!\n)/.test(argStr)) {
-        return '\t(' + argStr + ')';
+        return '\t' + base + '(' + argStr + ')';
       }
 
       return data.isCommand ? base + ' ' + argStr : base + '(' + argStr + ')';
