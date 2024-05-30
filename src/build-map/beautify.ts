@@ -65,7 +65,7 @@ export function beautifyFactory(
 
     if (comment && !usedComments.has(comment)) {
       usedComments.add(comment);
-      return line + ' //' + comment.value;
+      return line + ' // ' + comment.value.trimStart();
     }
 
     return line;
@@ -130,7 +130,10 @@ export function beautifyFactory(
       const expr = make(item.expression);
 
       if (/\n/.test(expr) && !/,(?!\n)/.test(expr)) {
-        return '\t(' + expr + ')';
+        incIndent();
+        const expr = make(item.expression);
+        decIndent();
+        return '(\n' + putIndent(expr, 1) + ')';
       }
 
       return '(' + expr + ')';
@@ -143,7 +146,7 @@ export function beautifyFactory(
           .join('\n');
       }
 
-      return '//' + item.value;
+      return '// ' + item.value.trimStart();
     },
     AssignmentStatement: (
       item: ASTAssignmentStatement,
@@ -313,17 +316,36 @@ export function beautifyFactory(
         return base;
       }
 
-      let argItem;
-      const args = [];
+      if (item.arguments.length > 3 && isMultilineAllowed) {
+        let argItem;
+        const args = [];
 
-      for (argItem of item.arguments) {
-        args.push(make(argItem));
+        incIndent();
+
+        for (argItem of item.arguments) {
+          args.push(make(argItem));
+        }
+
+        decIndent();
+
+        return (
+          base +
+          '(\n' +
+          args.map((item) => putIndent(item, 1)).join(',\n') +
+          ')'
+        );
       }
 
+      const args = item.arguments.map((argItem) => make(argItem));
       const argStr = args.join(', ');
 
       if (/\n/.test(argStr) && !/,(?!\n)/.test(argStr)) {
-        return '\t' + base + '(' + argStr + ')';
+        incIndent();
+        const args = item.arguments.map((argItem) => make(argItem));
+        decIndent();
+        const argStr = args.join(', ');
+
+        return base + '(\n' + putIndent(argStr, 1) + ')';
       }
 
       return data.isCommand ? base + ' ' + argStr : base + '(' + argStr + ')';
