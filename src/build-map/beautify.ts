@@ -40,7 +40,8 @@ import { TransformerDataObject } from '../transformer';
 import {
   countEvaluationExpressions,
   SHORTHAND_OPERATORS,
-  transformBitOperation
+  transformBitOperation,
+  unwrap
 } from './beautify/utils';
 import { BuildMap } from './default';
 
@@ -115,7 +116,7 @@ export function beautifyFactory(
     const last = block.body[block.body.length - 1];
 
     body.push(
-      ...new Array(Math.max(block.end.line - last.end.line - 1, 0)).fill(' ')
+      ...new Array(Math.max(block.end.line - last?.end?.line - 1, 0)).fill(' ')
     );
 
     return body;
@@ -289,7 +290,7 @@ export function beautifyFactory(
       item: ASTWhileStatement,
       _data: TransformerDataObject
     ): string => {
-      const condition = make(item.condition);
+      const condition = make(unwrap(item.condition));
       const blockStart = appendComment(item.start, 'while ' + condition);
       const blockEnd = putIndent('end while');
 
@@ -391,8 +392,8 @@ export function beautifyFactory(
       item: ASTIfClause,
       _data: TransformerDataObject
     ): string => {
-      const condition = make(item.condition);
-      const statement = putIndent(make(item.body[0]));
+      const condition = make(unwrap(item.condition));
+      const statement = make(item.body[0]);
 
       return 'if ' + condition + ' then ' + statement;
     },
@@ -400,8 +401,8 @@ export function beautifyFactory(
       item: ASTIfClause,
       _data: TransformerDataObject
     ): string => {
-      const condition = make(item.condition);
-      const statement = putIndent(make(item.body[0]));
+      const condition = make(unwrap(item.condition));
+      const statement = make(item.body[0]);
 
       return 'else if ' + condition + ' then ' + statement;
     },
@@ -419,8 +420,8 @@ export function beautifyFactory(
       item: ASTForGenericStatement,
       _data: TransformerDataObject
     ): string => {
-      const variable = make(item.variable);
-      const iterator = make(item.iterator);
+      const variable = make(unwrap(item.variable));
+      const iterator = make(unwrap(item.iterator));
       const blockStart = appendComment(
         item.start,
         'for ' + variable + ' in ' + iterator
@@ -449,7 +450,7 @@ export function beautifyFactory(
       return clauses.join('\n') + '\n' + putIndent('end if');
     },
     IfClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const condition = make(item.condition);
+      const condition = make(unwrap(item.condition));
       const blockStart = appendComment(item.start, 'if ' + condition + ' then');
 
       incIndent();
@@ -461,7 +462,7 @@ export function beautifyFactory(
       return blockStart + '\n' + body.join('\n');
     },
     ElseifClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const condition = make(item.condition);
+      const condition = make(unwrap(item.condition));
       const blockStart = appendComment(
         item.start,
         putIndent('else if') + ' ' + condition + ' then'

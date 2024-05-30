@@ -1,4 +1,9 @@
-import { ASTEvaluationExpression, Operator } from 'miniscript-core';
+import {
+  ASTBase,
+  ASTEvaluationExpression,
+  ASTParenthesisExpression,
+  Operator
+} from 'miniscript-core';
 
 export const SHORTHAND_OPERATORS = [
   Operator.Plus,
@@ -43,4 +48,11 @@ export const transformBitOperation = (
   }
 
   return expression;
+};
+
+export const unwrap = (node: ASTBase): ASTBase => {
+  while (node instanceof ASTParenthesisExpression) {
+    node = node.expression;
+  }
+  return node;
 };
