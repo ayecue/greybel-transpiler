@@ -161,7 +161,7 @@ export function beautifyFactory(
       if (
         (varibale instanceof ASTIdentifier ||
           varibale instanceof ASTMemberExpression) &&
-        new RegExp('^\b' + left + '\b').test(right)
+        new RegExp('^\\b' + left + '\\b').test(right)
       ) {
         const segments = right.split(' ');
         const [_, operator, ...rightSegments] = segments;
