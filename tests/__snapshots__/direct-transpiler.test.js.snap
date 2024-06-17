@@ -822,7 +822,7 @@ print+123"
 `;
 
 exports[`parse default scripts greybel-utils.src 1`] = `
-"#import \\"foo from ./ascii.src\\";
+"#import foo from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -832,7 +832,7 @@ print(\\"unknown\\")"
 `;
 
 exports[`parse default scripts greybel-utils.src beautify 1`] = `
-"#import \\"foo from ./ascii.src\\";
+"#import foo from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -845,7 +845,7 @@ print \\"unknown\\""
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
-"#import \\"I from ./ascii.src\\";
+"#import I from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -855,7 +855,7 @@ print(\\"unknown\\")"
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src 1`] = `
-"#import \\"foo from ./ascii.src\\";
+"#import foo from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -863,7 +863,7 @@ exports[`parse default scripts greybel-utils-with-comments.src 1`] = `
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src beautify 1`] = `
-"#import \\"foo from ./ascii.src\\";
+"#import foo from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -871,7 +871,7 @@ exports[`parse default scripts greybel-utils-with-comments.src beautify 1`] = `
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src uglify 1`] = `
-"#import \\"I from ./ascii.src\\";
+"#import I from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
