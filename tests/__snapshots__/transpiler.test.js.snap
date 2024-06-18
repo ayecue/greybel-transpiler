@@ -2655,7 +2655,7 @@ print {} isa list
 print {} isa map
 
 print {} isa funcRef
- ",
+",
 ]
 `;
 

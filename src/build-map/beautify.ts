@@ -97,8 +97,6 @@ export function beautifyFactory(
         0
       );
 
-      console.log(diff, block.start.line, block.end.line);
-
       if (diff > 0) {
         body.push(...new Array(diff).fill(''));
       }
