@@ -3,6 +3,7 @@ import { ASTChunkAdvanced, Parser } from 'greybel-core';
 import { ASTLiteral } from 'miniscript-core';
 
 import { BuildType, getFactory } from './build-map';
+import { BeautifyOptions } from './build-map/beautify';
 import { Context } from './context';
 import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
@@ -16,6 +17,7 @@ export interface DirectTranspilerOptions {
 
   obfuscation?: boolean;
   buildType?: BuildType;
+  buildOptions?: BeautifyOptions | object;
   disableLiteralsOptimization?: boolean;
   disableNamespacesOptimization?: boolean;
   environmentVariables?: Map<string, string>;
@@ -28,6 +30,7 @@ export class DirectTranspiler extends EventEmitter {
 
   obfuscation: boolean;
   buildType: BuildType;
+  buildOptions: BeautifyOptions | object;
   installer: boolean;
   disableLiteralsOptimization: boolean;
   disableNamespacesOptimization: boolean;
@@ -46,6 +49,7 @@ export class DirectTranspiler extends EventEmitter {
       ? options.obfuscation
       : true;
     me.buildType = options.buildType || BuildType.DEFAULT;
+    me.buildOptions = options.buildOptions || {};
     me.disableLiteralsOptimization =
       options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
     me.disableNamespacesOptimization =
@@ -83,6 +87,7 @@ export class DirectTranspiler extends EventEmitter {
     }
 
     const transformer = new Transformer(
+      this.buildOptions,
       mapFactory,
       context,
       me.environmentVariables

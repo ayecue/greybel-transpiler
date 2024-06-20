@@ -1,4 +1,5 @@
-export { BuildMap, BuildType, getFactory } from './build-map';
+export { BuildType, getFactory } from './build-map';
+export { BuildMap, Factory } from './build-map/factory';
 export { Context, ContextDataProperty, ContextOptions } from './context';
 export {
   Dependency,

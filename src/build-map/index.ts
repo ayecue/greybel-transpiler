@@ -1,9 +1,6 @@
-import { ASTBase } from 'miniscript-core';
-
-import { Context } from '../context';
-import { TransformerDataObject } from '../transformer';
 import { beautifyFactory } from './beautify';
-import { BuildMap, defaultFactory } from './default';
+import { defaultFactory } from './default';
+import { Factory } from './factory';
 import { uglifyFactory } from './uglify';
 
 export enum BuildType {
@@ -12,9 +9,7 @@ export enum BuildType {
   BEAUTIFY
 }
 
-export { BuildMap } from './default';
-
-const FACTORIES = {
+const FACTORIES: Record<BuildType, Factory<object>> = {
   [BuildType.DEFAULT]: defaultFactory,
   [BuildType.UGLIFY]: uglifyFactory,
   [BuildType.BEAUTIFY]: beautifyFactory
@@ -22,11 +17,7 @@ const FACTORIES = {
 
 export function getFactory(
   type: BuildType = BuildType.DEFAULT
-): (
-  make: (item: ASTBase, _data: TransformerDataObject) => string,
-  context: Context,
-  environmentVariables: Map<string, string>
-) => BuildMap {
+): Factory<object> {
   const factory = FACTORIES[type];
 
   if (!factory) {

@@ -1,7 +1,4 @@
-import {
-  ASTBase,
-  ASTParenthesisExpression
-} from 'miniscript-core';
+import { ASTBase, ASTParenthesisExpression } from 'miniscript-core';
 
 export function unwrap(node: ASTBase) {
   while (node instanceof ASTParenthesisExpression) {

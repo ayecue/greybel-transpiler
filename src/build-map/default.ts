@@ -33,18 +33,15 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
+import { Factory } from './factory';
 
-export interface BuildMap {
-  [type: string]: (item: ASTBase, _data: TransformerDataObject) => string;
-}
-
-export function defaultFactory(
-  make: (item: ASTBase, _data?: TransformerDataObject) => string,
-  context: Context,
-  environmentVariables: Map<string, string>
-): BuildMap {
+export const defaultFactory: Factory<{}> = (
+  _options,
+  make,
+  _context,
+  environmentVariables
+) => {
   return {
     ParenthesisExpression: (
       item: ASTParenthesisExpression,
@@ -489,4 +486,4 @@ export function defaultFactory(
       return body.join('\n');
     }
   };
-}
+};

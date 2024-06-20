@@ -33,15 +33,15 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { Context } from '../context';
 import { TransformerDataObject } from '../transformer';
-import { BuildMap } from './default';
+import { Factory } from './factory';
 
-export function uglifyFactory(
-  make: (item: ASTBase, _data?: TransformerDataObject) => string,
-  context: Context,
-  environmentVariables: Map<string, string>
-): BuildMap {
+export const uglifyFactory: Factory<{}> = (
+  _options,
+  make,
+  context,
+  environmentVariables
+) => {
   return {
     ParenthesisExpression: (
       item: ASTParenthesisExpression,
@@ -533,4 +533,4 @@ export function uglifyFactory(
       return body.join('\n');
     }
   };
-}
+};

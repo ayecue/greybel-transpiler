@@ -1,5 +1,6 @@
 import { MODULE_BOILERPLATE } from './boilerplates';
 import { BuildType, getFactory } from './build-map';
+import { BeautifyOptions } from './build-map/beautify';
 import { Context } from './context';
 import { Dependency, DependencyType } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
@@ -17,6 +18,7 @@ export interface TranspilerOptions {
 
   obfuscation?: boolean;
   buildType?: BuildType;
+  buildOptions?: BeautifyOptions | object;
   installer?: boolean;
   excludedNamespaces?: string[];
   disableLiteralsOptimization?: boolean;
@@ -35,6 +37,7 @@ export class Transpiler {
 
   obfuscation: boolean;
   buildType: BuildType;
+  buildOptions: BeautifyOptions | object;
   installer: boolean;
   disableLiteralsOptimization: boolean;
   disableNamespacesOptimization: boolean;
@@ -59,6 +62,7 @@ export class Transpiler {
     });
 
     me.buildType = options.buildType || BuildType.DEFAULT;
+    me.buildOptions = options.buildOptions || {};
     me.installer = options.installer || false;
     me.disableLiteralsOptimization =
       options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
@@ -84,6 +88,7 @@ export class Transpiler {
 
     // create builder
     const transformer = new Transformer(
+      this.buildOptions,
       mapFactory,
       context,
       me.environmentVariables

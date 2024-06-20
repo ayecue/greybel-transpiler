@@ -1,6 +1,6 @@
 import { ASTBase, ASTChunk } from 'miniscript-core';
 
-import { BuildMap } from './build-map/default';
+import { BuildMap, Factory } from './build-map/factory';
 import { Context } from './context';
 import { Stack } from './utils/stack';
 
@@ -17,11 +17,8 @@ export class Transformer {
   buildMap: BuildMap;
 
   constructor(
-    mapFactory: (
-      make: Function,
-      context: Context,
-      environmentVariables: Map<string, string>
-    ) => BuildMap,
+    options: object,
+    mapFactory: Factory<object>,
     context: Context,
     environmentVariables: Map<string, string>
   ) {
@@ -30,8 +27,8 @@ export class Transformer {
     me.currentTarget = Transformer.DEFAULT_TARGET;
     me.currentStack = new Stack();
     me.context = context;
-    me.buildMap = mapFactory.call(
-      me,
+    me.buildMap = mapFactory(
+      options,
       me.make.bind(me),
       context,
       environmentVariables
