@@ -551,9 +551,9 @@ test = [
 
 // shorthand binary
 test += 5
-test += 4 + 5
+test = test + 4 + 5
 test.abc += 5
-test.abc += 4 + 5
+test.abc = test.abc + 4 + 5
 
 // if
 if true then print(\\"test\\")
@@ -700,10 +700,10 @@ I={N:M,O:13,\\"bar\\":45}",
 
 exports[`parse default scripts binary-expressions.src 1`] = `
 Array [
-  "a=a/b
-a=a*b
-a=a-b
-a=a+b
+  "a=a/(b)
+a=a*(b)
+a=a-(b)
+a=a+(b)
 bitOr(a,b)
 bitAnd(a,b)
 a^b
@@ -728,10 +728,10 @@ a or b",
 
 exports[`parse default scripts binary-expressions.src uglify 1`] = `
 Array [
-  "I=I/J
-I=I*J
-I=I-J
-I=I+J
+  "I=I/(J)
+I=I*(J)
+I=I-(J)
+I=I+(J)
 bitOr(I,J)
 bitAnd(I,J)
 I^J
@@ -2945,9 +2945,9 @@ end if
 print(text)
 key=user_input(\\"test\\",false,true)
 if (key==\\"UpArrow\\") then
-outer.num=outer.num+1
+outer.num=outer.num+(1)
 else if (key==\\"DownArrow\\") then
-outer.num=outer.num-1
+outer.num=outer.num-(1)
 else
 exit(\\"bye\\")
 end if
@@ -3020,9 +3020,9 @@ end if
 print(M)
 N=O(\\"test\\",false,true)
 if (N==\\"UpArrow\\") then
-outer.J=outer.J+1
+outer.J=outer.J+(1)
 else if (N==\\"DownArrow\\") then
-outer.J=outer.J-1
+outer.J=outer.J-(1)
 else
 P(\\"bye\\")
 end if
@@ -3450,7 +3450,7 @@ String.parse = function(values)
 	maxIndex = values.len
 
 	while index < maxIndex
-		result += index, values[index])
+		result = result.replace(\\"$\\" + index, values[index])
 		index += 1
 	end while
 
@@ -3617,7 +3617,7 @@ Crypto.decrypt = function(str, pw)
 		currentBit = bitCounter
 		bitCounter += 1
 		if currentBit % 4 then
-			bitStorage *= 64 + buffer
+			bitStorage = bitStorage * 64 + buffer
 		else
 			bitStorage = buffer
 		end if
@@ -3943,7 +3943,7 @@ Random.calcSeed = function(seed)
 	pos = seed.len
 
 	for char in seed
-		seedVal += char.code + pos
+		seedVal = seedVal + char.code + pos
 		pos -= 1
 	end for
 
