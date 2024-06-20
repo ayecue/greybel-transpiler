@@ -44,6 +44,7 @@ import {
   unwrap
 } from './beautify/utils';
 import { BuildMap } from './default';
+import { createExpressionHash } from '../utils/create-expression-hash';
 
 export function beautifyFactory(
   make: (item: ASTBase, _data?: TransformerDataObject) => string,
@@ -156,21 +157,21 @@ export function beautifyFactory(
       const varibale = item.variable;
       const init = item.init;
       const left = make(varibale);
-      const right = make(init);
 
       // might can create shorthand for expression
       if (
         (varibale instanceof ASTIdentifier ||
           varibale instanceof ASTMemberExpression) &&
-        new RegExp('^\\b' + left + '\\b').test(right)
+          (init instanceof ASTEvaluationExpression && (init.left instanceof ASTIdentifier ||
+          init.left instanceof ASTMemberExpression))
+        && SHORTHAND_OPERATORS.includes(init.operator)
+        && createExpressionHash(varibale) === createExpressionHash(init.left)
       ) {
-        const segments = right.split(' ');
-        const [_, operator, ...rightSegments] = segments;
-
-        if (SHORTHAND_OPERATORS.includes(operator)) {
-          return left + ' ' + operator + '= ' + rightSegments.join(' ');
-        }
+        const right = make(unwrap(init.right));
+        return left + ' ' + init.operator + '= ' + right;
       }
+
+      const right = make(init);
 
       return left + ' = ' + right;
     },
