@@ -9,6 +9,7 @@ import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 import { OutputProcessor } from './utils/output-processor';
+import { DefaultFactoryOptions } from './build-map/factory';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -17,7 +18,7 @@ export interface DirectTranspilerOptions {
 
   obfuscation?: boolean;
   buildType?: BuildType;
-  buildOptions?: BeautifyOptions | object;
+  buildOptions?: BeautifyOptions | DefaultFactoryOptions;
   disableLiteralsOptimization?: boolean;
   disableNamespacesOptimization?: boolean;
   environmentVariables?: Map<string, string>;
@@ -30,7 +31,7 @@ export class DirectTranspiler extends EventEmitter {
 
   obfuscation: boolean;
   buildType: BuildType;
-  buildOptions: BeautifyOptions | object;
+  buildOptions: BeautifyOptions | DefaultFactoryOptions;
   installer: boolean;
   disableLiteralsOptimization: boolean;
   disableNamespacesOptimization: boolean;
@@ -49,7 +50,7 @@ export class DirectTranspiler extends EventEmitter {
       ? options.obfuscation
       : true;
     me.buildType = options.buildType || BuildType.DEFAULT;
-    me.buildOptions = options.buildOptions || {};
+    me.buildOptions = options.buildOptions || { isDevMode: false };
     me.disableLiteralsOptimization =
       options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
     me.disableNamespacesOptimization =

@@ -1,6 +1,7 @@
 import { MODULE_BOILERPLATE } from './boilerplates';
 import { BuildType, getFactory } from './build-map';
 import { BeautifyOptions } from './build-map/beautify';
+import { DefaultFactoryOptions } from './build-map/factory';
 import { Context } from './context';
 import { Dependency, DependencyType } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
@@ -18,7 +19,7 @@ export interface TranspilerOptions {
 
   obfuscation?: boolean;
   buildType?: BuildType;
-  buildOptions?: BeautifyOptions | object;
+  buildOptions?: BeautifyOptions | DefaultFactoryOptions;
   installer?: boolean;
   excludedNamespaces?: string[];
   disableLiteralsOptimization?: boolean;
@@ -37,7 +38,7 @@ export class Transpiler {
 
   obfuscation: boolean;
   buildType: BuildType;
-  buildOptions: BeautifyOptions | object;
+  buildOptions: BeautifyOptions | DefaultFactoryOptions;
   installer: boolean;
   disableLiteralsOptimization: boolean;
   disableNamespacesOptimization: boolean;
@@ -62,7 +63,7 @@ export class Transpiler {
     });
 
     me.buildType = options.buildType || BuildType.DEFAULT;
-    me.buildOptions = options.buildOptions || {};
+    me.buildOptions = options.buildOptions || { isDevMode: false };
     me.installer = options.installer || false;
     me.disableLiteralsOptimization =
       options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;

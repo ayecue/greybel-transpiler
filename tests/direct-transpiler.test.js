@@ -52,6 +52,7 @@ describe('parse', function () {
           code: fs.readFileSync(filepath, 'utf-8'),
           buildType: BuildType.BEAUTIFY,
           buildOptions: {
+            isDevMode: true,
             keepParentheses: true,
             indentation: 1,
             indentationSpaces: 10

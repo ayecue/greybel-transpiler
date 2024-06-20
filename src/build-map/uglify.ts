@@ -34,14 +34,18 @@ import {
 import { basename } from 'path';
 
 import { TransformerDataObject } from '../transformer';
-import { Factory } from './factory';
+import { DefaultFactoryOptions, Factory } from './factory';
 
-export const uglifyFactory: Factory<{}> = (
-  _options,
+export const uglifyFactory: Factory<DefaultFactoryOptions> = (
+  options,
   make,
   context,
   environmentVariables
 ) => {
+  const {
+    isDevMode = false
+  } = options;
+
   return {
     ParenthesisExpression: (
       item: ASTParenthesisExpression,
@@ -262,6 +266,7 @@ export const uglifyFactory: Factory<{}> = (
       item: ASTFeatureEnvarExpression,
       _data: TransformerDataObject
     ): string => {
+      if (isDevMode) return `#envar ${item.name}`;
       const value = environmentVariables.get(item.name);
       if (!value) return 'null';
       return `"${value}"`;
@@ -270,18 +275,21 @@ export const uglifyFactory: Factory<{}> = (
       _item: ASTBase,
       _data: TransformerDataObject
     ): string => {
+      if (isDevMode) return `debugger`;
       return '//debugger';
     },
     FeatureLineExpression: (
       item: ASTBase,
       _data: TransformerDataObject
     ): string => {
+      if (isDevMode) return `#line`;
       return `${item.start.line}`;
     },
     FeatureFileExpression: (
       item: ASTFeatureFileExpression,
       _data: TransformerDataObject
     ): string => {
+      if (isDevMode) return `#file`;
       return `"${basename(item.filename).replace(/"/g, '"')}"`;
     },
     IfShortcutStatement: (
@@ -427,9 +435,8 @@ export const uglifyFactory: Factory<{}> = (
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): string => {
-      if (!item.chunk) {
-        return '#import ' + make(item.name) + ' from "' + item.path + '";';
-      }
+      if (isDevMode) return '#import ' + make(item.name) + ' from "' + item.path + '";';
+      if (!item.chunk) return '#import ' + make(item.name) + ' from "' + item.path + '";';
 
       const requireMethodName = context.variables.get('__REQUIRE');
       return (
@@ -440,10 +447,8 @@ export const uglifyFactory: Factory<{}> = (
       item: ASTFeatureIncludeExpression,
       _data: TransformerDataObject
     ): string => {
-      if (!item.chunk) {
-        return '#include "' + item.path + '";';
-      }
-
+      if (isDevMode) return '#include "' + item.path + '";';
+      if (!item.chunk) return '#include "' + item.path + '";';
       return make(item.chunk);
     },
     ListConstructorExpression: (

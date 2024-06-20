@@ -1225,8 +1225,8 @@ print \\"0.2\\""
 exports[`parse default scripts envar.src beautify with custom settings 1`] = `
 "#include \\"../fixtures/envar-include.src\\";
 
-myvar = \\"\\"foo\\"\\"
-print(\\"0.2\\")"
+myvar = #envar test
+print(#envar test2)"
 `;
 
 exports[`parse default scripts envar.src uglify 1`] = `
@@ -1290,13 +1290,13 @@ exports[`parse default scripts greybel-utils.src beautify with custom settings 1
 "#import foo from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
-\\"true\\"
-//debugger
+#envar TEST_ENV
+debugger
 
 
 
-print(9)
-print(\\"unknown\\")"
+print(#line)
+print(#file)"
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
@@ -1329,8 +1329,8 @@ exports[`parse default scripts greybel-utils-with-comments.src beautify with cus
 "#import foo from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
-\\"true\\"
-//debugger"
+#envar TEST_ENV
+debugger"
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src uglify 1`] = `

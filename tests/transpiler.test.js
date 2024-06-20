@@ -54,6 +54,7 @@ describe('parse', function () {
           target: filepath,
           buildType: BuildType.BEAUTIFY,
           buildOptions: {
+            isDevMode: true,
             keepParentheses: true,
             indentation: 1,
             indentationSpaces: 10
