@@ -1296,7 +1296,7 @@ debugger
 
 
 print(#line)
-print(#file)"
+print(#filename)"
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `

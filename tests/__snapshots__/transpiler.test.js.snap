@@ -2239,7 +2239,7 @@ debugger
 
 
 print(#line)
-print(#file)",
+print(#filename)",
 ]
 `;
 
