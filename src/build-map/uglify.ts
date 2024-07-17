@@ -42,9 +42,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
   context,
   environmentVariables
 ) => {
-  const {
-    isDevMode = false
-  } = options;
+  const { isDevMode = false } = options;
 
   return {
     ParenthesisExpression: (
@@ -435,8 +433,10 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): string => {
-      if (isDevMode) return '#import ' + make(item.name) + ' from "' + item.path + '";';
-      if (!item.chunk) return '#import ' + make(item.name) + ' from "' + item.path + '";';
+      if (isDevMode)
+        return '#import ' + make(item.name) + ' from "' + item.path + '";';
+      if (!item.chunk)
+        return '#import ' + make(item.name) + ' from "' + item.path + '";';
 
       const requireMethodName = context.variables.get('__REQUIRE');
       return (

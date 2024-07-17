@@ -3796,18 +3796,30 @@ Array [
 //
 //my Test
 //
-//  **",
+//  **
+print \\"test\\" //
+//
+//  another comment
+//
+//  
+// one line comment ",
 ]
 `;
 
 exports[`parse default scripts multiline-comment.src beautify with custom settings 1`] = `
 Array [
-  "//
-//
-//
-//my Test
-//
-//  **",
+  "/*
+
+
+my Test
+
+  ***/
+print(\\"test\\") /*
+
+  another comment
+
+  */
+// one line comment ",
 ]
 `;
 

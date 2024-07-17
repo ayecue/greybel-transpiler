@@ -11,10 +11,15 @@ export interface BuildMap {
   [type: string]: (item: ASTBase, _data: TransformerDataObject) => string;
 }
 
+export type FactoryMake = (
+  item: ASTBase,
+  data?: TransformerDataObject
+) => string;
+
 export interface Factory<T extends DefaultFactoryOptions> {
   (
     options: T,
-    make: (item: ASTBase, data?: TransformerDataObject) => string,
+    make: FactoryMake,
     context: Context,
     environmentVariables: Map<string, string>
   ): BuildMap;

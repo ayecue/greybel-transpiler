@@ -4,12 +4,12 @@ import { ASTLiteral } from 'miniscript-core';
 
 import { BuildType, getFactory } from './build-map';
 import { BeautifyOptions } from './build-map/beautify';
+import { DefaultFactoryOptions } from './build-map/factory';
 import { Context } from './context';
 import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 import { OutputProcessor } from './utils/output-processor';
-import { DefaultFactoryOptions } from './build-map/factory';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 

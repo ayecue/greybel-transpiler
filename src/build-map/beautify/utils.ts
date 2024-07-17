@@ -1,7 +1,9 @@
 import {
   ASTBase,
+  ASTComment,
   ASTEvaluationExpression,
   ASTParenthesisExpression,
+  ASTType,
   Operator
 } from 'miniscript-core';
 
@@ -55,4 +57,12 @@ export const unwrap = (node: ASTBase): ASTBase => {
     node = node.expression;
   }
   return node;
+};
+
+export const getLastComment = (nodes: ASTBase[]): ASTComment | null => {
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const node = nodes[i];
+    if (node.type === ASTType.Comment) return node as ASTComment;
+  }
+  return null;
 };

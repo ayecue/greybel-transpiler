@@ -368,8 +368,10 @@ export const defaultFactory: Factory<DefaultFactoryOptions> = (
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): string => {
-      if (isDevMode) return '#import ' + make(item.name) + ' from "' + item.path + '";';
-      if (!item.chunk) return '#import ' + make(item.name) + ' from "' + item.path + '";';
+      if (isDevMode)
+        return '#import ' + make(item.name) + ' from "' + item.path + '";';
+      if (!item.chunk)
+        return '#import ' + make(item.name) + ' from "' + item.path + '";';
       return make(item.name) + ' = __REQUIRE("' + item.namespace + '")';
     },
     FeatureIncludeExpression: (
