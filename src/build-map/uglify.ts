@@ -4,6 +4,7 @@ import {
   ASTFeatureImportExpression,
   ASTFeatureIncludeExpression
 } from 'greybel-core';
+import { ASTFeatureInjectExpression } from 'greybel-core/dist/parser/ast/feature';
 import {
   ASTAssignmentStatement,
   ASTBase,
@@ -33,23 +34,18 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { TransformerDataObject } from '../transformer';
+import { TransformerDataObject } from '../types/transformer';
 import { DefaultFactoryOptions, Factory } from './factory';
 
-export const uglifyFactory: Factory<DefaultFactoryOptions> = (
-  options,
-  make,
-  context,
-  environmentVariables
-) => {
-  const { isDevMode = false } = options;
+export const uglifyFactory: Factory<DefaultFactoryOptions> = (transformer) => {
+  const { isDevMode = false } = transformer.buildOptions;
 
   return {
     ParenthesisExpression: (
       item: ASTParenthesisExpression,
       _data: TransformerDataObject
     ): string => {
-      const expr = make(item.expression);
+      const expr = transformer.make(item.expression);
 
       return '(' + expr + ')';
     },
@@ -62,8 +58,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
     ): string => {
       const varibale = item.variable;
       const init = item.init;
-      const left = make(varibale);
-      const right = make(init, data);
+      const left = transformer.make(varibale);
+      const right = transformer.make(init, data);
 
       return left + '=' + right;
     },
@@ -72,10 +68,10 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       _data: TransformerDataObject
     ): string => {
       const identifier = item.identifier;
-      const base = make(item.base);
-      const globalNamespace = context.variables.get('globals');
+      const base = transformer.make(item.base);
+      const globalNamespace = transformer.context.variables.get('globals');
 
-      const value = make(identifier, {
+      const value = transformer.make(identifier, {
         usesNativeVar:
           base === globalNamespace || base === 'locals' || base === 'outer',
         isMember: true
@@ -93,11 +89,11 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       let bodyItem;
 
       for (parameterItem of item.parameters) {
-        parameters.push(make(parameterItem, { isArgument: true }));
+        parameters.push(transformer.make(parameterItem, { isArgument: true }));
       }
 
       for (bodyItem of item.body) {
-        const transformed = make(bodyItem);
+        const transformed = transformer.make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
       }
@@ -122,7 +118,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       let fieldItem;
 
       for (fieldItem of item.fields) {
-        fields.push(make(fieldItem));
+        fields.push(transformer.make(fieldItem));
       }
 
       return '{' + fields.join(',') + '}';
@@ -131,8 +127,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTMapKeyString,
       _data: TransformerDataObject
     ): string => {
-      const key = make(item.key);
-      const value = make(item.value);
+      const key = transformer.make(item.key);
+      const value = transformer.make(item.value);
 
       return [key, value].join(':');
     },
@@ -141,26 +137,26 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
 
       if (data.isMember) {
         if (data.usesNativeVar) {
-          return context.variables.get(name) || name;
+          return transformer.context.variables.get(name) || name;
         }
 
         return name;
       }
 
-      return context.variables.get(name) || name;
+      return transformer.context.variables.get(name) || name;
     },
     ReturnStatement: (
       item: ASTReturnStatement,
       _data: TransformerDataObject
     ): string => {
-      const arg = item.argument ? make(item.argument) : '';
+      const arg = item.argument ? transformer.make(item.argument) : '';
       return 'return ' + arg;
     },
     NumericLiteral: (
       item: ASTLiteral,
       { isArgument = false }: TransformerDataObject
     ): string => {
-      const literal = context.literals.get(item);
+      const literal = transformer.context.literals.get(item);
       if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return item.value.toString();
@@ -169,12 +165,12 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTWhileStatement,
       _data: TransformerDataObject
     ): string => {
-      const condition = make(item.condition);
+      const condition = transformer.make(item.condition);
       const body = [];
       let bodyItem;
 
       for (bodyItem of item.body) {
-        const transformed = make(bodyItem);
+        const transformed = transformer.make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
       }
@@ -185,8 +181,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTCallExpression,
       _data: TransformerDataObject
     ): string => {
-      const base = make(item.base);
-      const globalNamespace = context.variables.get('globals');
+      const base = transformer.make(item.base);
+      const globalNamespace = transformer.context.variables.get('globals');
       const isNativeVarHasIndex =
         base === globalNamespace + '.hasIndex' ||
         base === 'locals.hasIndex' ||
@@ -198,17 +194,17 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
 
         if (argItem.type === 'StringLiteral') {
           const namespace = (argItem as ASTLiteral).value.toString();
-          const optNamespace = context.variables.get(namespace);
+          const optNamespace = transformer.context.variables.get(namespace);
           return base + '("' + (optNamespace ?? namespace) + '")';
         }
 
-        return base + '(' + make(argItem) + ')';
+        return base + '(' + transformer.make(argItem) + ')';
       }
 
       const args = [];
 
       for (argItem of item.arguments) {
-        args.push(make(argItem));
+        args.push(transformer.make(argItem));
       }
 
       if (args.length === 0) return base;
@@ -218,7 +214,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTLiteral,
       { isArgument = false }: TransformerDataObject
     ): string => {
-      const literal = context.literals.get(item);
+      const literal = transformer.context.literals.get(item);
       if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return item.raw.toString();
@@ -227,9 +223,9 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTSliceExpression,
       _data: TransformerDataObject
     ): string => {
-      const base = make(item.base);
-      const left = make(item.left);
-      const right = make(item.right);
+      const base = transformer.make(item.base);
+      const left = transformer.make(item.left);
+      const right = transformer.make(item.right);
 
       return base + '[' + [left, right].join(':') + ']';
     },
@@ -237,8 +233,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTIndexExpression,
       _data: TransformerDataObject
     ): string => {
-      const base = make(item.base);
-      const index = make(item.index);
+      const base = transformer.make(item.base);
+      const index = transformer.make(item.index);
 
       return base + '[' + index + ']';
     },
@@ -246,7 +242,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): string => {
-      const arg = make(item.argument);
+      const arg = transformer.make(item.argument);
 
       if (item.operator === 'new') return item.operator + ' ' + arg;
 
@@ -256,7 +252,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): string => {
-      const arg = make(item.argument);
+      const arg = transformer.make(item.argument);
 
       return 'not ' + arg;
     },
@@ -265,7 +261,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       _data: TransformerDataObject
     ): string => {
       if (isDevMode) return `#envar ${item.name}`;
-      const value = environmentVariables.get(item.name);
+      const value = transformer.environmentVariables.get(item.name);
       if (!value) return 'null';
       return `"${value}"`;
     },
@@ -298,7 +294,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       let clausesItem;
 
       for (clausesItem of item.clauses) {
-        clauses.push(make(clausesItem));
+        clauses.push(transformer.make(clausesItem));
       }
 
       return clauses.join('\n') + '\nend if';
@@ -307,8 +303,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTIfClause,
       _data: TransformerDataObject
     ): string => {
-      const condition = make(item.condition);
-      const statement = make(item.body[0]);
+      const condition = transformer.make(item.condition);
+      const statement = transformer.make(item.body[0]);
 
       return 'if ' + condition + ' then\n' + statement;
     },
@@ -316,8 +312,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTIfClause,
       _data: TransformerDataObject
     ): string => {
-      const condition = make(item.condition);
-      const statement = make(item.body[0]);
+      const condition = transformer.make(item.condition);
+      const statement = transformer.make(item.body[0]);
 
       return 'else if ' + condition + ' then\n' + statement;
     },
@@ -325,7 +321,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTElseClause,
       _data: TransformerDataObject
     ): string => {
-      const statement = make(item.body[0]);
+      const statement = transformer.make(item.body[0]);
 
       return 'else\n' + statement;
     },
@@ -333,7 +329,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTLiteral,
       { isArgument = false }: TransformerDataObject
     ): string => {
-      const literal = context.literals.get(item);
+      const literal = transformer.context.literals.get(item);
       if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return 'null';
@@ -342,13 +338,13 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTForGenericStatement,
       _data: TransformerDataObject
     ): string => {
-      const variable = make(item.variable);
-      const iterator = make(item.iterator);
+      const variable = transformer.make(item.variable);
+      const iterator = transformer.make(item.iterator);
       const body = [];
       let bodyItem;
 
       for (bodyItem of item.body) {
-        const transformed = make(bodyItem);
+        const transformed = transformer.make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
       }
@@ -371,18 +367,18 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       let clausesItem;
 
       for (clausesItem of item.clauses) {
-        clauses.push(make(clausesItem));
+        clauses.push(transformer.make(clausesItem));
       }
 
       return clauses.join('\n') + '\nend if';
     },
     IfClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const condition = make(item.condition);
+      const condition = transformer.make(item.condition);
       const body = [];
       let bodyItem;
 
       for (bodyItem of item.body) {
-        const transformed = make(bodyItem);
+        const transformed = transformer.make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
       }
@@ -390,12 +386,12 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       return 'if ' + condition + ' then\n' + body.join('\n');
     },
     ElseifClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const condition = make(item.condition);
+      const condition = transformer.make(item.condition);
       const body = [];
       let bodyItem;
 
       for (bodyItem of item.body) {
-        const transformed = make(bodyItem);
+        const transformed = transformer.make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
       }
@@ -407,7 +403,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       let bodyItem;
 
       for (bodyItem of item.body) {
-        const transformed = make(bodyItem);
+        const transformed = transformer.make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
       }
@@ -427,20 +423,51 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTCallStatement,
       _data: TransformerDataObject
     ): string => {
-      return make(item.expression);
+      return transformer.make(item.expression);
+    },
+    FeatureInjectExpression: (
+      item: ASTFeatureInjectExpression,
+      _data: TransformerDataObject
+    ): string => {
+      if (isDevMode) return `#inject "${item.path}"`;
+      if (transformer.currentDependency === null)
+        return `#inject "${item.path}"`;
+
+      const content = transformer.currentDependency.injections.get(item.path);
+
+      if (content == null) return 'null';
+
+      return `"${content.replace(/"/g, '""')}"`;
     },
     FeatureImportExpression: (
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): string => {
       if (isDevMode)
-        return '#import ' + make(item.name) + ' from "' + item.path + '";';
+        return (
+          '#import ' +
+          transformer.make(item.name) +
+          ' from "' +
+          item.path +
+          '";'
+        );
       if (!item.chunk)
-        return '#import ' + make(item.name) + ' from "' + item.path + '";';
+        return (
+          '#import ' +
+          transformer.make(item.name) +
+          ' from "' +
+          item.path +
+          '";'
+        );
 
-      const requireMethodName = context.variables.get('__REQUIRE');
+      const requireMethodName = transformer.context.variables.get('__REQUIRE');
       return (
-        make(item.name) + '=' + requireMethodName + '("' + item.namespace + '")'
+        transformer.make(item.name) +
+        '=' +
+        requireMethodName +
+        '("' +
+        item.namespace +
+        '")'
       );
     },
     FeatureIncludeExpression: (
@@ -449,7 +476,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
     ): string => {
       if (isDevMode) return '#include "' + item.path + '";';
       if (!item.chunk) return '#include "' + item.path + '";';
-      return make(item.chunk);
+      return transformer.make(item.chunk);
     },
     ListConstructorExpression: (
       item: ASTListConstructorExpression,
@@ -459,19 +486,19 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       let fieldItem;
 
       for (fieldItem of item.fields) {
-        fields.push(make(fieldItem));
+        fields.push(transformer.make(fieldItem));
       }
 
       return '[' + fields.join(',') + ']';
     },
     ListValue: (item: ASTListValue, _data: TransformerDataObject): string => {
-      return make(item.value);
+      return transformer.make(item.value);
     },
     BooleanLiteral: (
       item: ASTLiteral,
       { isArgument = false }: TransformerDataObject
     ): string => {
-      const literal = context.literals.get(item);
+      const literal = transformer.context.literals.get(item);
       if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
       return item.raw.toString();
@@ -483,8 +510,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTEvaluationExpression,
       _data: TransformerDataObject
     ): string => {
-      const left = make(item.left);
-      const right = make(item.right);
+      const left = transformer.make(item.left);
+      const right = transformer.make(item.right);
 
       return left + ' ' + item.operator + ' ' + right;
     },
@@ -492,8 +519,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTEvaluationExpression,
       _data: TransformerDataObject
     ): string => {
-      const left = make(item.left);
-      const right = make(item.right);
+      const left = transformer.make(item.left);
+      const right = transformer.make(item.right);
 
       return left + ' ' + item.operator + ' ' + right;
     },
@@ -501,8 +528,8 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTEvaluationExpression,
       _data: TransformerDataObject
     ): string => {
-      const left = make(item.left);
-      const right = make(item.right);
+      const left = transformer.make(item.left);
+      const right = transformer.make(item.right);
       const operator = item.operator;
       let expression = left + operator + right;
 
@@ -520,7 +547,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): string => {
-      const arg = make(item.argument);
+      const arg = transformer.make(item.argument);
       const operator = item.operator;
 
       return operator + arg;
@@ -530,7 +557,7 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (
       let bodyItem;
 
       for (bodyItem of item.body) {
-        const transformed = make(bodyItem);
+        const transformed = transformer.make(bodyItem);
         if (transformed === '') continue;
         body.push(transformed);
       }

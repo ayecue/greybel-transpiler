@@ -1,7 +1,6 @@
 import { ASTBase } from 'miniscript-core';
 
-import { Context } from '../context';
-import { TransformerDataObject } from '../transformer';
+import { TransformerDataObject, TransformerLike } from '../types/transformer';
 
 export interface DefaultFactoryOptions {
   isDevMode: boolean;
@@ -17,10 +16,5 @@ export type FactoryMake = (
 ) => string;
 
 export interface Factory<T extends DefaultFactoryOptions> {
-  (
-    options: T,
-    make: FactoryMake,
-    context: Context,
-    environmentVariables: Map<string, string>
-  ): BuildMap;
+  (transformer: TransformerLike<T>): BuildMap;
 }

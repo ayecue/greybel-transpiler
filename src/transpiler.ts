@@ -1,9 +1,10 @@
+import { DependencyType } from '.';
 import { MODULE_BOILERPLATE } from './boilerplates';
 import { BuildType, getFactory } from './build-map';
 import { BeautifyOptions } from './build-map/beautify';
 import { DefaultFactoryOptions } from './build-map/factory';
 import { Context } from './context';
-import { Dependency, DependencyType } from './dependency';
+import { Dependency } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
 import { Target, TargetParseResult } from './target';
 import { Transformer } from './transformer';
@@ -88,12 +89,13 @@ export class Transpiler {
     });
 
     // create builder
-    const transformer = new Transformer(
-      this.buildOptions,
+    const transformer = new Transformer({
+      buildOptions: me.buildOptions,
       mapFactory,
       context,
-      me.environmentVariables
-    );
+      environmentVariables: me.environmentVariables,
+      resourceHandler: me.resourceHandler
+    });
     const mainModule = targetParseResult.main;
     const moduleBoilerplate = transformer.transform(MODULE_BOILERPLATE);
     const build = (
@@ -111,7 +113,7 @@ export class Transpiler {
           moduleName !== mainNamespace &&
           item.type === DependencyType.Import
         ) {
-          const code = transformer.transform(item.chunk);
+          const code = transformer.transform(item.chunk, item);
           modules[moduleName] = moduleBoilerplate
             .replace('"$0"', '"' + moduleName + '"')
             .replace('"$1"', code);
@@ -134,7 +136,7 @@ export class Transpiler {
         output.addCode(modules[moduleKey])
       );
 
-      const code = transformer.transform(mainDependency.chunk);
+      const code = transformer.transform(mainDependency.chunk, mainDependency);
 
       output.addCode(code, true);
 

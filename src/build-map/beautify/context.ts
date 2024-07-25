@@ -7,7 +7,8 @@ import {
   ASTType
 } from 'miniscript-core';
 
-import { DefaultFactoryOptions, FactoryMake } from '../factory';
+import { TransformerLike } from '../../types/transformer';
+import { DefaultFactoryOptions } from '../factory';
 import { getLastComment } from './utils';
 
 export enum IndentationType {
@@ -25,7 +26,7 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
 export class BeautifyContext {
   readonly options: BeautifyContextOptions;
 
-  private make: FactoryMake;
+  private transformer: TransformerLike<BeautifyContextOptions>;
   private _indent: number;
   private _isMultilineAllowed: boolean;
   private chunks: ASTChunk['lines'][];
@@ -40,8 +41,11 @@ export class BeautifyContext {
     return this._isMultilineAllowed;
   }
 
-  constructor(make: FactoryMake, options: BeautifyContextOptions) {
-    this.make = make;
+  constructor(
+    transformer: TransformerLike<BeautifyContextOptions>,
+    options: BeautifyContextOptions
+  ) {
+    this.transformer = transformer;
     this.options = options;
     this._indent = 0;
     this._isMultilineAllowed = true;
@@ -76,7 +80,7 @@ export class BeautifyContext {
 
     if (lastItem != null && !this.usedComments.has(lastItem)) {
       this.usedComments.add(lastItem);
-      return line + ' ' + this.make(lastItem);
+      return line + ' ' + this.transformer.make(lastItem);
     }
 
     return line;
@@ -113,7 +117,9 @@ export class BeautifyContext {
         bodyItem.type !== ASTType.Comment &&
         previous?.end.line === bodyItem.start.line
       ) {
-        const transformed = this.make(bodyItem, { isCommand: true });
+        const transformed = this.transformer.make(bodyItem, {
+          isCommand: true
+        });
         body.push(
           this.putIndent(this.appendComment(bodyItem.end, transformed))
         );
@@ -147,10 +153,14 @@ export class BeautifyContext {
 
       if (bodyItem instanceof ASTComment) {
         this.usedComments.add(bodyItem);
-        const transformed = this.make(bodyItem, { isCommand: true });
+        const transformed = this.transformer.make(bodyItem, {
+          isCommand: true
+        });
         body.push(this.putIndent(transformed));
       } else {
-        const transformed = this.make(bodyItem, { isCommand: true });
+        const transformed = this.transformer.make(bodyItem, {
+          isCommand: true
+        });
         body.push(
           this.putIndent(this.appendComment(bodyItem.end, transformed))
         );

@@ -1,9 +1,9 @@
 export { BuildType, getFactory } from './build-map';
-export { BuildMap, Factory, FactoryMake } from './build-map/factory';
+export { beautifyFactory, BeautifyOptions } from './build-map/beautify';
 export { BeautifyContext } from './build-map/beautify/context';
 export * as BeautifyUtils from './build-map/beautify/utils';
-export { BeautifyOptions, beautifyFactory } from './build-map/beautify';
 export { defaultFactory } from './build-map/default';
+export { BuildMap, Factory, FactoryMake } from './build-map/factory';
 export { uglifyFactory } from './build-map/uglify';
 export { Context, ContextDataProperty, ContextOptions } from './context';
 export {
@@ -11,7 +11,6 @@ export {
   DependencyCallStack,
   DependencyFindResult,
   DependencyOptions,
-  DependencyType,
   ResourceDependencyMap
 } from './dependency';
 export { DirectTranspiler, DirectTranspilerOptions } from './direct-transpiler';
@@ -23,12 +22,14 @@ export {
   TargetParseResult,
   TargetParseResultItem
 } from './target';
-export { Transformer, TransformerDataObject } from './transformer';
+export { Transformer } from './transformer';
 export {
   Transpiler,
   TranspilerOptions,
   TranspilerParseResult
 } from './transpiler';
+export { DependencyLike, DependencyType } from './types/dependency';
+export { TransformerDataObject, TransformerLike } from './types/transformer';
 export { CharsetMap, generateCharsetMap } from './utils/charset-generator';
 export { BuildError } from './utils/error';
 export { fetchNamespaces } from './utils/fetch-namespaces';
