@@ -2278,7 +2278,7 @@ print(#line)
 print(#filename)
 
 
-print(#inject \\"../fixtures/inject.src\\")",
+print(#inject \\"../fixtures/inject.src\\";)",
 ]
 `;
 
