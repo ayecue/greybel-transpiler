@@ -1505,7 +1505,11 @@ print(\\"sub-import.src\\")
 \\"true\\"
 //debugger
 print(9)
-print(\\"greybel-utils.src\\")",
+print(\\"greybel-utils.src\\")
+print(\\"print \\"\\"1..\\"\\"
+print \\"\\"2..\\"\\"
+print \\"\\"3..\\"\\"
+print \\"\\"hello world\\"\\"\\")",
 ]
 `;
 
@@ -2002,7 +2006,14 @@ print \\"sub-import.src\\"
 
 
 print 9
-print \\"greybel-utils.src\\"",
+print \\"greybel-utils.src\\"
+
+
+print(
+	\\"print \\"\\"1..\\"\\"
+print \\"\\"2..\\"\\"
+print \\"\\"3..\\"\\"
+print \\"\\"hello world\\"\\"\\")",
 ]
 `;
 
@@ -2264,7 +2275,10 @@ debugger
 
 
 print(#line)
-print(#filename)",
+print(#filename)
+
+
+print(#inject \\"../fixtures/inject.src\\")",
 ]
 `;
 
@@ -2453,7 +2467,11 @@ print(\\"sub-import.src\\")
 \\"true\\"
 //debugger
 print(9)
-print(\\"greybel-utils.src\\")",
+print(\\"greybel-utils.src\\")
+print(\\"print \\"\\"1..\\"\\"
+print \\"\\"2..\\"\\"
+print \\"\\"3..\\"\\"
+print \\"\\"hello world\\"\\"\\")",
 ]
 `;
 

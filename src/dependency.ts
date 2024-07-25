@@ -9,14 +9,9 @@ import { ASTBase } from 'miniscript-core';
 
 import { Context, ContextDataProperty } from './context';
 import { ResourceHandler } from './resource';
+import { DependencyLike, DependencyType } from './types/dependency';
 import { BuildError } from './utils/error';
 import { fetchNamespaces } from './utils/fetch-namespaces';
-
-export enum DependencyType {
-  Main = 0,
-  Import = 1,
-  Include = 2
-}
 
 export interface DependencyOptions {
   target: string;
@@ -40,7 +35,7 @@ export type ResourceDependencyMap = Map<string, Dependency>;
 
 export type DependencyCallStack = string[];
 
-export class Dependency extends EventEmitter {
+export class Dependency extends EventEmitter implements DependencyLike {
   target: string;
   id: string;
   resourceHandler: ResourceHandler;
@@ -48,6 +43,7 @@ export class Dependency extends EventEmitter {
   /* eslint-disable no-use-before-define */
   dependencies: Set<Dependency>;
   context: Context;
+  injections: Map<string, string>;
 
   type: DependencyType | number;
   ref?: ASTBase;
@@ -62,6 +58,7 @@ export class Dependency extends EventEmitter {
     me.resourceHandler = options.resourceHandler;
     me.chunk = options.chunk;
     me.dependencies = new Set<Dependency>();
+    me.injections = new Map();
     me.type = options.type || DependencyType.Main;
     me.context = options.context;
     me.ref = options.ref;
@@ -150,6 +147,31 @@ export class Dependency extends EventEmitter {
     }
   }
 
+  async findInjections(): Promise<Map<string, string>> {
+    const me = this;
+    const { injects } = me.chunk;
+    const injections: Map<string, string> = new Map();
+
+    for (const item of injects) {
+      const injectionTarget = await me.resourceHandler.getTargetRelativeTo(
+        me.target,
+        item.path
+      );
+
+      if (!(await me.resourceHandler.has(injectionTarget))) {
+        throw new Error('Injection ' + injectionTarget + ' does not exist...');
+      }
+
+      const content = await me.resourceHandler.get(injectionTarget);
+
+      injections.set(item.path, content);
+    }
+
+    me.injections = injections;
+
+    return injections;
+  }
+
   async findDependencies(): Promise<DependencyFindResult> {
     const me = this;
     const { imports, includes } = me.chunk;
@@ -191,6 +213,8 @@ export class Dependency extends EventEmitter {
       literals.push(...relatedDependencies.literals);
       result.push(dependency);
     }
+
+    await this.findInjections();
 
     const dependencies = new Set<Dependency>(result);
 

@@ -1295,7 +1295,8 @@ exports[`parse default scripts greybel-utils.src 1`] = `
 \\"true\\"
 //debugger
 print(9)
-print(\\"unknown\\")"
+print(\\"unknown\\")
+print(#inject \\"../fixtures/inject.src\\")"
 `;
 
 exports[`parse default scripts greybel-utils.src beautify 1`] = `
@@ -1308,7 +1309,10 @@ exports[`parse default scripts greybel-utils.src beautify 1`] = `
 
 
 print 9
-print \\"unknown\\""
+print \\"unknown\\"
+
+
+print #inject \\"../fixtures/inject.src\\""
 `;
 
 exports[`parse default scripts greybel-utils.src beautify with custom settings 1`] = `
@@ -1321,7 +1325,10 @@ debugger
 
 
 print(#line)
-print(#filename)"
+print(#filename)
+
+
+print(#inject \\"../fixtures/inject.src\\")"
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
@@ -1331,7 +1338,8 @@ exports[`parse default scripts greybel-utils.src uglify 1`] = `
 \\"true\\"
 //debugger
 print(9)
-print(\\"unknown\\")"
+print(\\"unknown\\")
+print(#inject \\"../fixtures/inject.src\\")"
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src 1`] = `

@@ -87,12 +87,12 @@ export class DirectTranspiler extends EventEmitter {
       literals.forEach((literal: ASTLiteral) => context.literals.add(literal));
     }
 
-    const transformer = new Transformer(
-      this.buildOptions,
+    const transformer = new Transformer({
+      buildOptions: me.buildOptions,
       mapFactory,
       context,
-      me.environmentVariables
-    );
+      environmentVariables: me.environmentVariables
+    });
     const output = new OutputProcessor(context, transformer);
 
     if (!me.disableLiteralsOptimization) output.addLiteralsOptimization();
