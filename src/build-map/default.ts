@@ -3,9 +3,9 @@ import {
   ASTFeatureEnvarExpression,
   ASTFeatureFileExpression,
   ASTFeatureImportExpression,
-  ASTFeatureIncludeExpression
+  ASTFeatureIncludeExpression,
+  ASTFeatureInjectExpression
 } from 'greybel-core';
-import { ASTFeatureInjectExpression } from 'greybel-core/dist/parser/ast/feature';
 import {
   ASTAssignmentStatement,
   ASTBase,
