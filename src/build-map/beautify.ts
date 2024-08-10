@@ -265,7 +265,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       const commentAtEnd = context.useComment(item.end);
 
       if (item.arguments.length === 0) {
-        return base;
+        return base + commentAtEnd;
       }
 
       if (item.arguments.length > 3 && context.isMultilineAllowed) {
