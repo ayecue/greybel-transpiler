@@ -9,22 +9,23 @@ import {
 import {
   ASTAssignmentStatement,
   ASTBase,
+  ASTBinaryExpression,
   ASTCallExpression,
   ASTCallStatement,
   ASTComment,
+  ASTComparisonGroupExpression,
   ASTElseClause,
-  ASTLogicalExpression,
-  ASTIsaExpression,
-  ASTBinaryExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
   ASTIfClause,
   ASTIfStatement,
   ASTIndexExpression,
+  ASTIsaExpression,
   ASTListConstructorExpression,
   ASTListValue,
   ASTLiteral,
+  ASTLogicalExpression,
   ASTMapConstructorExpression,
   ASTMapKeyString,
   ASTMemberExpression,
@@ -32,8 +33,7 @@ import {
   ASTReturnStatement,
   ASTSliceExpression,
   ASTUnaryExpression,
-  ASTWhileStatement,
-  ASTComparisonGroupExpression
+  ASTWhileStatement
 } from 'miniscript-core';
 import { basename } from 'path';
 
@@ -505,7 +505,9 @@ export const defaultFactory: Factory<DefaultFactoryOptions> = (transformer) => {
       item: ASTComparisonGroupExpression,
       _data: TransformerDataObject
     ): string => {
-      const expressions: string[] = item.expressions.map((it) => transformer.make(it));
+      const expressions: string[] = item.expressions.map((it) =>
+        transformer.make(it)
+      );
       const segments: string[] = [expressions[0]];
 
       for (let index = 0; index < item.operators.length; index++) {

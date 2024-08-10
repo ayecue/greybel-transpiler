@@ -3,11 +3,11 @@ import {
   ASTBaseBlock,
   ASTChunk,
   ASTComment,
+  ASTForGenericStatement,
+  ASTIfClause,
   ASTPosition,
   ASTType,
-  ASTIfClause,
-  ASTWhileStatement,
-  ASTForGenericStatement
+  ASTWhileStatement
 } from 'miniscript-core';
 
 import { TransformerLike } from '../../types/transformer';

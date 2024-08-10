@@ -8,23 +8,24 @@ import {
 import {
   ASTAssignmentStatement,
   ASTBase,
+  ASTBinaryExpression,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
   ASTComment,
+  ASTComparisonGroupExpression,
   ASTElseClause,
-  ASTLogicalExpression,
-  ASTBinaryExpression,
-  ASTIsaExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
   ASTIfClause,
   ASTIfStatement,
   ASTIndexExpression,
+  ASTIsaExpression,
   ASTListConstructorExpression,
   ASTListValue,
   ASTLiteral,
+  ASTLogicalExpression,
   ASTMapConstructorExpression,
   ASTMapKeyString,
   ASTMemberExpression,
@@ -32,8 +33,7 @@ import {
   ASTReturnStatement,
   ASTSliceExpression,
   ASTUnaryExpression,
-  ASTWhileStatement,
-  ASTComparisonGroupExpression
+  ASTWhileStatement
 } from 'miniscript-core';
 import { basename } from 'path';
 
@@ -71,17 +71,11 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
   return {
     ParenthesisExpression: (
       item: ASTParenthesisExpression,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): string => {
-      const expr = transformer.make(item.expression);
-      const count = countRightBinaryExpressions(item.expression)
-
-      if (count > 3) {
-        context.incIndent();
-        const expr = context.putIndent(transformer.make(item.expression), 1);
-        context.decIndent();
-        return '(\n' + expr + ')';
-      }
+      const expr = transformer.make(item.expression, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
 
       return '(' + expr + ')';
     },
@@ -627,10 +621,14 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
     },
     IsaExpression: (
       item: ASTIsaExpression,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): string => {
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
+      const left = transformer.make(item.left, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
+      const right = transformer.make(item.right, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
 
       return left + ' ' + item.operator + ' ' + right;
     },
@@ -643,19 +641,27 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       if (count > 2) {
         if (!data.hasLogicalIndentActive) context.incIndent();
 
-        const left = transformer.make(item.left, { hasLogicalIndentActive: true });
-        const right = transformer.make(item.right, { hasLogicalIndentActive: true });
+        const left = transformer.make(item.left, {
+          hasLogicalIndentActive: true
+        });
+        const right = transformer.make(item.right, {
+          hasLogicalIndentActive: true
+        });
         const operator = item.operator;
         const expression =
           left + ' ' + operator + '\n' + context.putIndent(right);
-        
+
         if (!data.hasLogicalIndentActive) context.decIndent();
 
         return expression;
       }
 
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
+      const left = transformer.make(item.left, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
+      const right = transformer.make(item.right, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
 
       return left + ' ' + item.operator + ' ' + right;
     },
@@ -663,8 +669,12 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTBinaryExpression,
       data: TransformerDataObject
     ): string => {
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
+      const left = transformer.make(item.left, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
+      const right = transformer.make(item.right, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
       const operator = item.operator;
       const expression = transformBitOperation(
         left + ' ' + operator + ' ' + right,
@@ -688,7 +698,9 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTComparisonGroupExpression,
       _data: TransformerDataObject
     ): string => {
-      const expressions: string[] = item.expressions.map((it) => transformer.make(it));
+      const expressions: string[] = item.expressions.map((it) =>
+        transformer.make(it)
+      );
       const segments: string[] = [expressions[0]];
 
       for (let index = 0; index < item.operators.length; index++) {

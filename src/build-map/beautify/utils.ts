@@ -1,8 +1,10 @@
 import {
   ASTBase,
-  ASTComment,
   ASTBinaryExpression,
+  ASTComment,
   ASTComparisonGroupExpression,
+  ASTIsaExpression,
+  ASTLogicalExpression,
   ASTParenthesisExpression,
   ASTType,
   Operator
@@ -17,9 +19,9 @@ export const SHORTHAND_OPERATORS = [
   Operator.Power
 ] as string[];
 
-export const countRightBinaryExpressions = (
-  item: ASTBase
-): number => {
+export const countRightBinaryExpressions = (item: ASTBase): number => {
+  item = unwrap(item);
+
   if (item instanceof ASTComparisonGroupExpression) {
     return item.expressions.length;
   }
@@ -31,8 +33,14 @@ export const countRightBinaryExpressions = (
     const current = queue.pop();
     if (current instanceof ASTBinaryExpression) {
       count++;
-      queue.push(current.left);
-      queue.push(current.right);
+    }
+    if (
+      current instanceof ASTBinaryExpression ||
+      current instanceof ASTLogicalExpression ||
+      current instanceof ASTIsaExpression
+    ) {
+      queue.push(unwrap(current.left));
+      queue.push(unwrap(current.right));
     }
   }
 
