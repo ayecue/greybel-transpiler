@@ -695,7 +695,9 @@ if false then
 stacktrace=function()
 print(\\"abc\\")
 end function
-end if"
+end if
+print(\\"abc\\">[42])
+// <<<<<<<<<<<"
 `;
 
 exports[`parse default scripts beautify-cases.src beautify 1`] = `
@@ -858,7 +860,8 @@ end function
 if false then stacktrace = function
 	print \\"abc\\"
 end function
-"
+
+print \\"abc\\" > [ 42 ] // <<<<<<<<<<<"
 `;
 
 exports[`parse default scripts beautify-cases.src beautify with custom settings 1`] = `
@@ -1021,7 +1024,8 @@ end function
 if false then stacktrace = function
           print(\\"abc\\")
 end function
-"
+
+print(\\"abc\\" > [ 42 ]) // <<<<<<<<<<<"
 `;
 
 exports[`parse default scripts beautify-cases.src uglify 1`] = `
@@ -1108,7 +1112,8 @@ if false then
 M=function
 print(R)
 end function
-end if"
+end if
+print(R>[42])"
 `;
 
 exports[`parse default scripts binary-expressions.src 1`] = `

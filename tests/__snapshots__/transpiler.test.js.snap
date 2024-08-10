@@ -704,7 +704,9 @@ if false then
 stacktrace=function()
 print(\\"abc\\")
 end function
-end if",
+end if
+print(\\"abc\\">[42])
+// <<<<<<<<<<<",
 ]
 `;
 
@@ -869,7 +871,8 @@ end function
 if false then stacktrace = function
 	print \\"abc\\"
 end function
-",
+
+print \\"abc\\" > [ 42 ] // <<<<<<<<<<<",
 ]
 `;
 
@@ -1034,7 +1037,8 @@ end function
 if false then stacktrace = function
           print(\\"abc\\")
 end function
-",
+
+print(\\"abc\\" > [ 42 ]) // <<<<<<<<<<<",
 ]
 `;
 
@@ -1123,7 +1127,8 @@ if false then
 M=function
 print(R)
 end function
-end if",
+end if
+print(R>[42])",
 ]
 `;
 

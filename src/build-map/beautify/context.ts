@@ -77,17 +77,21 @@ export class BeautifyContext {
     return this.chunks[this.chunks.length - 1];
   }
 
-  appendComment(position: ASTPosition, line: string): string {
+  useComment(position: ASTPosition, leftPadding: string = ' '): string {
     const items = this.getLines()[position.line];
-    if (items == null) return line;
+    if (items == null) return '';
     const lastItem = getLastComment(items);
 
     if (lastItem != null && !this.usedComments.has(lastItem)) {
       this.usedComments.add(lastItem);
-      return line + ' ' + this.transformer.make(lastItem);
+      return leftPadding + this.transformer.make(lastItem);
     }
 
-    return line;
+    return '';
+  }
+
+  appendComment(position: ASTPosition, line: string): string {
+    return line + this.useComment(position);
   }
 
   disableMultiline() {

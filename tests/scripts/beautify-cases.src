@@ -91,3 +91,5 @@ end function
 if false then stacktrace = function
   print "abc"
 end function
+
+print("abc" > [ 42 ]) // <<<<<<<<<<<

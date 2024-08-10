@@ -262,6 +262,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       data: TransformerDataObject
     ): string => {
       const base = transformer.make(item.base);
+      const commentAtEnd = context.useComment(item.end);
 
       if (item.arguments.length === 0) {
         return base;
@@ -283,7 +284,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
           base +
           '(\n' +
           args.map((item) => context.putIndent(item, 1)).join(',\n') +
-          ')'
+          ')' + commentAtEnd
         );
       }
 
@@ -296,12 +297,12 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
         const argStr = args.join(', ');
         context.decIndent();
 
-        return base + '(\n' + context.putIndent(argStr, 1) + ')';
+        return base + '(\n' + context.putIndent(argStr, 1) + ')' + commentAtEnd;
       }
 
       return data.isCommand && !keepParentheses
-        ? base + ' ' + argStr
-        : base + '(' + argStr + ')';
+        ? base + ' ' + argStr + commentAtEnd
+        : base + '(' + argStr + ')' + commentAtEnd;
     },
     StringLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
       return item.raw.toString();
