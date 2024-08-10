@@ -7,7 +7,8 @@ import {
   ASTIfClause,
   ASTPosition,
   ASTType,
-  ASTWhileStatement
+  ASTWhileStatement,
+  ASTIfStatement
 } from 'miniscript-core';
 
 import { TransformerLike } from '../../types/transformer';
@@ -105,7 +106,7 @@ export class BeautifyContext {
     this._indent--;
   }
 
-  getBlockStartLine(block: ASTBaseBlock): number {
+  getBlockOpenerEndLine(block: ASTBaseBlock): number {
     if (block instanceof ASTIfClause) {
       return block.condition.end.line;
     } else if (block instanceof ASTWhileStatement) {
@@ -115,6 +116,15 @@ export class BeautifyContext {
     }
 
     return block.start.line;
+  }
+
+  getPreviousEndLine(item: ASTBase): number {
+    if (item.type === ASTType.IfShortcutStatement) {
+      const ifShortcut = item as ASTIfStatement;
+      return ifShortcut.clauses[ifShortcut.clauses.length - 1].body[0].end.line;
+    }
+
+    return item.end.line;
   }
 
   buildBlock(block: ASTBaseBlock): string[] {
@@ -157,8 +167,8 @@ export class BeautifyContext {
 
       const diff = Math.max(
         previous
-          ? bodyItem.start.line - previous.end.line - 1
-          : bodyItem.start.line - this.getBlockStartLine(block) - 1,
+          ? bodyItem.start.line - this.getPreviousEndLine(previous) - 1
+          : bodyItem.start.line - this.getBlockOpenerEndLine(block) - 1,
         0
       );
 

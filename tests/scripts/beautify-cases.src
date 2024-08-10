@@ -83,3 +83,11 @@ test = {
 while true
   if true then print("test") else print("xd")
 end while
+
+
+if true then stacktrace = function
+  print "test"
+end function
+if false then stacktrace = function
+  print "abc"
+end function
