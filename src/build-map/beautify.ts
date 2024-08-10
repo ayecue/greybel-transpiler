@@ -13,7 +13,9 @@ import {
   ASTChunk,
   ASTComment,
   ASTElseClause,
-  ASTEvaluationExpression,
+  ASTLogicalExpression,
+  ASTBinaryExpression,
+  ASTIsaExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
@@ -30,7 +32,8 @@ import {
   ASTReturnStatement,
   ASTSliceExpression,
   ASTUnaryExpression,
-  ASTWhileStatement
+  ASTWhileStatement,
+  ASTComparisonGroupExpression
 } from 'miniscript-core';
 import { basename } from 'path';
 
@@ -42,7 +45,7 @@ import {
   IndentationType
 } from './beautify/context';
 import {
-  countEvaluationExpressions,
+  countRightBinaryExpressions,
   SHORTHAND_OPERATORS,
   transformBitOperation,
   unwrap
@@ -71,8 +74,9 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       _data: TransformerDataObject
     ): string => {
       const expr = transformer.make(item.expression);
+      const count = countRightBinaryExpressions(item.expression)
 
-      if (/\n/.test(expr) && !/,(?!\n)/.test(expr)) {
+      if (count > 3) {
         context.incIndent();
         const expr = context.putIndent(transformer.make(item.expression), 1);
         context.decIndent();
@@ -107,7 +111,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       if (
         (varibale instanceof ASTIdentifier ||
           varibale instanceof ASTMemberExpression) &&
-        init instanceof ASTEvaluationExpression &&
+        init instanceof ASTBinaryExpression &&
         (init.left instanceof ASTIdentifier ||
           init.left instanceof ASTMemberExpression) &&
         SHORTHAND_OPERATORS.includes(init.operator) &&
@@ -483,7 +487,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTCallStatement,
       _data: TransformerDataObject
     ): string => {
-      return transformer.make(item.expression);
+      return transformer.make(item.expression, { isCommand: true });
     },
     FeatureInjectExpression: (
       item: ASTFeatureInjectExpression,
@@ -622,7 +626,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       return '';
     },
     IsaExpression: (
-      item: ASTEvaluationExpression,
+      item: ASTIsaExpression,
       _data: TransformerDataObject
     ): string => {
       const left = transformer.make(item.left);
@@ -631,72 +635,36 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       return left + ' ' + item.operator + ' ' + right;
     },
     LogicalExpression: (
-      item: ASTEvaluationExpression,
+      item: ASTLogicalExpression,
       data: TransformerDataObject
     ): string => {
-      const count = data.isInEvalExpression
-        ? 0
-        : countEvaluationExpressions(item);
+      const count = countRightBinaryExpressions(item.right);
 
-      if (count > 3 || data.isEvalMultiline) {
-        if (!data.isEvalMultiline) context.incIndent();
+      if (count > 2) {
+        if (!data.hasLogicalIndentActive) context.incIndent();
 
-        const left = transformer.make(item.left, {
-          isInEvalExpression: true,
-          isEvalMultiline: true
-        });
-        const right = transformer.make(item.right, {
-          isInEvalExpression: true,
-          isEvalMultiline: true
-        });
+        const left = transformer.make(item.left, { hasLogicalIndentActive: true });
+        const right = transformer.make(item.right, { hasLogicalIndentActive: true });
         const operator = item.operator;
         const expression =
           left + ' ' + operator + '\n' + context.putIndent(right);
-
-        if (!data.isEvalMultiline) context.decIndent();
+        
+        if (!data.hasLogicalIndentActive) context.decIndent();
 
         return expression;
       }
 
-      const left = transformer.make(item.left, { isInEvalExpression: true });
-      const right = transformer.make(item.right, { isInEvalExpression: true });
+      const left = transformer.make(item.left);
+      const right = transformer.make(item.right);
 
       return left + ' ' + item.operator + ' ' + right;
     },
     BinaryExpression: (
-      item: ASTEvaluationExpression,
+      item: ASTBinaryExpression,
       data: TransformerDataObject
     ): string => {
-      const count = data.isInBinaryExpression
-        ? 0
-        : countEvaluationExpressions(item);
-
-      if (count > 3 || data.isEvalMultiline) {
-        if (!data.isEvalMultiline) context.incIndent();
-
-        const left = transformer.make(item.left, {
-          isInEvalExpression: true,
-          isEvalMultiline: true
-        });
-        const right = transformer.make(item.right, {
-          isInEvalExpression: true,
-          isEvalMultiline: true
-        });
-        const operator = item.operator;
-        const expression = transformBitOperation(
-          left + ' ' + operator + '\n' + context.putIndent(right),
-          left,
-          right,
-          operator
-        );
-
-        if (!data.isEvalMultiline) context.decIndent();
-
-        return expression;
-      }
-
-      const left = transformer.make(item.left, { isInEvalExpression: true });
-      const right = transformer.make(item.right, { isInEvalExpression: true });
+      const left = transformer.make(item.left);
+      const right = transformer.make(item.right);
       const operator = item.operator;
       const expression = transformBitOperation(
         left + ' ' + operator + ' ' + right,
@@ -715,6 +683,19 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       const operator = item.operator;
 
       return operator + arg;
+    },
+    ComparisonGroupExpression: (
+      item: ASTComparisonGroupExpression,
+      _data: TransformerDataObject
+    ): string => {
+      const expressions: string[] = item.expressions.map((it) => transformer.make(it));
+      const segments: string[] = [expressions[0]];
+
+      for (let index = 0; index < item.operators.length; index++) {
+        segments.push(item.operators[index], expressions[index + 1]);
+      }
+
+      return segments.join(' ');
     },
     Chunk: (item: ASTChunk, _data: TransformerDataObject): string => {
       context.pushLines(item.lines);
