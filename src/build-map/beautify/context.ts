@@ -4,7 +4,10 @@ import {
   ASTChunk,
   ASTComment,
   ASTPosition,
-  ASTType
+  ASTType,
+  ASTIfClause,
+  ASTWhileStatement,
+  ASTForGenericStatement
 } from 'miniscript-core';
 
 import { TransformerLike } from '../../types/transformer';
@@ -74,7 +77,7 @@ export class BeautifyContext {
   }
 
   appendComment(position: ASTPosition, line: string): string {
-    const items = this.getLines().get(position.line);
+    const items = this.getLines()[position.line];
     if (items == null) return line;
     const lastItem = getLastComment(items);
 
@@ -100,6 +103,18 @@ export class BeautifyContext {
 
   decIndent() {
     this._indent--;
+  }
+
+  getBlockStartLine(block: ASTBaseBlock): number {
+    if (block instanceof ASTIfClause) {
+      return block.condition.end.line;
+    } else if (block instanceof ASTWhileStatement) {
+      return block.condition.end.line;
+    } else if (block instanceof ASTForGenericStatement) {
+      return block.iterator.end.line;
+    }
+
+    return block.start.line;
   }
 
   buildBlock(block: ASTBaseBlock): string[] {
@@ -143,7 +158,7 @@ export class BeautifyContext {
       const diff = Math.max(
         previous
           ? bodyItem.start.line - previous.end.line - 1
-          : bodyItem.start.line - block.start.line - 1,
+          : bodyItem.start.line - this.getBlockStartLine(block) - 1,
         0
       );
 

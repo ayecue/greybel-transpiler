@@ -13,7 +13,9 @@ import {
   ASTCallStatement,
   ASTComment,
   ASTElseClause,
-  ASTEvaluationExpression,
+  ASTLogicalExpression,
+  ASTIsaExpression,
+  ASTBinaryExpression,
   ASTForGenericStatement,
   ASTFunctionStatement,
   ASTIdentifier,
@@ -30,7 +32,8 @@ import {
   ASTReturnStatement,
   ASTSliceExpression,
   ASTUnaryExpression,
-  ASTWhileStatement
+  ASTWhileStatement,
+  ASTComparisonGroupExpression
 } from 'miniscript-core';
 import { basename } from 'path';
 
@@ -453,7 +456,7 @@ export const defaultFactory: Factory<DefaultFactoryOptions> = (transformer) => {
       return '';
     },
     IsaExpression: (
-      item: ASTEvaluationExpression,
+      item: ASTIsaExpression,
       _data: TransformerDataObject
     ): string => {
       const left = transformer.make(item.left);
@@ -462,7 +465,7 @@ export const defaultFactory: Factory<DefaultFactoryOptions> = (transformer) => {
       return left + ' ' + item.operator + ' ' + right;
     },
     LogicalExpression: (
-      item: ASTEvaluationExpression,
+      item: ASTLogicalExpression,
       _data: TransformerDataObject
     ): string => {
       const left = transformer.make(item.left);
@@ -471,7 +474,7 @@ export const defaultFactory: Factory<DefaultFactoryOptions> = (transformer) => {
       return left + ' ' + item.operator + ' ' + right;
     },
     BinaryExpression: (
-      item: ASTEvaluationExpression,
+      item: ASTBinaryExpression,
       _data: TransformerDataObject
     ): string => {
       const left = transformer.make(item.left);
@@ -497,6 +500,19 @@ export const defaultFactory: Factory<DefaultFactoryOptions> = (transformer) => {
       const operator = item.operator;
 
       return operator + arg;
+    },
+    ComparisonGroupExpression: (
+      item: ASTComparisonGroupExpression,
+      _data: TransformerDataObject
+    ): string => {
+      const expressions: string[] = item.expressions.map((it) => transformer.make(it));
+      const segments: string[] = [expressions[0]];
+
+      for (let index = 0; index < item.operators.length; index++) {
+        segments.push(item.operators[index], expressions[index + 1]);
+      }
+
+      return segments.join(' ');
     },
     Chunk: (
       item: ASTChunkAdvancedOptions,
