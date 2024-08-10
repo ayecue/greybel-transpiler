@@ -9,6 +9,7 @@ import {
   ASTAssignmentStatement,
   ASTBase,
   ASTBinaryExpression,
+  ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
@@ -29,6 +30,7 @@ import {
   ASTMapConstructorExpression,
   ASTMapKeyString,
   ASTMemberExpression,
+  ASTNumericLiteral,
   ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
@@ -156,13 +158,13 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (transformer) => {
       return 'return ' + arg;
     },
     NumericLiteral: (
-      item: ASTLiteral,
+      item: ASTNumericLiteral,
       { isArgument = false }: TransformerDataObject
     ): string => {
       const literal = transformer.context.literals.get(item);
       if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
-      return item.value.toString();
+      return (item.negated ? '-' : '') + item.value.toString();
     },
     WhileStatement: (
       item: ASTWhileStatement,
@@ -498,13 +500,13 @@ export const uglifyFactory: Factory<DefaultFactoryOptions> = (transformer) => {
       return transformer.make(item.value);
     },
     BooleanLiteral: (
-      item: ASTLiteral,
+      item: ASTBooleanLiteral,
       { isArgument = false }: TransformerDataObject
     ): string => {
       const literal = transformer.context.literals.get(item);
       if (!isArgument && literal != null && literal.namespace != null)
         return literal.namespace;
-      return item.raw.toString();
+      return (item.negated ? '-' : '') + item.raw.toString();
     },
     EmptyExpression: (_item: ASTBase, _data: TransformerDataObject): string => {
       return '';

@@ -9,6 +9,7 @@ import {
   ASTAssignmentStatement,
   ASTBase,
   ASTBinaryExpression,
+  ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
   ASTChunk,
@@ -29,6 +30,7 @@ import {
   ASTMapConstructorExpression,
   ASTMapKeyString,
   ASTMemberExpression,
+  ASTNumericLiteral,
   ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
@@ -231,10 +233,10 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       return 'return ' + arg;
     },
     NumericLiteral: (
-      item: ASTLiteral,
+      item: ASTNumericLiteral,
       _data: TransformerDataObject
     ): string => {
-      return item.value.toString();
+      return (item.negated ? '-' : '') + item.value.toString();
     },
     WhileStatement: (
       item: ASTWhileStatement,
@@ -611,10 +613,10 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       return transformer.make(item.value);
     },
     BooleanLiteral: (
-      item: ASTLiteral,
+      item: ASTBooleanLiteral,
       _data: TransformerDataObject
     ): string => {
-      return item.raw.toString();
+      return (item.negated ? '-' : '') + item.raw.toString();
     },
     EmptyExpression: (_item: ASTBase, _data: TransformerDataObject): string => {
       return '';
