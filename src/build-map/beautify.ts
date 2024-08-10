@@ -284,7 +284,8 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
           base +
           '(\n' +
           args.map((item) => context.putIndent(item, 1)).join(',\n') +
-          ')' + commentAtEnd
+          ')' +
+          commentAtEnd
         );
       }
 
@@ -319,12 +320,15 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
     },
     IndexExpression: (
       item: ASTIndexExpression,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): string => {
+      const commentAtEnd = data.isCommand
+        ? context.useComment(item.index.end)
+        : '';
       const base = transformer.make(item.base);
       const index = transformer.make(item.index);
 
-      return base + '[' + index + ']';
+      return base + '[' + index + ']' + commentAtEnd;
     },
     UnaryExpression: (
       item: ASTUnaryExpression,

@@ -697,7 +697,20 @@ print(\\"abc\\")
 end function
 end if
 print(\\"abc\\">[42])
-// <<<<<<<<<<<"
+//foo
+test[25]
+//foo
+test[25]
+//bar
+test[123][25]
+//foo
+test[25](11)
+//bar
+test(11)[25]
+//foo
+while true
+//bar
+end while"
 `;
 
 exports[`parse default scripts beautify-cases.src beautify 1`] = `
@@ -861,7 +874,17 @@ if false then stacktrace = function
 	print \\"abc\\"
 end function
 
-print \\"abc\\" > [ 42 ] // <<<<<<<<<<<"
+print \\"abc\\" > [ 42 ] // foo
+
+test[25] // foo
+test[25] // bar
+test[123][25] // foo
+test[25] 11 // bar
+test(11)[25] // foo
+
+while true // bar
+
+end while"
 `;
 
 exports[`parse default scripts beautify-cases.src beautify with custom settings 1`] = `
@@ -1025,7 +1048,17 @@ if false then stacktrace = function
           print(\\"abc\\")
 end function
 
-print(\\"abc\\" > [ 42 ]) // <<<<<<<<<<<"
+print(\\"abc\\" > [ 42 ]) // foo
+
+test[25] // foo
+test[25] // bar
+test[123][25] // foo
+test[25](11) // bar
+test(11)[25] // foo
+
+while true // bar
+
+end while"
 `;
 
 exports[`parse default scripts beautify-cases.src uglify 1`] = `
@@ -1113,7 +1146,15 @@ M=function
 print(R)
 end function
 end if
-print(R>[42])"
+print(R>[42])
+I[25]
+I[25]
+I[N][25]
+I[25](11)
+I(11)[25]
+while T
+
+end while"
 `;
 
 exports[`parse default scripts binary-expressions.src 1`] = `

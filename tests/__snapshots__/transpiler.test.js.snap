@@ -706,7 +706,20 @@ print(\\"abc\\")
 end function
 end if
 print(\\"abc\\">[42])
-// <<<<<<<<<<<",
+//foo
+test[25]
+//foo
+test[25]
+//bar
+test[123][25]
+//foo
+test[25](11)
+//bar
+test(11)[25]
+//foo
+while true
+//bar
+end while",
 ]
 `;
 
@@ -872,7 +885,17 @@ if false then stacktrace = function
 	print \\"abc\\"
 end function
 
-print \\"abc\\" > [ 42 ] // <<<<<<<<<<<",
+print \\"abc\\" > [ 42 ] // foo
+
+test[25] // foo
+test[25] // bar
+test[123][25] // foo
+test[25] 11 // bar
+test(11)[25] // foo
+
+while true // bar
+
+end while",
 ]
 `;
 
@@ -1038,7 +1061,17 @@ if false then stacktrace = function
           print(\\"abc\\")
 end function
 
-print(\\"abc\\" > [ 42 ]) // <<<<<<<<<<<",
+print(\\"abc\\" > [ 42 ]) // foo
+
+test[25] // foo
+test[25] // bar
+test[123][25] // foo
+test[25](11) // bar
+test(11)[25] // foo
+
+while true // bar
+
+end while",
 ]
 `;
 
@@ -1128,7 +1161,15 @@ M=function
 print(R)
 end function
 end if
-print(R>[42])",
+print(R>[42])
+I[25]
+I[25]
+I[N][25]
+I[25](11)
+I(11)[25]
+while T
+
+end while",
 ]
 `;
 

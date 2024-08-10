@@ -5,10 +5,10 @@ import {
   ASTComment,
   ASTForGenericStatement,
   ASTIfClause,
+  ASTIfStatement,
   ASTPosition,
   ASTType,
-  ASTWhileStatement,
-  ASTIfStatement
+  ASTWhileStatement
 } from 'miniscript-core';
 
 import { TransformerLike } from '../../types/transformer';
