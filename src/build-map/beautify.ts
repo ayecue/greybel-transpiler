@@ -444,11 +444,9 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       return clauses.join('\n') + '\n' + context.putIndent('end if');
     },
     IfClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
+      const commentAtStart = context.useComment(item.start);
       const condition = transformer.make(unwrap(item.condition));
-      const blockStart = context.appendComment(
-        item.start,
-        'if ' + condition + ' then'
-      );
+      const blockStart = 'if ' + condition + ' then' + commentAtStart;
 
       context.incIndent();
 
@@ -459,11 +457,14 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       return blockStart + '\n' + body.join('\n');
     },
     ElseifClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
+      const commentAtStart = context.useComment(item.start);
       const condition = transformer.make(unwrap(item.condition));
-      const blockStart = context.appendComment(
-        item.start,
-        context.putIndent('else if') + ' ' + condition + ' then'
-      );
+      const blockStart =
+        context.putIndent('else if') +
+        ' ' +
+        condition +
+        ' then' +
+        commentAtStart;
 
       context.incIndent();
 
