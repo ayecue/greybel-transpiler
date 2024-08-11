@@ -123,7 +123,9 @@ export class BeautifyContext {
   }
 
   getPreviousEndLine(item: ASTBase): number {
-    if (item.type === ASTType.IfShortcutStatement) {
+    if (item == null) {
+      return 0;
+    } else if (item.type === ASTType.IfShortcutStatement) {
       const ifShortcut = item as ASTIfStatement;
       return ifShortcut.clauses[ifShortcut.clauses.length - 1].body[0].end.line;
     }
@@ -132,6 +134,8 @@ export class BeautifyContext {
   }
 
   buildBlock(block: ASTBaseBlock): string[] {
+    if (block.body.length === 0) return [];
+
     const sortedBody = [...block.body].sort(
       (a, b) => a.start.line - b.start.line
     );
@@ -199,7 +203,10 @@ export class BeautifyContext {
     }
 
     const last = block.body[block.body.length - 1];
-    const size = Math.max(block.end.line - last?.end?.line - 1, 0);
+    const size = Math.max(
+      block.end.line - this.getPreviousEndLine(last) - 1,
+      0
+    );
 
     if (size > 0) {
       body.push(...new Array(size).fill(''));

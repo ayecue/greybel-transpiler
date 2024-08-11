@@ -1,11 +1,13 @@
 import {
   ASTBase,
   ASTBinaryExpression,
+  ASTClause,
   ASTComment,
   ASTComparisonGroupExpression,
   ASTIsaExpression,
   ASTLogicalExpression,
   ASTParenthesisExpression,
+  ASTPosition,
   ASTType,
   Operator
 } from 'miniscript-core';
@@ -77,4 +79,15 @@ export const getLastComment = (nodes: ASTBase[]): ASTComment | null => {
     if (node.type === ASTType.Comment) return node as ASTComment;
   }
   return null;
+};
+
+export const containsMultilineItemInShortcutClauses = (
+  position: ASTPosition,
+  clauses: ASTClause[]
+) => {
+  return clauses.some((it) => position.line < it.body[0].end.line);
+};
+
+export const hasEmptyBody = (body: ASTBase[]) => {
+  return !body.some((it) => !(it instanceof ASTComment));
 };

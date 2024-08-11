@@ -47,7 +47,9 @@ import {
   IndentationType
 } from './beautify/context';
 import {
+  containsMultilineItemInShortcutClauses,
   countRightBinaryExpressions,
+  hasEmptyBody,
   SHORTHAND_OPERATORS,
   transformBitOperation,
   unwrap
@@ -146,6 +148,10 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       );
       const blockEnd = context.putIndent('end function');
 
+      if (hasEmptyBody(item.body)) {
+        return blockStart + '\n' + blockEnd;
+      }
+
       context.incIndent();
       const body = context.buildBlock(item);
       context.decIndent();
@@ -242,17 +248,17 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTWhileStatement,
       _data: TransformerDataObject
     ): string => {
+      const commentAtStart = context.useComment(item.start);
       const condition = transformer.make(unwrap(item.condition));
-      const blockStart = context.appendComment(
-        item.start,
-        'while ' + condition
-      );
+      const blockStart = 'while ' + condition + commentAtStart;
       const blockEnd = context.putIndent('end while');
 
+      if (hasEmptyBody(item.body)) {
+        return blockStart + '\n' + blockEnd;
+      }
+
       context.incIndent();
-
       const body = context.buildBlock(item);
-
       context.decIndent();
 
       return blockStart + '\n' + body.join('\n') + '\n' + blockEnd;
@@ -362,13 +368,19 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       _data: TransformerDataObject
     ): string => {
       const clauses = [];
+      const commentAtEnd = !containsMultilineItemInShortcutClauses(
+        item.start,
+        item.clauses
+      )
+        ? context.useComment(item.start)
+        : '';
       let clausesItem;
 
       for (clausesItem of item.clauses) {
         clauses.push(transformer.make(clausesItem));
       }
 
-      return clauses.join(' ');
+      return clauses.join(' ') + commentAtEnd;
     },
     IfShortcutClause: (
       item: ASTIfClause,
@@ -402,18 +414,18 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTForGenericStatement,
       _data: TransformerDataObject
     ): string => {
+      const commentAtStart = context.useComment(item.start);
       const variable = transformer.make(unwrap(item.variable));
       const iterator = transformer.make(unwrap(item.iterator));
-      const blockStart = context.appendComment(
-        item.start,
-        'for ' + variable + ' in ' + iterator
-      );
+      const blockStart = 'for ' + variable + ' in ' + iterator + commentAtStart;
       const blockEnd = context.putIndent('end for');
 
+      if (hasEmptyBody(item.body)) {
+        return blockStart + '\n' + blockEnd;
+      }
+
       context.incIndent();
-
       const body = context.buildBlock(item);
-
       context.decIndent();
 
       return blockStart + '\n' + body.join('\n') + '\n' + blockEnd;
