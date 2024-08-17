@@ -162,19 +162,22 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTMapConstructorExpression,
       _data: TransformerDataObject
     ): string => {
+      const commentStart = context.useComment(item.start);
+      const commentEnd = context.useComment(item.end);
+      
       if (item.fields.length === 0) {
-        return '{}';
+        return '{}' + commentStart;
       }
 
       if (item.fields.length === 1) {
         const field = transformer.make(item.fields[0]);
-        return context.appendComment(item.fields[0].end, '{ ' + field + ' }');
+        return '{ ' + field + ' }' + commentStart;
       }
 
       if (context.isMultilineAllowed) {
         const fields = [];
         const blockEnd = context.putIndent(
-          context.appendComment(item.start, '}')
+          '}' + commentEnd
         );
 
         context.incIndent();
@@ -191,7 +194,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
 
         context.decIndent();
 
-        const blockStart = context.appendComment(item.start, '{');
+        const blockStart = '{' + commentStart;
 
         return (
           blockStart +
@@ -205,7 +208,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       const fields = [];
       let fieldItem;
       const blockStart = '{';
-      const blockEnd = context.appendComment(item.start, '}');
+      const blockEnd = '}' + commentStart;
 
       for (fieldItem of item.fields) {
         fields.push(transformer.make(fieldItem));
@@ -576,13 +579,16 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTListConstructorExpression,
       _data: TransformerDataObject
     ): string => {
+      const commentStart = context.useComment(item.start);
+      const commentEnd = context.useComment(item.end);
+
       if (item.fields.length === 0) {
-        return '[]';
+        return '[]' + commentStart;
       }
 
       if (item.fields.length === 1) {
         const field = transformer.make(item.fields[0]);
-        return context.appendComment(item.fields[0].end, '[ ' + field + ' ]');
+        return '[ ' + field + ' ]' + commentStart;
       }
 
       const fields = [];
@@ -590,7 +596,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
 
       if (context.isMultilineAllowed) {
         const blockEnd = context.putIndent(
-          context.appendComment(item.end, ']')
+          ']' + commentEnd
         );
 
         context.incIndent();
@@ -607,7 +613,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
 
         context.decIndent();
 
-        const blockStart = context.appendComment(item.start, '[');
+        const blockStart = '[' + commentStart;
 
         return (
           blockStart +
@@ -618,7 +624,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
         );
       }
 
-      const blockEnd = context.putIndent(context.appendComment(item.end, ']'));
+      const blockEnd = context.putIndent(']' + commentStart);
       const blockStart = '[';
 
       for (fieldItem of item.fields) {
