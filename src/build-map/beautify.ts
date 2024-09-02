@@ -77,11 +77,12 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
       item: ASTParenthesisExpression,
       data: TransformerDataObject
     ): string => {
+      const commentAtEnd = context.useComment(item.end);
       const expr = transformer.make(item.expression, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
 
-      return '(' + expr + ')';
+      return '(' + expr + ')' + commentAtEnd;
     },
     Comment: (item: ASTComment, _data: TransformerDataObject): string => {
       if (item.isMultiline) {
@@ -164,7 +165,7 @@ export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
     ): string => {
       const commentStart = context.useComment(item.start);
       const commentEnd = context.useComment(item.end);
-      
+
       if (item.fields.length === 0) {
         return '{}' + commentStart;
       }
