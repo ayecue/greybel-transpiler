@@ -1010,9 +1010,12 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       }
 
       this.process(item.name);
+
+      const requireMethodName = this.transformer.context.variables.get('__REQUIRE');
+
       this.tokens.push({
         type: TokenType.Text,
-        value: ' = __REQUIRE("' + item.namespace + '")',
+        value: ` = ${requireMethodName}("${item.namespace}")`,
         ref: item
       });
     },
