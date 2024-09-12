@@ -67,7 +67,10 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
     return output;
   }
 
-  handlers = {
+  handlers: Record<
+    string,
+    (this: UglifyFactory, item: ASTBase, data: TransformerDataObject) => void
+  > = {
     ParenthesisExpression: function (
       this: UglifyFactory,
       item: ASTParenthesisExpression,

@@ -112,7 +112,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     return output;
   }
 
-  handlers = {
+  handlers: Record<
+    string,
+    (this: BeautifyFactory, item: ASTBase, data: TransformerDataObject) => void
+  > = {
     ParenthesisExpression: function (
       this: BeautifyFactory,
       item: ASTParenthesisExpression,

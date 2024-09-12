@@ -67,7 +67,10 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     return output;
   }
 
-  handlers = {
+  handlers: Record<
+    string,
+    (this: DefaultFactory, item: ASTBase, data: TransformerDataObject) => void
+  > = {
     ParenthesisExpression: function (
       this: DefaultFactory,
       item: ASTParenthesisExpression,
