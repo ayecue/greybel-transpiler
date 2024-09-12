@@ -39,7 +39,8 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { TransformerDataObject } from '../types/transformer';
+import { DependencyLike } from '../types/dependency';
+import { TransformerDataObject, TransformerLike } from '../types/transformer';
 import { createExpressionHash } from '../utils/create-expression-hash';
 import {
   BeautifyContext,
@@ -47,700 +48,1453 @@ import {
   IndentationType
 } from './beautify/context';
 import {
-  containsMultilineItemInShortcutClauses,
   countRightBinaryExpressions,
-  hasEmptyBody,
   SHORTHAND_OPERATORS,
-  transformBitOperation,
   unwrap
 } from './beautify/utils';
-import { Factory } from './factory';
+import { Factory, TokenType } from './factory';
 
 export type BeautifyOptions = BeautifyContextOptions;
 
-export const beautifyFactory: Factory<BeautifyOptions> = (transformer) => {
-  const {
-    keepParentheses = false,
-    indentation = IndentationType.Tab,
-    indentationSpaces = 2,
-    isDevMode = false
-  } = transformer.buildOptions as BeautifyOptions;
-  const context = new BeautifyContext(transformer, {
-    keepParentheses,
-    indentation,
-    indentationSpaces,
-    isDevMode
-  });
+export class BeautifyFactory extends Factory<BeautifyOptions> {
+  readonly context: BeautifyContext;
 
-  return {
-    ParenthesisExpression: (
-      item: ASTParenthesisExpression,
-      data: TransformerDataObject
-    ): string => {
-      const commentAtEnd = context.useComment(item.end);
-      const expr = transformer.make(item.expression, {
-        hasLogicalIndentActive: data.hasLogicalIndentActive
-      });
+  constructor(transformer: TransformerLike<BeautifyOptions>) {
+    super(transformer);
 
-      return '(' + expr + ')' + commentAtEnd;
-    },
-    Comment: (item: ASTComment, _data: TransformerDataObject): string => {
-      if (item.isMultiline) {
-        if (isDevMode) {
-          return `/*${item.value}*/`;
+    const {
+      keepParentheses = false,
+      indentation = IndentationType.Tab,
+      indentationSpaces = 2,
+      isDevMode = false
+    } = transformer.buildOptions as BeautifyOptions;
+
+    this.context = new BeautifyContext(this, {
+      keepParentheses,
+      indentation,
+      indentationSpaces,
+      isDevMode
+    });
+  }
+
+  transform(item: ASTChunk, dependency: DependencyLike): string {
+    this._tokens = [];
+
+    this._currentDependency = dependency;
+    this.process(item);
+
+    let output = '';
+
+    for (let index = 0; index < this.tokens.length - 1; index++) {
+      const token = this.tokens[index];
+      const nextToken = this.tokens[index + 1];
+
+      if (token.type === TokenType.Text) {
+        output += token.value;
+      } else if (token.type === TokenType.Comment) {
+        output += token.value;
+      } else if (token.type === TokenType.EndOfLine) {
+        if (
+          nextToken?.type === TokenType.Comment &&
+          token.ref.end.line === nextToken?.ref.start.line
+        ) {
+          output += ' ' + nextToken.value.trim();
+          index++;
+          continue;
         }
 
-        return item.value
-          .split('\n')
-          .map((line) => `//${line}`)
-          .join('\n');
+        output += '\n';
+      } else {
+        throw new Error('Unknown token type!');
+      }
+    }
+
+    return output;
+  }
+
+  handlers = {
+    ParenthesisExpression: function (
+      this: BeautifyFactory,
+      item: ASTParenthesisExpression,
+      data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '(',
+        ref: item
+      });
+      this.process(item.expression, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ')',
+        ref: item
+      });
+    },
+    Comment: function (
+      this: BeautifyFactory,
+      item: ASTComment,
+      _data: TransformerDataObject
+    ): void {
+      this.context.usedComments.add(item);
+
+      if (item.isMultiline) {
+        if (this.transformer.buildOptions.isDevMode) {
+          this.tokens.push({
+            type: TokenType.Comment,
+            value: `/*${item.value}*/`,
+            ref: item,
+            isMultiline: true
+          });
+          return;
+        }
+
+        this.tokens.push({
+          type: TokenType.Comment,
+          value: item.value
+            .split('\n')
+            .map((line) => `//${line}`)
+            .join('\n'),
+          ref: item,
+          isMultiline: true
+        });
+
+        return;
       }
 
-      return '// ' + item.value.trimStart();
+      this.tokens.push({
+        type: TokenType.Comment,
+        value: '// ' + item.value.trimStart(),
+        ref: item,
+        isMultiline: false
+      });
     },
-    AssignmentStatement: (
+    AssignmentStatement: function (
+      this: BeautifyFactory,
       item: ASTAssignmentStatement,
       _data: TransformerDataObject
-    ): string => {
-      const varibale = item.variable;
+    ): void {
+      const variable = item.variable;
       const init = item.init;
-      const left = transformer.make(varibale);
+
+      this.process(variable);
 
       // might can create shorthand for expression
       if (
-        (varibale instanceof ASTIdentifier ||
-          varibale instanceof ASTMemberExpression) &&
+        (variable instanceof ASTIdentifier ||
+          variable instanceof ASTMemberExpression) &&
         init instanceof ASTBinaryExpression &&
         (init.left instanceof ASTIdentifier ||
           init.left instanceof ASTMemberExpression) &&
         SHORTHAND_OPERATORS.includes(init.operator) &&
-        createExpressionHash(varibale) === createExpressionHash(init.left)
+        createExpressionHash(variable) === createExpressionHash(init.left)
       ) {
-        const right = transformer.make(unwrap(init.right));
-        return left + ' ' + init.operator + '= ' + right;
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ' ' + init.operator + '= ',
+          ref: item
+        });
+        this.process(unwrap(init.right));
+        return;
       }
 
-      const right = transformer.make(init);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' = ',
+        ref: item
+      });
 
-      return left + ' = ' + right;
+      this.process(init);
     },
-    MemberExpression: (
+    MemberExpression: function (
+      this: BeautifyFactory,
       item: ASTMemberExpression,
       _data: TransformerDataObject
-    ): string => {
-      const identifier = transformer.make(item.identifier);
-      const base = transformer.make(item.base);
-
-      return [base, identifier].join(item.indexer);
+    ): void {
+      this.process(item.base);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.indexer,
+        ref: item
+      });
+      this.process(item.identifier);
     },
-    FunctionDeclaration: (
+    FunctionDeclaration: function (
+      this: BeautifyFactory,
       item: ASTFunctionStatement,
       _data: TransformerDataObject
-    ): string => {
-      context.disableMultiline();
-      const parameters = item.parameters.map((item) => transformer.make(item));
-      context.enableMultiline();
+    ): void {
+      if (item.parameters.length === 0) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'function',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
+      } else {
+        this.context.disableMultiline();
 
-      const blockStart = context.appendComment(
-        item.start,
-        parameters.length === 0
-          ? 'function'
-          : 'function(' + parameters.join(', ') + ')'
-      );
-      const blockEnd = context.putIndent('end function');
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'function(',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
 
-      if (hasEmptyBody(item.body)) {
-        return blockStart + '\n' + blockEnd;
+        for (let index = 0; index < item.parameters.length; index++) {
+          const arg = item.parameters[index];
+          this.process(arg);
+          if (index !== item.parameters.length - 1)
+            this.tokens.push({
+              type: TokenType.Text,
+              value: ', ',
+              ref: arg
+            });
+        }
+
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
+
+        this.context.enableMultiline();
       }
 
-      context.incIndent();
-      const body = context.buildBlock(item);
-      context.decIndent();
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      return blockStart + '\n' + body.join('\n') + '\n' + blockEnd;
+      this.context.incIndent();
+      this.context.buildBlock(item);
+      this.context.decIndent();
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: this.context.getIndent() + 'end function',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    MapConstructorExpression: (
+    MapConstructorExpression: function (
+      this: BeautifyFactory,
       item: ASTMapConstructorExpression,
       _data: TransformerDataObject
-    ): string => {
-      const commentStart = context.useComment(item.start);
-      const commentEnd = context.useComment(item.end);
-
+    ): void {
       if (item.fields.length === 0) {
-        return '{}' + commentStart;
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '{}',
+          ref: item
+        });
+        return;
       }
 
       if (item.fields.length === 1) {
-        const field = transformer.make(item.fields[0]);
-        return '{ ' + field + ' }' + commentStart;
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '{ ',
+          ref: item
+        });
+        this.process(item.fields[0]);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ' }',
+          ref: item
+        });
+        return;
       }
 
-      if (context.isMultilineAllowed) {
-        const fields = [];
-        const blockEnd = context.putIndent(
-          '}' + commentEnd
-        );
+      if (this.context.isMultilineAllowed) {
+        this.context.incIndent();
 
-        context.incIndent();
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '{',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
 
-        for (let index = item.fields.length - 1; index >= 0; index--) {
+        for (let index = 0; index < item.fields.length; index++) {
           const fieldItem = item.fields[index];
-          fields.unshift(
-            context.appendComment(
-              fieldItem.end,
-              transformer.make(fieldItem) + ','
-            )
-          );
+          this.tokens.push({
+            type: TokenType.Text,
+            value: this.context.getIndent(),
+            ref: fieldItem
+          });
+          this.process(fieldItem);
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ',',
+            ref: fieldItem
+          });
+          this.tokens.push({
+            type: TokenType.EndOfLine,
+            value: '\n',
+            ref: fieldItem
+          });
         }
 
-        context.decIndent();
+        this.context.decIndent();
 
-        const blockStart = '{' + commentStart;
-
-        return (
-          blockStart +
-          '\n' +
-          fields.map((field) => context.putIndent(field, 1)).join('\n') +
-          '\n' +
-          blockEnd
-        );
+        this.tokens.push({
+          type: TokenType.Text,
+          value: this.context.getIndent() + '}',
+          ref: {
+            start: item.end,
+            end: item.end
+          }
+        });
+        return;
       }
 
-      const fields = [];
-      let fieldItem;
-      const blockStart = '{';
-      const blockEnd = '}' + commentStart;
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '{ ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      for (fieldItem of item.fields) {
-        fields.push(transformer.make(fieldItem));
+      for (let index = 0; index < item.fields.length; index++) {
+        const fieldItem = item.fields[index];
+        this.process(fieldItem);
+        if (index !== item.fields.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ', ',
+            ref: fieldItem
+          });
       }
 
-      return (
-        blockStart +
-        ' ' +
-        fields.map((field) => context.putIndent(field, 1)).join(', ') +
-        ' ' +
-        blockEnd
-      );
+      this.context.decIndent();
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' }',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    MapKeyString: (
+    MapKeyString: function (
+      this: BeautifyFactory,
       item: ASTMapKeyString,
       _data: TransformerDataObject
-    ): string => {
-      const key = transformer.make(item.key);
-      const value = transformer.make(item.value);
-
-      return [key, value].join(': ');
+    ): void {
+      this.process(item.key);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ': ',
+        ref: item
+      });
+      this.process(item.value);
     },
-    Identifier: (item: ASTIdentifier, _data: TransformerDataObject): string => {
-      return item.name;
+    Identifier: function (
+      this: BeautifyFactory,
+      item: ASTIdentifier,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.name,
+        ref: item
+      });
     },
-    ReturnStatement: (
+    ReturnStatement: function (
+      this: BeautifyFactory,
       item: ASTReturnStatement,
       _data: TransformerDataObject
-    ): string => {
-      const arg = item.argument ? transformer.make(item.argument) : '';
-      return 'return ' + arg;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'return ',
+        ref: item
+      });
+      if (item.argument) this.process(item.argument);
     },
-    NumericLiteral: (
+    NumericLiteral: function (
+      this: BeautifyFactory,
       item: ASTNumericLiteral,
       _data: TransformerDataObject
-    ): string => {
-      return (item.negated ? '-' : '') + item.value.toString();
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: (item.negated ? '-' : '') + item.value.toString(),
+        ref: item
+      });
     },
-    WhileStatement: (
+    WhileStatement: function (
+      this: BeautifyFactory,
       item: ASTWhileStatement,
       _data: TransformerDataObject
-    ): string => {
-      const commentAtStart = context.useComment(item.start);
-      const condition = transformer.make(unwrap(item.condition));
-      const blockStart = 'while ' + condition + commentAtStart;
-      const blockEnd = context.putIndent('end while');
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'while ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      if (hasEmptyBody(item.body)) {
-        return blockStart + '\n' + blockEnd;
-      }
+      this.context.disableMultiline();
+      this.process(item.condition);
+      this.context.enableMultiline();
 
-      context.incIndent();
-      const body = context.buildBlock(item);
-      context.decIndent();
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      return blockStart + '\n' + body.join('\n') + '\n' + blockEnd;
+      this.context.incIndent();
+      this.context.buildBlock(item);
+      this.context.decIndent();
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: this.context.getIndent() + 'end while',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    CallExpression: (
+    CallExpression: function (
+      this: BeautifyFactory,
       item: ASTCallExpression,
       data: TransformerDataObject
-    ): string => {
-      const base = transformer.make(item.base);
-      const commentAtEnd = context.useComment(item.end);
+    ): void {
+      this.process(item.base);
 
       if (item.arguments.length === 0) {
-        return base + commentAtEnd;
+        return;
       }
 
-      if (item.arguments.length > 3 && context.isMultilineAllowed) {
-        let argItem;
-        const args = [];
+      if (item.arguments.length > 3 && this.context.isMultilineAllowed) {
+        this.context.incIndent();
 
-        context.incIndent();
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '(',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
 
-        for (argItem of item.arguments) {
-          args.push(transformer.make(argItem));
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
+
+        for (let index = 0; index < item.arguments.length; index++) {
+          const argItem = item.arguments[index];
+          this.tokens.push({
+            type: TokenType.Text,
+            value: this.context.getIndent(),
+            ref: argItem
+          });
+          this.process(argItem);
+          if (index !== item.arguments.length - 1) {
+            this.tokens.push({
+              type: TokenType.Text,
+              value: ',',
+              ref: argItem
+            });
+            this.tokens.push({
+              type: TokenType.EndOfLine,
+              value: '\n',
+              ref: argItem
+            });
+          }
         }
 
-        context.decIndent();
+        this.context.decIndent();
 
-        return (
-          base +
-          '(\n' +
-          args.map((item) => context.putIndent(item, 1)).join(',\n') +
-          ')' +
-          commentAtEnd
-        );
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: {
+            start: item.end,
+            end: item.end
+          }
+        });
+
+        return;
       }
 
-      const args = item.arguments.map((argItem) => transformer.make(argItem));
-      const argStr = args.join(', ');
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '(',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      if (/\n/.test(argStr) && !/,(?!\n)/.test(argStr)) {
-        context.incIndent();
-        const args = item.arguments.map((argItem) => transformer.make(argItem));
-        const argStr = args.join(', ');
-        context.decIndent();
+      const startIndex = this.tokens.length - 1;
 
-        return base + '(\n' + context.putIndent(argStr, 1) + ')' + commentAtEnd;
+      for (let index = 0; index < item.arguments.length; index++) {
+        const argItem = item.arguments[index];
+        this.process(argItem);
+        if (index !== item.arguments.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ', ',
+            ref: argItem
+          });
       }
 
-      return data.isCommand && !keepParentheses
-        ? base + ' ' + argStr + commentAtEnd
-        : base + '(' + argStr + ')' + commentAtEnd;
+      const containsNewLine = this.context.containsNewLineInRange(startIndex);
+
+      if (item.arguments.length > 1 && containsNewLine) {
+        this._tokens = this._tokens.slice(0, startIndex + 1);
+
+        this.context.incIndent();
+
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
+
+        for (let index = 0; index < item.arguments.length; index++) {
+          const argItem = item.arguments[index];
+          this.tokens.push({
+            type: TokenType.Text,
+            value: this.context.getIndent(),
+            ref: argItem
+          });
+          this.process(argItem);
+          if (index !== item.arguments.length - 1) {
+            this.tokens.push({
+              type: TokenType.Text,
+              value: ',',
+              ref: argItem
+            });
+            this.tokens.push({
+              type: TokenType.EndOfLine,
+              value: '\n',
+              ref: argItem
+            });
+          }
+        }
+
+        this.context.decIndent();
+
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: {
+            start: item.end,
+            end: item.end
+          }
+        });
+
+        return;
+      }
+
+      if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
+        this.tokens[startIndex].value = ' ';
+        return;
+      }
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ')',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    StringLiteral: (item: ASTLiteral, _data: TransformerDataObject): string => {
-      return item.raw.toString();
+    StringLiteral: function (
+      this: BeautifyFactory,
+      item: ASTLiteral,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.raw.toString(),
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    SliceExpression: (
+    SliceExpression: function (
+      this: BeautifyFactory,
       item: ASTSliceExpression,
       _data: TransformerDataObject
-    ): string => {
-      const base = transformer.make(item.base);
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
-
-      return base + '[' + [left, right].join(' : ') + ']';
+    ): void {
+      this.process(item.base);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '[',
+        ref: item
+      });
+      this.process(item.left);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' : ',
+        ref: item
+      });
+      this.process(item.right);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ']',
+        ref: item
+      });
     },
-    IndexExpression: (
+    IndexExpression: function (
+      this: BeautifyFactory,
       item: ASTIndexExpression,
-      data: TransformerDataObject
-    ): string => {
-      const commentAtEnd = data.isCommand
-        ? context.useComment(item.index.end)
-        : '';
-      const base = transformer.make(item.base);
-      const index = transformer.make(item.index);
-
-      return base + '[' + index + ']' + commentAtEnd;
+      _data: TransformerDataObject
+    ): void {
+      this.process(item.base);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '[',
+        ref: item
+      });
+      this.process(item.index);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ']',
+        ref: item
+      });
     },
-    UnaryExpression: (
+    UnaryExpression: function (
+      this: BeautifyFactory,
       item: ASTUnaryExpression,
       _data: TransformerDataObject
-    ): string => {
-      const arg = transformer.make(item.argument);
+    ): void {
+      if (item.operator === 'new') {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: item.operator + ' ',
+          ref: item
+        });
+      } else {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: item.operator,
+          ref: item
+        });
+      }
 
-      if (item.operator === 'new') return item.operator + ' ' + arg;
-
-      return item.operator + arg;
+      this.process(item.argument);
     },
-    NegationExpression: (
+    NegationExpression: function (
+      this: BeautifyFactory,
       item: ASTUnaryExpression,
       _data: TransformerDataObject
-    ): string => {
-      const arg = transformer.make(item.argument);
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'not ',
+        ref: item
+      });
 
-      return 'not ' + arg;
+      this.process(item.argument);
     },
-    FeatureEnvarExpression: (
+    FeatureEnvarExpression: function (
+      this: BeautifyFactory,
       item: ASTFeatureEnvarExpression,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return `#envar ${item.name}`;
-      const value = transformer.environmentVariables.get(item.name);
-      if (!value) return 'null';
-      return `"${value}"`;
-    },
-    IfShortcutStatement: (
-      item: ASTIfStatement,
-      _data: TransformerDataObject
-    ): string => {
-      const clauses = [];
-      const commentAtEnd = !containsMultilineItemInShortcutClauses(
-        item.start,
-        item.clauses
-      )
-        ? context.useComment(item.start)
-        : '';
-      let clausesItem;
-
-      for (clausesItem of item.clauses) {
-        clauses.push(transformer.make(clausesItem));
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#envar ${item.name}`,
+          ref: item
+        });
+        return;
       }
 
-      return clauses.join(' ') + commentAtEnd;
+      const value = this.transformer.environmentVariables.get(item.name);
+
+      if (!value) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'null',
+          ref: item
+        });
+        return;
+      }
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `"${value}"`,
+        ref: item
+      });
     },
-    IfShortcutClause: (
+    IfShortcutStatement: function (
+      this: BeautifyFactory,
+      item: ASTIfStatement,
+      _data: TransformerDataObject
+    ): void {
+      for (let index = 0; index < item.clauses.length; index++) {
+        const clausesItem = item.clauses[index];
+        this.process(clausesItem);
+        if (index !== item.clauses.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ' ',
+            ref: item
+          });
+      }
+    },
+    IfShortcutClause: function (
+      this: BeautifyFactory,
       item: ASTIfClause,
       _data: TransformerDataObject
-    ): string => {
-      const condition = transformer.make(unwrap(item.condition));
-      const statement = transformer.make(item.body[0]);
-
-      return 'if ' + condition + ' then ' + statement;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'if ',
+        ref: item
+      });
+      this.process(unwrap(item.condition));
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then ',
+        ref: item
+      });
+      this.process(item.body[0]);
     },
-    ElseifShortcutClause: (
+    ElseifShortcutClause: function (
+      this: BeautifyFactory,
       item: ASTIfClause,
       _data: TransformerDataObject
-    ): string => {
-      const condition = transformer.make(unwrap(item.condition));
-      const statement = transformer.make(item.body[0]);
-
-      return 'else if ' + condition + ' then ' + statement;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'else if ',
+        ref: item
+      });
+      this.process(unwrap(item.condition));
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then ',
+        ref: item
+      });
+      this.process(item.body[0]);
     },
-    ElseShortcutClause: (
+    ElseShortcutClause: function (
+      this: BeautifyFactory,
       item: ASTElseClause,
       _data: TransformerDataObject
-    ): string => {
-      const statement = transformer.make(item.body[0]);
-      return 'else ' + statement;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'else ',
+        ref: item
+      });
+      this.process(item.body[0]);
     },
-    NilLiteral: (_item: ASTLiteral, _data: TransformerDataObject): string => {
-      return 'null';
+    NilLiteral: function (
+      this: BeautifyFactory,
+      item: ASTLiteral,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'null',
+        ref: item
+      });
     },
-    ForGenericStatement: (
+    ForGenericStatement: function (
+      this: BeautifyFactory,
       item: ASTForGenericStatement,
       _data: TransformerDataObject
-    ): string => {
-      const commentAtStart = context.useComment(item.start);
-      const variable = transformer.make(unwrap(item.variable));
-      const iterator = transformer.make(unwrap(item.iterator));
-      const blockStart = 'for ' + variable + ' in ' + iterator + commentAtStart;
-      const blockEnd = context.putIndent('end for');
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'for ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(unwrap(item.variable));
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' in ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(unwrap(item.iterator));
 
-      if (hasEmptyBody(item.body)) {
-        return blockStart + '\n' + blockEnd;
-      }
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      context.incIndent();
-      const body = context.buildBlock(item);
-      context.decIndent();
+      this.context.incIndent();
+      this.context.buildBlock(item);
+      this.context.decIndent();
 
-      return blockStart + '\n' + body.join('\n') + '\n' + blockEnd;
+      this.tokens.push({
+        type: TokenType.Text,
+        value: this.context.getIndent() + 'end for',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    IfStatement: (
+    IfStatement: function (
+      this: BeautifyFactory,
       item: ASTIfStatement,
       _data: TransformerDataObject
-    ): string => {
-      const clauses = [];
-      let clausesItem;
-
-      for (clausesItem of item.clauses) {
-        clauses.push(transformer.make(clausesItem));
+    ): void {
+      for (const clausesItem of item.clauses) {
+        this.process(clausesItem);
       }
 
-      return clauses.join('\n') + '\n' + context.putIndent('end if');
+      this.tokens.push({
+        type: TokenType.Text,
+        value: this.context.getIndent() + 'end if',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    IfClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const commentAtStart = context.useComment(item.start);
-      const condition = transformer.make(unwrap(item.condition));
-      const blockStart = 'if ' + condition + ' then' + commentAtStart;
-
-      context.incIndent();
-
-      const body = context.buildBlock(item);
-
-      context.decIndent();
-
-      return blockStart + '\n' + body.join('\n');
-    },
-    ElseifClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const commentAtStart = context.useComment(item.start);
-      const condition = transformer.make(unwrap(item.condition));
-      const blockStart =
-        context.putIndent('else if') +
-        ' ' +
-        condition +
-        ' then' +
-        commentAtStart;
-
-      context.incIndent();
-
-      const body = context.buildBlock(item);
-
-      context.decIndent();
-
-      return blockStart + '\n' + body.join('\n');
-    },
-    ElseClause: (item: ASTElseClause, _data: TransformerDataObject): string => {
-      const blockStart = context.appendComment(
-        item.start,
-        context.putIndent('else')
-      );
-
-      context.incIndent();
-
-      const body = context.buildBlock(item);
-
-      context.decIndent();
-
-      return blockStart + '\n' + body.join('\n');
-    },
-    ContinueStatement: (
-      _item: ASTBase,
+    IfClause: function (
+      this: BeautifyFactory,
+      item: ASTIfClause,
       _data: TransformerDataObject
-    ): string => {
-      return 'continue';
-    },
-    BreakStatement: (_item: ASTBase, _data: TransformerDataObject): string => {
-      return 'break';
-    },
-    CallStatement: (
-      item: ASTCallStatement,
-      _data: TransformerDataObject
-    ): string => {
-      return transformer.make(item.expression, { isCommand: true });
-    },
-    FeatureInjectExpression: (
-      item: ASTFeatureInjectExpression,
-      _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return `#inject "${item.path}";`;
-      if (transformer.currentDependency === null)
-        return `#inject "${item.path}";`;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'if ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(unwrap(item.condition));
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      const content = transformer.currentDependency.injections.get(item.path);
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      if (content == null) return 'null';
-
-      return `"${content.replace(/"/g, '""')}"`;
+      this.context.incIndent();
+      this.context.buildBlock(item);
+      this.context.decIndent();
     },
-    FeatureImportExpression: (
-      item: ASTFeatureImportExpression,
+    ElseifClause: function (
+      this: BeautifyFactory,
+      item: ASTIfClause,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode)
-        return (
-          '#import ' +
-          transformer.make(item.name) +
-          ' from "' +
-          item.path +
-          '";'
-        );
-      if (!item.chunk)
-        return (
-          '#import ' +
-          transformer.make(item.name) +
-          ' from "' +
-          item.path +
-          '";'
-        );
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: this.context.getIndent() + 'else if ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(unwrap(item.condition));
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      return (
-        transformer.make(item.name) + ' = __REQUIRE("' + item.namespace + '")'
-      );
-    },
-    FeatureIncludeExpression: (
-      item: ASTFeatureIncludeExpression,
-      _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return '#include "' + item.path + '";';
-      if (!item.chunk) return '#include "' + item.path + '";';
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      return transformer.make(item.chunk);
+      this.context.incIndent();
+      this.context.buildBlock(item);
+      this.context.decIndent();
     },
-    FeatureDebuggerExpression: (
-      _item: ASTBase,
+    ElseClause: function (
+      this: BeautifyFactory,
+      item: ASTElseClause,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return 'debugger';
-      return '//debugger';
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: this.context.getIndent() + 'else',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      this.context.incIndent();
+      this.context.buildBlock(item);
+      this.context.decIndent();
     },
-    FeatureLineExpression: (
+    ContinueStatement: function (
+      this: BeautifyFactory,
       item: ASTBase,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return '#line';
-      return `${item.start.line}`;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'continue',
+        ref: item
+      });
     },
-    FeatureFileExpression: (
+    BreakStatement: function (
+      this: BeautifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'break',
+        ref: item
+      });
+    },
+    CallStatement: function (
+      this: BeautifyFactory,
+      item: ASTCallStatement,
+      _data: TransformerDataObject
+    ): void {
+      this.process(item.expression, { isCommand: true });
+    },
+    FeatureInjectExpression: function (
+      this: BeautifyFactory,
+      item: ASTFeatureInjectExpression,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#inject "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+      if (this.currentDependency === null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#inject "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+
+      const content = this.currentDependency.injections.get(item.path);
+
+      if (content == null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'null',
+          ref: item
+        });
+        return;
+      }
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `"${content.replace(/"/g, '""')}"`,
+        ref: item
+      });
+    },
+    FeatureImportExpression: function (
+      this: BeautifyFactory,
+      item: ASTFeatureImportExpression,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#import ',
+          ref: item
+        });
+        this.process(item.name);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ` from "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+      if (!item.chunk) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#import ',
+          ref: item
+        });
+        this.process(item.name);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ` from "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+
+      this.process(item.name);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' = __REQUIRE("' + item.namespace + '")',
+        ref: item
+      });
+    },
+    FeatureIncludeExpression: function (
+      this: BeautifyFactory,
+      item: ASTFeatureIncludeExpression,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#include "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+      if (!item.chunk) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#include "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+
+      this.process(item.chunk);
+    },
+    FeatureDebuggerExpression: function (
+      this: BeautifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'debugger',
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '//debugger',
+        ref: item
+      });
+    },
+    FeatureLineExpression: function (
+      this: BeautifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#line',
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `${item.start.line}`,
+        ref: item
+      });
+    },
+    FeatureFileExpression: function (
+      this: BeautifyFactory,
       item: ASTFeatureFileExpression,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return '#filename';
-      return `"${basename(item.filename).replace(/"/g, '"')}"`;
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#filename',
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `"${basename(item.filename).replace(/"/g, '"')}"`,
+        ref: item
+      });
     },
-    ListConstructorExpression: (
+    ListConstructorExpression: function (
+      this: BeautifyFactory,
       item: ASTListConstructorExpression,
       _data: TransformerDataObject
-    ): string => {
-      const commentStart = context.useComment(item.start);
-      const commentEnd = context.useComment(item.end);
-
+    ): void {
       if (item.fields.length === 0) {
-        return '[]' + commentStart;
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '[]',
+          ref: item
+        });
+
+        return;
       }
 
       if (item.fields.length === 1) {
-        const field = transformer.make(item.fields[0]);
-        return '[ ' + field + ' ]' + commentStart;
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '[ ',
+          ref: item
+        });
+        this.process(item.fields[0]);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ' ]',
+          ref: item
+        });
+        return;
       }
 
-      const fields = [];
-      let fieldItem;
+      if (this.context.isMultilineAllowed) {
+        this.context.incIndent();
 
-      if (context.isMultilineAllowed) {
-        const blockEnd = context.putIndent(
-          ']' + commentEnd
-        );
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '[',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
 
-        context.incIndent();
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
 
-        for (let index = item.fields.length - 1; index >= 0; index--) {
+        for (let index = 0; index < item.fields.length; index++) {
           const fieldItem = item.fields[index];
-          fields.unshift(
-            context.appendComment(
-              fieldItem.end,
-              transformer.make(fieldItem) + ','
-            )
-          );
+          this.tokens.push({
+            type: TokenType.Text,
+            value: this.context.getIndent(),
+            ref: fieldItem
+          });
+          this.process(fieldItem);
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ',',
+            ref: fieldItem
+          });
+          this.tokens.push({
+            type: TokenType.EndOfLine,
+            value: '\n',
+            ref: fieldItem
+          });
         }
 
-        context.decIndent();
+        this.context.decIndent();
 
-        const blockStart = '[' + commentStart;
+        this.tokens.push({
+          type: TokenType.Text,
+          value: this.context.getIndent() + ']',
+          ref: {
+            start: item.end,
+            end: item.end
+          }
+        });
 
-        return (
-          blockStart +
-          '\n' +
-          fields.map((field) => context.putIndent(field, 1)).join('\n') +
-          '\n' +
-          blockEnd
-        );
+        return;
       }
 
-      const blockEnd = context.putIndent(']' + commentStart);
-      const blockStart = '[';
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '[ ',
+        ref: item
+      });
 
-      for (fieldItem of item.fields) {
-        fields.push(transformer.make(fieldItem));
+      for (let index = 0; index < item.fields.length; index++) {
+        const fieldItem = item.fields[index];
+        this.process(fieldItem);
+        if (index !== item.fields.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ', ',
+            ref: fieldItem
+          });
       }
 
-      return blockStart + ' ' + fields.join(', ') + ' ' + blockEnd;
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' ]',
+        ref: item
+      });
     },
-    ListValue: (item: ASTListValue, _data: TransformerDataObject): string => {
-      return transformer.make(item.value);
+    ListValue: function (
+      this: BeautifyFactory,
+      item: ASTListValue,
+      _data: TransformerDataObject
+    ): void {
+      this.process(item.value);
     },
-    BooleanLiteral: (
+    BooleanLiteral: function (
+      this: BeautifyFactory,
       item: ASTBooleanLiteral,
       _data: TransformerDataObject
-    ): string => {
-      return (item.negated ? '-' : '') + item.raw.toString();
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: (item.negated ? '-' : '') + item.raw.toString(),
+        ref: item
+      });
     },
-    EmptyExpression: (_item: ASTBase, _data: TransformerDataObject): string => {
-      return '';
+    EmptyExpression: function (
+      this: BeautifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '',
+        ref: item
+      });
     },
-    IsaExpression: (
+    IsaExpression: function (
+      this: BeautifyFactory,
       item: ASTIsaExpression,
       data: TransformerDataObject
-    ): string => {
-      const left = transformer.make(item.left, {
+    ): void {
+      this.process(item.left, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
-      const right = transformer.make(item.right, {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' ' + item.operator + ' ',
+        ref: item
+      });
+      this.process(item.right, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
-
-      return left + ' ' + item.operator + ' ' + right;
     },
-    LogicalExpression: (
+    LogicalExpression: function (
+      this: BeautifyFactory,
       item: ASTLogicalExpression,
       data: TransformerDataObject
-    ): string => {
+    ): void {
       const count = countRightBinaryExpressions(item.right);
 
       if (count > 2) {
-        if (!data.hasLogicalIndentActive) context.incIndent();
+        if (!data.hasLogicalIndentActive) this.context.incIndent();
 
-        const left = transformer.make(item.left, {
+        this.process(item.left, {
           hasLogicalIndentActive: true
         });
-        const right = transformer.make(item.right, {
+
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ' ' + item.operator + ' ',
+          ref: item
+        });
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: item
+        });
+        this.tokens.push({
+          type: TokenType.Text,
+          value: this.context.getIndent(),
+          ref: item
+        });
+
+        this.process(item.right, {
           hasLogicalIndentActive: true
         });
-        const operator = item.operator;
-        const expression =
-          left + ' ' + operator + '\n' + context.putIndent(right);
 
-        if (!data.hasLogicalIndentActive) context.decIndent();
+        if (!data.hasLogicalIndentActive) this.context.decIndent();
 
-        return expression;
+        return;
       }
 
-      const left = transformer.make(item.left, {
-        hasLogicalIndentActive: data.hasLogicalIndentActive
-      });
-      const right = transformer.make(item.right, {
+      this.process(item.left, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
 
-      return left + ' ' + item.operator + ' ' + right;
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' ' + item.operator + ' ',
+        ref: item
+      });
+
+      this.process(item.right, {
+        hasLogicalIndentActive: data.hasLogicalIndentActive
+      });
     },
-    BinaryExpression: (
+    BinaryExpression: function (
+      this: BeautifyFactory,
       item: ASTBinaryExpression,
-      data: TransformerDataObject
-    ): string => {
-      const left = transformer.make(item.left, {
-        hasLogicalIndentActive: data.hasLogicalIndentActive
-      });
-      const right = transformer.make(item.right, {
-        hasLogicalIndentActive: data.hasLogicalIndentActive
-      });
-      const operator = item.operator;
-      const expression = transformBitOperation(
-        left + ' ' + operator + ' ' + right,
-        left,
-        right,
-        operator
-      );
+      _data: TransformerDataObject
+    ): void {
+      if (item.operator === '|') {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'bitOr(',
+          ref: item
+        });
+        this.process(item.left);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ', ',
+          ref: item
+        });
+        this.process(item.right);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: item
+        });
+        return;
+      } else if (item.operator === '&') {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'bitAnd(',
+          ref: item
+        });
+        this.process(item.left);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ', ',
+          ref: item
+        });
+        this.process(item.right);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: item
+        });
+        return;
+      } else if (
+        item.operator === '<<' ||
+        item.operator === '>>' ||
+        item.operator === '>>>'
+      ) {
+        throw new Error('Operators in binary expression are not supported');
+      }
 
-      return expression;
+      this.process(item.left);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' ' + item.operator + ' ',
+        ref: item
+      });
+      this.process(item.right);
     },
-    BinaryNegatedExpression: (
+    BinaryNegatedExpression: function (
+      this: BeautifyFactory,
       item: ASTUnaryExpression,
       _data: TransformerDataObject
-    ): string => {
-      const arg = transformer.make(item.argument);
-      const operator = item.operator;
-
-      return operator + arg;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.operator,
+        ref: item
+      });
+      this.process(item.argument);
     },
-    ComparisonGroupExpression: (
+    ComparisonGroupExpression: function (
+      this: BeautifyFactory,
       item: ASTComparisonGroupExpression,
       _data: TransformerDataObject
-    ): string => {
-      const expressions: string[] = item.expressions.map((it) =>
-        transformer.make(it)
-      );
-      const segments: string[] = [expressions[0]];
+    ): void {
+      this.process(item.expressions[0]);
 
       for (let index = 0; index < item.operators.length; index++) {
-        segments.push(item.operators[index], expressions[index + 1]);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ' ' + item.operators[index] + ' ',
+          ref: item
+        });
+        this.process(item.expressions[index + 1]);
       }
-
-      return segments.join(' ');
     },
-    Chunk: (item: ASTChunk, _data: TransformerDataObject): string => {
-      context.pushLines(item.lines);
-      const body = context.buildBlock(item).join('\n');
-      context.popLines();
-      return body;
+    Chunk: function (
+      this: BeautifyFactory,
+      item: ASTChunk,
+      _data: TransformerDataObject
+    ): void {
+      this.context.buildBlock(item);
     }
   };
-};
+}

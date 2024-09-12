@@ -1,15 +1,18 @@
-import { ASTBase, ASTChunk } from 'miniscript-core';
+import { ASTChunk } from 'miniscript-core';
 
-import { BuildMap, DefaultFactoryOptions, Factory } from './build-map/factory';
+import {
+  DefaultFactoryOptions,
+  Factory,
+  FactoryConstructor
+} from './build-map/factory';
 import { Context } from './context';
 import { ResourceHandler } from './resource';
 import { DependencyLike } from './types/dependency';
-import { TransformerDataObject, TransformerLike } from './types/transformer';
-import { Stack } from './utils/stack';
+import { TransformerLike } from './types/transformer';
 
 export interface TransformerOptions {
   buildOptions: DefaultFactoryOptions;
-  mapFactory: Factory<DefaultFactoryOptions>;
+  factoryConstructor: FactoryConstructor<DefaultFactoryOptions>;
   context: Context;
   environmentVariables: Map<string, string>;
   resourceHandler?: ResourceHandler;
@@ -20,23 +23,11 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
   private _buildOptions: DefaultFactoryOptions;
   private _context: Context;
   private _environmentVariables: Map<string, string>;
-  private _buildMap: BuildMap;
+  private _factory: Factory<DefaultFactoryOptions>;
   private _resourceHandler: ResourceHandler | null;
-
-  // runtime
-  private _currentDependency: DependencyLike | null;
-  private _currentStack: Stack;
 
   get buildOptions() {
     return this._buildOptions;
-  }
-
-  get currentStack() {
-    return this._currentStack;
-  }
-
-  get currentDependency() {
-    return this._currentDependency;
   }
 
   get context() {
@@ -47,17 +38,13 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
     return this._environmentVariables;
   }
 
-  get buildMap() {
-    return this._buildMap;
-  }
-
   get resourceHandler() {
     return this._resourceHandler;
   }
 
   constructor({
     buildOptions,
-    mapFactory,
+    factoryConstructor,
     context,
     environmentVariables,
     resourceHandler
@@ -67,30 +54,8 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
     me._buildOptions = buildOptions;
     me._context = context;
     me._environmentVariables = environmentVariables;
-    me._buildMap = mapFactory(me);
+    me._factory = new factoryConstructor(me);
     me._resourceHandler = resourceHandler ?? null;
-
-    me._currentDependency = null;
-    me._currentStack = new Stack();
-  }
-
-  make(o: ASTBase, data: TransformerDataObject = {}): string {
-    const me = this;
-    const currentStack = me._currentStack;
-    if (o == null) return '';
-    if (o.type == null) {
-      console.error('Error AST type:', o);
-      throw new Error('Unexpected AST type');
-    }
-    const fn = me._buildMap[o.type];
-    if (fn == null) {
-      console.error('Error AST:', o);
-      throw new Error('Type does not exist ' + o.type);
-    }
-    currentStack.push(o);
-    const result = fn(o, data);
-    currentStack.pop();
-    return result;
   }
 
   transform(chunk: ASTChunk, dependency: DependencyLike = null): string {
@@ -100,8 +65,6 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
       throw new Error('Expects chunk');
     }
 
-    me._currentDependency = dependency;
-
-    return me.make(chunk);
+    return me._factory.transform(chunk, dependency);
   }
 }

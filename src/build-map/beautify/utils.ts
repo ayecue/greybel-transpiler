@@ -49,23 +49,6 @@ export const countRightBinaryExpressions = (item: ASTBase): number => {
   return count;
 };
 
-export const transformBitOperation = (
-  expression: string,
-  left: string,
-  right: string,
-  operator: string
-): string => {
-  if (operator === '|') {
-    return 'bitOr(' + [left, right].join(', ') + ')';
-  } else if (operator === '&') {
-    return 'bitAnd(' + [left, right].join(', ') + ')';
-  } else if (operator === '<<' || operator === '>>' || operator === '>>>') {
-    throw new Error('Operators in binary expression are not supported');
-  }
-
-  return expression;
-};
-
 export const unwrap = (node: ASTBase): ASTBase => {
   while (node instanceof ASTParenthesisExpression) {
     node = node.expression;

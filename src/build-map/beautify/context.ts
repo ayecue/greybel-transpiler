@@ -1,18 +1,14 @@
 import {
   ASTBase,
   ASTBaseBlock,
-  ASTChunk,
-  ASTComment,
   ASTForGenericStatement,
   ASTIfClause,
   ASTIfStatement,
-  ASTPosition,
   ASTType,
   ASTWhileStatement
 } from 'miniscript-core';
 
-import { TransformerLike } from '../../types/transformer';
-import { DefaultFactoryOptions } from '../factory';
+import { DefaultFactoryOptions, Factory, TokenType } from '../factory';
 import { getLastComment } from './utils';
 
 export enum IndentationType {
@@ -30,12 +26,11 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
 export class BeautifyContext {
   readonly options: BeautifyContextOptions;
 
-  private transformer: TransformerLike<BeautifyContextOptions>;
+  private factory: Factory<BeautifyContextOptions>;
   private _indent: number;
   private _isMultilineAllowed: boolean;
-  private chunks: ASTChunk['lines'][];
-  private usedComments: Set<ASTBase>;
-  public putIndent: (str: string, offset?: number) => string;
+  private _usedComments: Set<ASTBase>;
+  public getIndent: (offset?: number) => string;
 
   get indent() {
     return this._indent;
@@ -45,53 +40,24 @@ export class BeautifyContext {
     return this._isMultilineAllowed;
   }
 
+  get usedComments() {
+    return this._usedComments;
+  }
+
   constructor(
-    transformer: TransformerLike<BeautifyContextOptions>,
+    factory: Factory<BeautifyContextOptions>,
     options: BeautifyContextOptions
   ) {
-    this.transformer = transformer;
+    this.factory = factory;
     this.options = options;
     this._indent = 0;
     this._isMultilineAllowed = true;
-    this.chunks = [];
-    this.usedComments = new Set();
-    this.putIndent =
+    this._usedComments = new Set();
+    this.getIndent =
       options.indentation === IndentationType.Tab
-        ? (str: string, offset: number = 0) =>
-            `${'\t'.repeat(this._indent + offset)}${str}`
-        : (str: string, offset: number = 0) =>
-            `${' '
-              .repeat(options.indentationSpaces)
-              .repeat(this._indent + offset)}${str}`;
-  }
-
-  pushLines(lines: ASTChunk['lines']) {
-    this.chunks.push(lines);
-  }
-
-  popLines(): ASTChunk['lines'] {
-    return this.chunks.pop();
-  }
-
-  getLines(): ASTChunk['lines'] {
-    return this.chunks[this.chunks.length - 1];
-  }
-
-  useComment(position: ASTPosition, leftPadding: string = ' '): string {
-    const items = this.getLines()[position.line];
-    if (items == null) return '';
-    const lastItem = getLastComment(items);
-
-    if (lastItem != null && !this.usedComments.has(lastItem)) {
-      this.usedComments.add(lastItem);
-      return leftPadding + this.transformer.make(lastItem);
-    }
-
-    return '';
-  }
-
-  appendComment(position: ASTPosition, line: string): string {
-    return line + this.useComment(position);
+        ? (offset: number = 0) => '\t'.repeat(this._indent + offset)
+        : (offset: number = 0) =>
+            ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
   }
 
   disableMultiline() {
@@ -133,71 +99,67 @@ export class BeautifyContext {
     return item.end.line;
   }
 
-  buildBlock(block: ASTBaseBlock): string[] {
-    if (block.body.length === 0) return [];
+  containsNewLineInRange(
+    start: number,
+    end: number = this.factory.tokens.length
+  ) {
+    const max = Math.min(end, this.factory.tokens.length);
 
-    const sortedBody = [...block.body].sort(
-      (a, b) => a.start.line - b.start.line
-    );
-    const body: string[] = [];
+    for (let index = start; index < max; index++) {
+      if (this.factory.tokens[index].type === TokenType.EndOfLine) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  buildBlock(block: ASTBaseBlock): void {
+    if (block.body.length === 0) return;
+
+    block.body.sort((a, b) => a.range[0] - b.range[0]);
+
+    const existingLines: Set<number> = new Set();
     let previous: ASTBase | null = null;
 
-    for (let index = 0; index < sortedBody.length; index++) {
-      const bodyItem = sortedBody[index];
-      const next = sortedBody[index + 1] ?? null;
-
-      if (
-        bodyItem.type !== ASTType.Comment &&
-        previous?.end.line === bodyItem.start.line
-      ) {
-        const transformed = this.transformer.make(bodyItem, {
-          isCommand: true
-        });
-        body.push(
-          this.putIndent(this.appendComment(bodyItem.end, transformed))
-        );
-        previous = bodyItem;
-        continue;
-      }
-
-      if (this.usedComments.has(bodyItem)) {
-        const comment = bodyItem as ASTComment;
-        if (comment.isMultiline) previous = bodyItem;
-        continue;
-      }
-
-      if (
-        bodyItem.type === ASTType.Comment &&
-        bodyItem.start.line === next?.start.line
-      ) {
-        continue;
-      }
-
-      const diff = Math.max(
-        previous
-          ? bodyItem.start.line - this.getPreviousEndLine(previous) - 1
-          : bodyItem.start.line - this.getBlockOpenerEndLine(block) - 1,
-        0
-      );
+    for (let index = 0; index < block.body.length; index++) {
+      const bodyItem = block.body[index];
+      const lastEndLine = previous
+        ? this.getPreviousEndLine(previous)
+        : this.getBlockOpenerEndLine(block);
+      const diff = Math.max(bodyItem.start.line - lastEndLine - 1, 0);
 
       if (diff > 0) {
-        body.push(...new Array(diff).fill(''));
+        for (let j = 0; j < diff; j++) {
+          const pos = {
+            line: lastEndLine + j + 1,
+            character: 0
+          };
+          this.factory.tokens.push({
+            type: TokenType.EndOfLine,
+            value: '\n',
+            ref: {
+              start: pos,
+              end: pos
+            }
+          });
+        }
       }
 
-      if (bodyItem instanceof ASTComment) {
-        this.usedComments.add(bodyItem);
-        const transformed = this.transformer.make(bodyItem, {
-          isCommand: true
-        });
-        body.push(this.putIndent(transformed));
-      } else {
-        const transformed = this.transformer.make(bodyItem, {
-          isCommand: true
-        });
-        body.push(
-          this.putIndent(this.appendComment(bodyItem.end, transformed))
-        );
-      }
+      const startIndex = this.factory.tokens.length;
+      this.factory.process(bodyItem, {
+        isCommand: true
+      });
+      this.factory.tokens[startIndex].value =
+        this.getIndent() + this.factory.tokens[startIndex].value;
+      this.factory.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: bodyItem.end,
+          end: bodyItem.end
+        }
+      });
 
       previous = bodyItem;
     }
@@ -209,9 +171,20 @@ export class BeautifyContext {
     );
 
     if (size > 0) {
-      body.push(...new Array(size).fill(''));
+      for (let j = 0; j < size; j++) {
+        const pos = {
+          line: last.end.line + j + 1,
+          character: 0
+        };
+        this.factory.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: pos,
+            end: pos
+          }
+        });
+      }
     }
-
-    return body;
   }
 }

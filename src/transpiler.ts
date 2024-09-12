@@ -76,7 +76,7 @@ export class Transpiler {
 
   async parse(): Promise<TranspilerParseResult> {
     const me = this;
-    const mapFactory = getFactory(me.buildType);
+    const factoryConstructor = getFactory(me.buildType);
     const context = me.context;
     const target = new Target({
       target: me.target,
@@ -91,7 +91,7 @@ export class Transpiler {
     // create builder
     const transformer = new Transformer({
       buildOptions: me.buildOptions,
-      mapFactory,
+      factoryConstructor,
       context,
       environmentVariables: me.environmentVariables,
       resourceHandler: me.resourceHandler
