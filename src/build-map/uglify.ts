@@ -1015,7 +1015,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
 
       this.tokens.push({
         type: TokenType.Text,
-        value: ` = ${requireMethodName}("${item.namespace}")`,
+        value: `=${requireMethodName}("${item.namespace}")`,
         ref: item
       });
     },
