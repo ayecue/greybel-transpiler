@@ -540,7 +540,69 @@ H.w=\\"  \\"
 H.x=\\"<color=#\\"
 H.z=\\">\\"
 H.y=\\"</color>\\"
-I={};map={};map.a=[u,t,q];map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"];map.c=[o,s,p];map.d=[v,\\"|| // \\",\\"||//  \\"];map.e=[o,\\"||- \\",p];map.f=[o,p,s];map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",t];map.h=[q,\\"||-|| \\",q];map.i=[r,r,r];map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"];map.k=[\\"||  / \\",\\"|| /  \\",v];map.l=[s,s,p];map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"];map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"];map.o=[u,q,t];map.p=[u,t,\\"||    \\"];map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"];map.r=[u,v,q];map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"];map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"];map.u=[q,q,t];map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"];map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"];map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"];map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"];map.z=[\\"¯// \\",\\"//  \\",p];map[\\"0\\"]=[u,\\"||x|| \\",t];map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"];map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"];map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"];map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"];map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"];map[\\"6\\"]=[\\"||¯¯  \\",u,t];map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"];map[\\"8\\"]=[u,\\"||-|| \\",t];map[\\"9\\"]=[u,\\"  ¯|| \\",\\"  //  \\"];map[\\" \\"]=[w,w,w];I.MAP=map;I.gen=function(str,l);a=[[],[],[]];m=self.MAP;for char in str;char=char.lower;if (m.hasIndex(char)) then;a[0].push(m[char][0]);a[1].push(m[char][1]);a[2].push(m[char][2]);end if;end for;if (n(l)==\\"string\\") then;a[0]=[x+l+z]+a[0]+[y];a[1]=[x+l+z]+a[1]+[y];a[2]=[x+l+z]+a[2]+[y];else if (n(l)==\\"list\\") then;a[0]=[x+l[0]+z]+a[0]+[y];a[1]=[x+l[1]+z]+a[1]+[y];a[2]=[x+l[2]+z]+a[2]+[y];end if;return [a[0].join(\\"\\"),a[1].join(\\"\\"),a[2].join(\\"\\")].join(\\"\\\\n\\");end function;print(I.gen(\\"Hallo\\"))"
+I={}
+map={}
+map.a=[u,t,q]
+map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
+map.c=[o,s,p]
+map.d=[v,\\"|| // \\",\\"||//  \\"]
+map.e=[o,\\"||- \\",p]
+map.f=[o,p,s]
+map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",t]
+map.h=[q,\\"||-|| \\",q]
+map.i=[r,r,r]
+map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
+map.k=[\\"||  / \\",\\"|| /  \\",v]
+map.l=[s,s,p]
+map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
+map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
+map.o=[u,q,t]
+map.p=[u,t,\\"||    \\"]
+map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
+map.r=[u,v,q]
+map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
+map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
+map.u=[q,q,t]
+map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
+map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
+map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
+map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
+map.z=[\\"¯// \\",\\"//  \\",p]
+map[\\"0\\"]=[u,\\"||x|| \\",t]
+map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
+map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
+map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
+map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
+map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
+map[\\"6\\"]=[\\"||¯¯  \\",u,t]
+map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
+map[\\"8\\"]=[u,\\"||-|| \\",t]
+map[\\"9\\"]=[u,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[w,w,w]
+I.MAP=map
+I.gen=function(str,l)
+a=[[],[],[]]
+m=self.MAP
+for char in str
+char=char.lower
+if (m.hasIndex(char)) then
+a[0].push(m[char][0])
+a[1].push(m[char][1])
+a[2].push(m[char][2])
+end if
+end for
+if (n(l)==\\"string\\") then
+a[0]=[x+l+z]+a[0]+[y]
+a[1]=[x+l+z]+a[1]+[y]
+a[2]=[x+l+z]+a[2]+[y]
+else if (n(l)==\\"list\\") then
+a[0]=[x+l[0]+z]+a[0]+[y]
+a[1]=[x+l[1]+z]+a[1]+[y]
+a[2]=[x+l[2]+z]+a[2]+[y]
+end if
+return [a[0].join(\\"\\"),a[1].join(\\"\\"),a[2].join(\\"\\")].join(\\"\\\\n\\")
+end function
+print(I.gen(\\"Hallo\\"))"
 `;
 
 exports[`parse default scripts beautify-cases.src 1`] = `
@@ -1075,7 +1137,115 @@ H.a=234
 H.b=true
 H.e=\\"test\\"
 H.f=\\"xd\\"
-;I=d+2+3+g+c+6 and (2+3+g+c+6+(2+3+g+c+6+7));;J(\\"dieFace[1] - dieFace[6]\\",[K[d],K[2],K[3],K[g],K[c],K[6],{X:V,W:Y}].join,V,V);J(d,2,3,g);;I={};I={W:V};I={X:V,W:[Z,d,a],\\"xx\\":{X:V,\\"ooo\\":{X:V,W:Y},W:Y},\\"123\\":\\"3\\"};;I=[];I=[W];I=[Z,d,[Z,d,a],[Z,[Z,d,a],d,a],a];;I=I+c;I=I+g+c;I.abc=I.abc+c;I.abc=I.abc+g+c;;if (b) then print(e);if (b) then print(e) else print(f);if (b) then I=[d,2,3,g,c];if (b) then I=[d,2,3,g,c] else I=[c,g,3,2,d];if (b) then;print(e);else;print(f);end if;if (b) then;print(e);else if (false) then;print(\\"xa\\");else;print(f);end if;I=function;return [d,2,3,g,c];end function;;I=I+c;;;I=[d,2,3,g];;I=function;;return V;;end function;;for I in [V];;print(e);;end for;;;I={W:V};;I={W:V,X:13,\\"bar\\":45};;while b;if b then print(e) else print(f);end while;if b then M=function;print(e);end function;if false then M=function;print(Z);end function;print(Z>[42]);;I[25];;I[25];;I[V][25];;I[25](11);;I(11)[25];;while b;;end while;if N.remove(@O) then return \\"foo:\\"+@O+\\"!\\";;P.bar=function(O=0,val=0,T=0,U=0);if b then return function;;print(e);end function;end function;I=function;end function;if I==null then;;print(X);else if I==null then;;print(\\"bar\\");else;;print(\\"nil\\");end if;R=R+([floor(rnd(S)*256)]);;R=R+({W:floor(rnd(S))});"
+
+I=d+2+3+g+c+6 and (2+3+g+c+6+(2+3+g+c+6+7))
+
+J(\\"dieFace[1] - dieFace[6]\\",[K[d],K[2],K[3],K[g],K[c],K[6],{X:V,W:Y}].join,V,V)
+J(d,2,3,g)
+
+I={}
+I={W:V}
+I={X:V,W:[Z,d,a],\\"xx\\":{X:V,\\"ooo\\":{X:V,W:Y},W:Y},\\"123\\":\\"3\\"}
+
+I=[]
+I=[W]
+I=[Z,d,[Z,d,a],[Z,[Z,d,a],d,a],a]
+
+I=I+c
+I=I+g+c
+I.abc=I.abc+c
+I.abc=I.abc+g+c
+
+if (b) then print(e)
+if (b) then print(e) else print(f)
+if (b) then I=[d,2,3,g,c]
+if (b) then I=[d,2,3,g,c] else I=[c,g,3,2,d]
+if (b) then
+print(e)
+else
+print(f)
+end if
+if (b) then
+print(e)
+else if (false) then
+print(\\"xa\\")
+else
+print(f)
+end if
+I=function
+return [d,2,3,g,c]
+end function
+
+I=I+c
+
+
+I=[d,2,3,g]
+
+I=function
+
+return V
+
+end function
+
+for I in [V]
+
+print(e)
+
+end for
+
+
+I={W:V}
+
+I={W:V,X:13,\\"bar\\":45}
+
+while b
+if b then print(e) else print(f)
+end while
+if b then M=function
+print(e)
+end function
+if false then M=function
+print(Z)
+end function
+print(Z>[42])
+
+I[25]
+
+I[25]
+
+I[V][25]
+
+I[25](11)
+
+I(11)[25]
+
+while b
+
+end while
+if N.remove(@O) then return \\"foo:\\"+@O+\\"!\\"
+
+P.bar=function(O=0,val=0,T=0,U=0)
+if b then return function
+
+print(e)
+end function
+end function
+I=function
+end function
+if I==null then
+
+print(X)
+else if I==null then
+
+print(\\"bar\\")
+else
+
+print(\\"nil\\")
+end if
+R=R+([floor(rnd(S)*256)])
+
+R=R+({W:floor(rnd(S))})
+"
 `;
 
 exports[`parse default scripts binary-expressions.src 1`] = `
@@ -1114,7 +1284,17 @@ a and b
 a or b"
 `;
 
-exports[`parse default scripts binary-expressions.src uglify 1`] = `"I=I/(J);I=I*(J);I=I-(J);I=I+(J);bitOr(I,J);bitAnd(I,J);I^J;I and J;I or J"`;
+exports[`parse default scripts binary-expressions.src uglify 1`] = `
+"I=I/(J)
+I=I*(J)
+I=I-(J)
+I=I+(J)
+bitOr(I,J)
+bitAnd(I,J)
+I^J
+I and J
+I or J"
+`;
 
 exports[`parse default scripts comments.src 1`] = `
 "//comment
@@ -1136,7 +1316,13 @@ myVariable // comment2
 test = 2 // comment3"
 `;
 
-exports[`parse default scripts comments.src uglify 1`] = `";I;;J=2;"`;
+exports[`parse default scripts comments.src uglify 1`] = `
+"
+I
+
+J=2
+"
+`;
 
 exports[`parse default scripts default-args.src 1`] = `
 "test=function(arg1=0,arg2=\\"test\\")
@@ -1181,7 +1367,15 @@ var3 = \\"test\\""
 exports[`parse default scripts default-args.src uglify 1`] = `
 "globals.H=globals
 H.O=\\"test\\"
-I=function(M=0,N=O);print(M);print(N);end function;I;I(\\"foo\\",false);J=O;K=O;L=O"
+I=function(M=0,N=O)
+print(M)
+print(N)
+end function
+I
+I(\\"foo\\",false)
+J=O
+K=O
+L=O"
 `;
 
 exports[`parse default scripts envar.src 1`] = `
@@ -1204,7 +1398,11 @@ myvar = #envar test
 print(#envar test2)"
 `;
 
-exports[`parse default scripts envar.src uglify 1`] = `"#include \\"../fixtures/envar-include.src\\";;I=\\"\\"foo\\"\\";print(\\"0.2\\")"`;
+exports[`parse default scripts envar.src uglify 1`] = `
+"#include \\"../fixtures/envar-include.src\\";
+I=\\"\\"foo\\"\\"
+print(\\"0.2\\")"
+`;
 
 exports[`parse default scripts expressions.src 1`] = `
 "\\"as\\"+\\"wa\\"
@@ -1227,7 +1425,12 @@ print(-123)
 print + 123"
 `;
 
-exports[`parse default scripts expressions.src uglify 1`] = `"\\"as\\"+\\"wa\\";print(\\"was\\")-print(\\"hallo\\");print(-123);print+123"`;
+exports[`parse default scripts expressions.src uglify 1`] = `
+"\\"as\\"+\\"wa\\"
+print(\\"was\\")-print(\\"hallo\\")
+print(-123)
+print+123"
+`;
 
 exports[`parse default scripts greybel-utils.src 1`] = `
 "#import foo from \\"./ascii.src\\";
@@ -1272,7 +1475,16 @@ print(#filename)
 print(#inject \\"../fixtures/inject.src\\";)"
 `;
 
-exports[`parse default scripts greybel-utils.src uglify 1`] = `"#import I from \\"./ascii.src\\";;#include \\"./ascii.src\\";;#include \\"../fixtures/sub-import.src\\";;\\"true\\";//debugger;print(9);print(\\"unknown\\");print(#inject \\"../fixtures/inject.src\\";)"`;
+exports[`parse default scripts greybel-utils.src uglify 1`] = `
+"#import I from \\"./ascii.src\\";
+#include \\"./ascii.src\\";
+#include \\"../fixtures/sub-import.src\\";
+\\"true\\"
+//debugger
+print(9)
+print(\\"unknown\\")
+print(#inject \\"../fixtures/inject.src\\";)"
+`;
 
 exports[`parse default scripts greybel-utils-with-comments.src 1`] = `
 "#import foo from \\"./ascii.src\\";
@@ -1298,7 +1510,13 @@ exports[`parse default scripts greybel-utils-with-comments.src beautify with cus
 debugger"
 `;
 
-exports[`parse default scripts greybel-utils-with-comments.src uglify 1`] = `"#import I from \\"./ascii.src\\";;#include \\"./ascii.src\\";;#include \\"../fixtures/sub-import.src\\";;\\"true\\";//debugger"`;
+exports[`parse default scripts greybel-utils-with-comments.src uglify 1`] = `
+"#import I from \\"./ascii.src\\";
+#include \\"./ascii.src\\";
+#include \\"../fixtures/sub-import.src\\";
+\\"true\\"
+//debugger"
+`;
 
 exports[`parse default scripts has-index.src 1`] = `
 "globals.test=\\"was\\"
@@ -1329,7 +1547,14 @@ print(globals.hasIndex(\\"doesNotExist\\"))
 print(locals.hasIndex(\\"doesNotExist\\"))"
 `;
 
-exports[`parse default scripts has-index.src uglify 1`] = `"H.test=\\"was\\";locals.J=\\"moo\\";print(H.hasIndex(\\"test\\"));print(locals.hasIndex(\\"J\\"));print(H.hasIndex(\\"doesNotExist\\"));print(locals.hasIndex(\\"doesNotExist\\"))"`;
+exports[`parse default scripts has-index.src uglify 1`] = `
+"H.I=\\"was\\"
+locals.J=\\"moo\\"
+print(H.hasIndex(\\"I\\"))
+print(locals.hasIndex(\\"J\\"))
+print(H.hasIndex(\\"doesNotExist\\"))
+print(locals.hasIndex(\\"doesNotExist\\"))"
+`;
 
 exports[`parse default scripts isa.src 1`] = `
 "print(2 isa number)
@@ -1436,7 +1661,23 @@ print({} isa funcRef)
 exports[`parse default scripts isa.src uglify 1`] = `
 "globals.H=globals
 H.I=\\"abc\\"
-print(2 isa number);print(2 isa string);print(2 isa list);print(2 isa map);print(I isa number);print(I isa string);print(I isa list);print(I isa map);print([1,2,3] isa number);print([1,2,3] isa string);print([1,2,3] isa list);print([1,2,3] isa map);print({} isa number);print({} isa string);print({} isa list);print({} isa map);print({} isa funcRef)"
+print(2 isa number)
+print(2 isa string)
+print(2 isa list)
+print(2 isa map)
+print(I isa number)
+print(I isa string)
+print(I isa list)
+print(I isa map)
+print([1,2,3] isa number)
+print([1,2,3] isa string)
+print([1,2,3] isa list)
+print([1,2,3] isa map)
+print({} isa number)
+print({} isa string)
+print({} isa list)
+print({} isa map)
+print({} isa funcRef)"
 `;
 
 exports[`parse default scripts map.src 1`] = `
@@ -1478,7 +1719,11 @@ test5 = { 123: \\"bar\\" }"
 exports[`parse default scripts map.src uglify 1`] = `
 "globals.H=globals
 H.N=true
-I={{\\"myTest\\":0,1:2}:N};J={[12,14]:N};K={I:234};L={N:\\"foo\\"};M={123:\\"bar\\"}"
+I={{\\"myTest\\":0,1:2}:N}
+J={[12,14]:N}
+K={I:234}
+L={N:\\"foo\\"}
+M={123:\\"bar\\"}"
 `;
 
 exports[`parse default scripts multiline-comment.src 1`] = `
@@ -1525,7 +1770,12 @@ print(\\"test\\") /*
   */ // one line comment"
 `;
 
-exports[`parse default scripts multiline-comment.src uglify 1`] = `";print(\\"test\\");;"`;
+exports[`parse default scripts multiline-comment.src uglify 1`] = `
+"
+print(\\"test\\")
+
+"
+`;
 
 exports[`parse default scripts negation.src 1`] = `
 "test=-1+2+-2+3
@@ -1558,7 +1808,12 @@ print(test)
 print(foo)"
 `;
 
-exports[`parse default scripts negation.src uglify 1`] = `"I=-1+2+-2+3;J=[-1,-2+4,(-2)+-4+6];print(I);print(J)"`;
+exports[`parse default scripts negation.src uglify 1`] = `
+"I=-1+2+-2+3
+J=[-1,-2+4,(-2)+-4+6]
+print(I)
+print(J)"
+`;
 
 exports[`parse default scripts obj-init.src 1`] = `
 "valueOfIdentifier=\\"foo\\"
@@ -1619,7 +1874,11 @@ print(myList)"
 exports[`parse default scripts obj-init.src uglify 1`] = `
 "globals.H=globals
 H.P=\\"123\\"
-I=\\"foo\\";J={\\"test\\":{\\"another\\":P},\\"value\\":P,\\"idtf\\":I};print([J.test.another,J.value,J.idtf]);O=[{\\"another\\":P},P,I];print(O)"
+I=\\"foo\\"
+J={\\"test\\":{\\"another\\":P},\\"value\\":P,\\"idtf\\":I}
+print([J.test.another,J.value,J.idtf])
+O=[{\\"another\\":P},P,I]
+print(O)"
 `;
 
 exports[`parse default scripts optimize.src 1`] = `
@@ -1707,7 +1966,27 @@ superlangername3(\\"xxxxxxxxxx\\")"
 exports[`parse default scripts optimize.src uglify 1`] = `
 "globals.H=globals
 H.O=\\"xxxxxxxxxx\\"
-I=function(N);print(N);end function;J=function(N);print(N);end function;K=function(N);print(N);end function;L=function(N);print(N);end function;M=function(N);print(N);end function;I(O);J(O);L(O);J(O);M(O);K(O)"
+I=function(N)
+print(N)
+end function
+J=function(N)
+print(N)
+end function
+K=function(N)
+print(N)
+end function
+L=function(N)
+print(N)
+end function
+M=function(N)
+print(N)
+end function
+I(O)
+J(O)
+L(O)
+J(O)
+M(O)
+K(O)"
 `;
 
 exports[`parse default scripts outer.src 1`] = `
@@ -1808,7 +2087,33 @@ end function
 main"
 `;
 
-exports[`parse default scripts outer.src uglify 1`] = `"I=function;J=0;K=function;L;M=\\"<mark=green><color=black>\\"+outer.J;print(outer.hasIndex(\\"J\\"));if (outer.J>20) then M=\\"<mark=yellow><color=green>\\"+outer.J;if (outer.J>40) then M=\\"<mark=red><color=yellow>\\"+outer.J;if (outer.J<-20) then M=\\"<mark=green><color=yellow>\\"+outer.J;if (outer.J<-40) then M=\\"<mark=yellow><color=red>\\"+outer.J;print(M);N=O(\\"test\\",false,true);if (N==\\"UpArrow\\") then;outer.J=outer.J+(1);else if (N==\\"DownArrow\\") then;outer.J=outer.J-(1);else;P(\\"bye\\");end if;end function;while (true);K;end while;end function;I"`;
+exports[`parse default scripts outer.src uglify 1`] = `
+"I=function
+J=0
+K=function
+L
+M=\\"<mark=green><color=black>\\"+outer.J
+print(outer.hasIndex(\\"J\\"))
+if (outer.J>20) then M=\\"<mark=yellow><color=green>\\"+outer.J
+if (outer.J>40) then M=\\"<mark=red><color=yellow>\\"+outer.J
+if (outer.J<-20) then M=\\"<mark=green><color=yellow>\\"+outer.J
+if (outer.J<-40) then M=\\"<mark=yellow><color=red>\\"+outer.J
+print(M)
+N=O(\\"test\\",false,true)
+if (N==\\"UpArrow\\") then
+outer.J=outer.J+(1)
+else if (N==\\"DownArrow\\") then
+outer.J=outer.J-(1)
+else
+P(\\"bye\\")
+end if
+end function
+while (true)
+K
+end while
+end function
+I"
+`;
 
 exports[`parse default scripts password-generator.src 1`] = `
 "PasswordGenerator={}
@@ -2003,7 +2308,62 @@ end while
 print(result)"
 `;
 
-exports[`parse default scripts password-generator.src uglify 1`] = `"I={};I.MAX_PASSWORD_LENGTH=15;I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\";I.NUMBER_CHARACTERS=\\"0123456789\\";I.ALPHA_NUMERIC=I.ALPHABETIC_CHARACTERS+I.ALPHABETIC_CHARACTERS.upper+I.NUMBER_CHARACTERS;I.constructor=function;U=self;U.buffer=[0];U.characters=U.ALPHA_NUMERIC;return U;end function;I.increaseBuffer=function(X);U=self;Y=U.buffer;Z=U.characters.len;if (X==null) then X=Y.len-1;a=Y[X];a=a+1;Y[X]=a;if (a==Z) then;Y[X]=0;if (X==0) then;Y.push(0);else;U.increaseBuffer(X-1);end if;end if;end function;I.gen=function;U=self;Y=U.buffer;b=U.characters;c=\\"\\";R=0;while R<Y.len;d=Y[R];c=c+b[d];if (R==Y.len-1) then self.increaseBuffer;R=R+1;end while;if (Y.len>U.MAX_PASSWORD_LENGTH) then;return null;end if;return c;end function;Q=(new I).constructor;R=0;S=10;T=[];while (R<S);T.push(Q.gen);R=R+1;end while;print(T)"`;
+exports[`parse default scripts password-generator.src uglify 1`] = `
+"I={}
+I.MAX_PASSWORD_LENGTH=15
+I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
+I.NUMBER_CHARACTERS=\\"0123456789\\"
+I.ALPHA_NUMERIC=I.ALPHABETIC_CHARACTERS+I.ALPHABETIC_CHARACTERS.upper+I.NUMBER_CHARACTERS
+I.constructor=function
+U=self
+U.buffer=[0]
+U.characters=U.ALPHA_NUMERIC
+return U
+end function
+I.increaseBuffer=function(X)
+U=self
+Y=U.buffer
+Z=U.characters.len
+if (X==null) then X=Y.len-1
+a=Y[X]
+a=a+1
+Y[X]=a
+if (a==Z) then
+Y[X]=0
+if (X==0) then
+Y.push(0)
+else
+U.increaseBuffer(X-1)
+end if
+end if
+end function
+I.gen=function
+U=self
+Y=U.buffer
+b=U.characters
+c=\\"\\"
+R=0
+while R<Y.len
+d=Y[R]
+c=c+b[d]
+if (R==Y.len-1) then self.increaseBuffer
+R=R+1
+end while
+if (Y.len>U.MAX_PASSWORD_LENGTH) then
+return null
+end if
+return c
+end function
+Q=(new I).constructor
+R=0
+S=10
+T=[]
+while (R<S)
+T.push(Q.gen)
+R=R+1
+end while
+print(T)"
+`;
 
 exports[`parse default scripts pseudo-crypto.src 1`] = `
 "String={}
@@ -2628,7 +2988,191 @@ exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 H.Ͻ=1
 H.ϻ=null
 H.ϼ=63
-I={};I.constructor=function(str);self.str=str;return self;end function;I.parse=function(values);d=self.str;e=0;f=values.len;while e<f;d=d.replace(\\"$\\"+e,values[e]);e=e+Ͻ;end while;return (new self).constructor(d);end function;I.startsWith=function(str);return self.str.indexOf(str)==0;end function;I.substr=function(g,h);return (new self).constructor(slice(self.str,g,h));end function;I.indexOf=function(str);return self.str.indexOf(str);end function;I.replace=function(str,i);return (new self).constructor(self.str.replace(str,i));end function;I.remove=function(str);return (new self).constructor(self.str.remove(str));end function;I.toString=function;return self.str;end function;I.length=function;return self.str.len;end function;I.split=function(j);return self.str.split(j);end function;I.trim=function(j);return (new self).constructor(self.str.trim);end function;Q={};Q.String=I;Q.constructor=function(k,values);l=self;l.message=k;if (values!=ϻ) then;l.message=(new l.String).constructor(k).parse(values).toString;end if;return l;end function;Q.throw=function;m(\\"<color=#ff0000>\\"+self.message+\\"</color>\\");end function;S={};S.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\";S.defaultSecret=\\"test123\\";S.maxCharCode=55295;S.Error=Q;S.constructor=function(U,n,o);p=self;p.defaultSecret=U;p.table=o;p.hashFn=@n;if (@n==ϻ) then p.hashFn=@r;if o==ϻ then p.table=p.defaultCharset;if p.table.len!=64 then (new p.Error).constructor(\\"Invalid charset $0...\\",[p.table]).throw;return p;end function;S.getHash=function(s);p=self;hash=[];t=p.hashFn(s);for char in t;hash.push(char.code);end for;hash.reverse;return hash;end function;S.encrypt=function(str,s);p=self;if (s==ϻ) then s=p.defaultSecret;hash=p.getHash(s);ϳ=0;w=[];x=0;y=str.len%3;z=str.len-y;_=function(ϲ);if (not p.table.hasIndex(ϲ)) then;(new p.Error).constructor(\\"Invalid index $0...\\",[ϲ]).throw;end if;return p.table[ϲ];end function;Ϩ=function(ϫ,ϭ);return bitwise(\\"&\\",ϫ,ϭ);end function;ϩ=function(ϫ,ϭ);return bitwise(\\"<<\\",ϫ,ϭ);end function;Ϫ=function(ϫ,ϭ);return bitwise(\\">>\\",ϫ,ϭ);end function;while x<z;l=hash[x%hash.len-Ͻ];ϫ=ϩ(str[x].code+l,16);ϭ=ϩ(str[x+Ͻ].code+l,8);ϯ=str[x+2].code+l;ϱ=ϫ+ϭ+ϯ;w.push(_(Ϩ(Ϫ(ϱ,18),ϼ)));w.push(_(Ϩ(Ϫ(ϱ,12),ϼ)));w.push(_(Ϩ(Ϫ(ϱ,6),ϼ)));w.push(_(Ϩ(ϱ,ϼ)));x=x+3;end while;if (y==2) then;l=hash[x%hash.len-Ͻ];ϫ=ϩ(str[x].code+l,8);ϭ=str[x+Ͻ].code+l;ϱ=ϫ+ϭ;w.push(_(Ϫ(ϱ,10)));w.push(_(Ϩ(Ϫ(ϱ,4),ϼ)));w.push(_(Ϩ(ϩ(ϱ,2),ϼ)));w.push(\\"=\\");else if (y==Ͻ) then;l=hash[x%hash.len-Ͻ];ϱ=str[x].code+l;w.push(_(Ϫ(ϱ,2)));w.push(_(Ϩ(ϩ(ϱ,4),ϼ)));w.push(\\"==\\");end if;return w.join(\\"\\");end function;S.decrypt=function(str,s);p=self;if (s==ϻ) then s=p.defaultSecret;hash=p.getHash(s);ϳ=0;ϴ=hash.len;w=[];ϵ=0;϶=0;x=0;ϳ=0;z=str.len;Ϩ=function(ϫ,ϭ);return bitwise(\\"&\\",ϫ,ϭ);end function;Ϫ=function(ϫ,ϭ);return bitwise(\\">>\\",ϫ,ϭ);end function;while x<z;ϱ=p.table.indexOf(str[x]);Ϸ=ϵ;ϵ=ϵ+Ͻ;if (Ϸ%4) then;϶=϶*64+ϱ;else;϶=ϱ;end if;if (Ϸ%4) then;ϸ=(floor(ϳ/3)*3)%ϴ-Ͻ;if (not hash.hasIndex(ϸ)) then break;l=hash[ϸ];Ϲ=Ϩ(-2*ϵ,6);Ϲ=Ϫ(϶,Ϲ);Ϲ=Ϩ(255,Ϲ);if (Ϲ!=0) then;Ϻ=Ϲ-l;if (Ϻ>p.maxCharCode) then break;w.push(char(Ϻ));end if;ϳ=ϳ+Ͻ;end if;x=x+Ͻ;end while;return w.join(\\"\\");end function;Z=(new S).constructor(\\"test\\");Ϭ=\\"abcde\\";Ϯ=Z.encrypt(Ϭ);ϰ=Z.decrypt(Ϯ);print(Ϯ);print(ϰ)"
+I={}
+I.constructor=function(str)
+self.str=str
+return self
+end function
+I.parse=function(values)
+d=self.str
+e=0
+f=values.len
+while e<f
+d=d.replace(\\"$\\"+e,values[e])
+e=e+Ͻ
+end while
+return (new self).constructor(d)
+end function
+I.startsWith=function(str)
+return self.str.indexOf(str)==0
+end function
+I.substr=function(g,h)
+return (new self).constructor(slice(self.str,g,h))
+end function
+I.indexOf=function(str)
+return self.str.indexOf(str)
+end function
+I.replace=function(str,i)
+return (new self).constructor(self.str.replace(str,i))
+end function
+I.remove=function(str)
+return (new self).constructor(self.str.remove(str))
+end function
+I.toString=function
+return self.str
+end function
+I.length=function
+return self.str.len
+end function
+I.split=function(j)
+return self.str.split(j)
+end function
+I.trim=function(j)
+return (new self).constructor(self.str.trim)
+end function
+Q={}
+Q.String=I
+Q.constructor=function(k,values)
+l=self
+l.message=k
+if (values!=ϻ) then
+l.message=(new l.String).constructor(k).parse(values).toString
+end if
+return l
+end function
+Q.throw=function
+m(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
+end function
+S={}
+S.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
+S.defaultSecret=\\"test123\\"
+S.maxCharCode=55295
+S.Error=Q
+S.constructor=function(U,n,o)
+p=self
+p.defaultSecret=U
+p.table=o
+p.hashFn=@n
+if (@n==ϻ) then p.hashFn=@r
+if o==ϻ then p.table=p.defaultCharset
+if p.table.len!=64 then (new p.Error).constructor(\\"Invalid charset $0...\\",[p.table]).throw
+return p
+end function
+S.getHash=function(s)
+p=self
+hash=[]
+t=p.hashFn(s)
+for char in t
+hash.push(char.code)
+end for
+hash.reverse
+return hash
+end function
+S.encrypt=function(str,s)
+p=self
+if (s==ϻ) then s=p.defaultSecret
+hash=p.getHash(s)
+ϳ=0
+w=[]
+x=0
+y=str.len%3
+z=str.len-y
+_=function(ϲ)
+if (not p.table.hasIndex(ϲ)) then
+(new p.Error).constructor(\\"Invalid index $0...\\",[ϲ]).throw
+end if
+return p.table[ϲ]
+end function
+Ϩ=function(ϫ,ϭ)
+return bitwise(\\"&\\",ϫ,ϭ)
+end function
+ϩ=function(ϫ,ϭ)
+return bitwise(\\"<<\\",ϫ,ϭ)
+end function
+Ϫ=function(ϫ,ϭ)
+return bitwise(\\">>\\",ϫ,ϭ)
+end function
+while x<z
+l=hash[x%hash.len-Ͻ]
+ϫ=ϩ(str[x].code+l,16)
+ϭ=ϩ(str[x+Ͻ].code+l,8)
+ϯ=str[x+2].code+l
+ϱ=ϫ+ϭ+ϯ
+w.push(_(Ϩ(Ϫ(ϱ,18),ϼ)))
+w.push(_(Ϩ(Ϫ(ϱ,12),ϼ)))
+w.push(_(Ϩ(Ϫ(ϱ,6),ϼ)))
+w.push(_(Ϩ(ϱ,ϼ)))
+x=x+3
+end while
+if (y==2) then
+l=hash[x%hash.len-Ͻ]
+ϫ=ϩ(str[x].code+l,8)
+ϭ=str[x+Ͻ].code+l
+ϱ=ϫ+ϭ
+w.push(_(Ϫ(ϱ,10)))
+w.push(_(Ϩ(Ϫ(ϱ,4),ϼ)))
+w.push(_(Ϩ(ϩ(ϱ,2),ϼ)))
+w.push(\\"=\\")
+else if (y==Ͻ) then
+l=hash[x%hash.len-Ͻ]
+ϱ=str[x].code+l
+w.push(_(Ϫ(ϱ,2)))
+w.push(_(Ϩ(ϩ(ϱ,4),ϼ)))
+w.push(\\"==\\")
+end if
+return w.join(\\"\\")
+end function
+S.decrypt=function(str,s)
+p=self
+if (s==ϻ) then s=p.defaultSecret
+hash=p.getHash(s)
+ϳ=0
+ϴ=hash.len
+w=[]
+ϵ=0
+϶=0
+x=0
+ϳ=0
+z=str.len
+Ϩ=function(ϫ,ϭ)
+return bitwise(\\"&\\",ϫ,ϭ)
+end function
+Ϫ=function(ϫ,ϭ)
+return bitwise(\\">>\\",ϫ,ϭ)
+end function
+while x<z
+ϱ=p.table.indexOf(str[x])
+Ϸ=ϵ
+ϵ=ϵ+Ͻ
+if (Ϸ%4) then
+϶=϶*64+ϱ
+else
+϶=ϱ
+end if
+if (Ϸ%4) then
+ϸ=(floor(ϳ/3)*3)%ϴ-Ͻ
+if (not hash.hasIndex(ϸ)) then break
+l=hash[ϸ]
+Ϲ=Ϩ(-2*ϵ,6)
+Ϲ=Ϫ(϶,Ϲ)
+Ϲ=Ϩ(255,Ϲ)
+if (Ϲ!=0) then
+Ϻ=Ϲ-l
+if (Ϻ>p.maxCharCode) then break
+w.push(char(Ϻ))
+end if
+ϳ=ϳ+Ͻ
+end if
+x=x+Ͻ
+end while
+return w.join(\\"\\")
+end function
+Z=(new S).constructor(\\"test\\")
+Ϭ=\\"abcde\\"
+Ϯ=Z.encrypt(Ϭ)
+ϰ=Z.decrypt(Ϯ)
+print(Ϯ)
+print(ϰ)"
 `;
 
 exports[`parse default scripts random.src 1`] = `
@@ -2830,7 +3374,58 @@ print(Random.seq(
           10))"
 `;
 
-exports[`parse default scripts random.src uglify 1`] = `"I={};I.pool={};I.defaultSeed=\\"random\\";I.createPool=function(Q,val);return {\\"seed\\":Q,\\"value\\":val,\\"generation\\":0};end function;I.calcSeed=function(Q);R=0;S=Q.len;for char in Q;R=R+char.code+S;S=S-1;end for;return R;end function;I.gen=function(T,U,Q,V);W=self;J=W.pool;if (V==null) then V=true;if (Q==null) then Q=W.defaultSeed;if (J.hasIndex(Q)) then;X=J[Q];if (not V) then return X.value;X.generation=X.generation+1;val=floor((rnd(X.value+X.generation)*(U-T))+T);X.value=val;return val;end if;R=W.calcSeed(Q);val=floor((rnd(R)*(U-T))+T);J[Q]=W.createPool(R,val);return val;end function;I.seq=function(T,U,Q,a,b);W=self;c=0;d=[];while c<a;e=W.gen(T,U,Q);d.push(e);c=c+1;end while;if (b!=true) then W.pool.remove(Q);return d;end function;I.get=function(T,U);return self.gen(T,U);end function;print(I.get(100,500));print(I.seq(100,500,\\"test\\",10))"`;
+exports[`parse default scripts random.src uglify 1`] = `
+"I={}
+I.pool={}
+I.defaultSeed=\\"random\\"
+I.createPool=function(Q,val)
+return {\\"seed\\":Q,\\"value\\":val,\\"generation\\":0}
+end function
+I.calcSeed=function(Q)
+R=0
+S=Q.len
+for char in Q
+R=R+char.code+S
+S=S-1
+end for
+return R
+end function
+I.gen=function(T,U,Q,V)
+W=self
+J=W.pool
+if (V==null) then V=true
+if (Q==null) then Q=W.defaultSeed
+if (J.hasIndex(Q)) then
+X=J[Q]
+if (not V) then return X.value
+X.generation=X.generation+1
+val=floor((rnd(X.value+X.generation)*(U-T))+T)
+X.value=val
+return val
+end if
+R=W.calcSeed(Q)
+val=floor((rnd(R)*(U-T))+T)
+J[Q]=W.createPool(R,val)
+return val
+end function
+I.seq=function(T,U,Q,a,b)
+W=self
+c=0
+d=[]
+while c<a
+e=W.gen(T,U,Q)
+d.push(e)
+c=c+1
+end while
+if (b!=true) then W.pool.remove(Q)
+return d
+end function
+I.get=function(T,U)
+return self.gen(T,U)
+end function
+print(I.get(100,500))
+print(I.seq(100,500,\\"test\\",10))"
+`;
 
 exports[`parse default scripts simple-object.src 1`] = `
 "test={}
@@ -2868,7 +3463,15 @@ end function
 print(test.was)"
 `;
 
-exports[`parse default scripts simple-object.src uglify 1`] = `"I={};I.here=\\"was\\";I.was=function;super.here;print(self.here);end function;print(I.was)"`;
+exports[`parse default scripts simple-object.src uglify 1`] = `
+"I={}
+I.here=\\"was\\"
+I.was=function
+super.here
+print(self.here)
+end function
+print(I.was)"
+`;
 
 exports[`parse default scripts slice.src 1`] = `
 "divideString=function(str,limit)
@@ -2921,7 +3524,20 @@ end function
 print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))"
 `;
 
-exports[`parse default scripts slice.src uglify 1`] = `"I=function(str,J);K=0;L=str.len;M=[];while K<L;N=K+J;M.push(str[K:N]);K=N;end while;return M;end function;print(I(\\"blahhblahhblahhblahhblahhblahhgad\\",5))"`;
+exports[`parse default scripts slice.src uglify 1`] = `
+"I=function(str,J)
+K=0
+L=str.len
+M=[]
+while K<L
+N=K+J
+M.push(str[K:N])
+K=N
+end while
+return M
+end function
+print(I(\\"blahhblahhblahhblahhblahhblahhgad\\",5))"
+`;
 
 exports[`parse default scripts unary.src 1`] = `
 "test=function
@@ -2965,5 +3581,13 @@ exports[`parse default scripts unary.src uglify 1`] = `
 "globals.H=globals
 H.K=\\"was\\"
 H.J=false
-I=function;return null;end function;print(@K.split and (J or not J));print(@(K.split and (J or not J)));print(not K.split and (J or not J));print(not (K.split and (J or not J)));print(-1+2);print(-(1+2))"
+I=function
+return null
+end function
+print(@K.split and (J or not J))
+print(@(K.split and (J or not J)))
+print(not K.split and (J or not J))
+print(not (K.split and (J or not J)))
+print(-1+2)
+print(-(1+2))"
 `;

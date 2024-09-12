@@ -58,7 +58,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       if (token.type === TokenType.Text) {
         output += token.value;
       } else if (token.type === TokenType.EndOfLine) {
-        output += ';';
+        output += '\n';
       } else {
         throw new Error('Unknown token type!');
       }
@@ -123,11 +123,10 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       });
 
       const idtfr = createExpressionString(item.base);
-      const globalNamespace = this.transformer.context.variables.get('globals');
 
       this.process(item.identifier, {
         usesNativeVar:
-          idtfr === globalNamespace || idtfr === 'locals' || idtfr === 'outer',
+          idtfr === 'globals' || idtfr === 'locals' || idtfr === 'outer',
         isMember: true
       });
     },
@@ -366,10 +365,9 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       item: ASTCallExpression,
       _data: TransformerDataObject
     ): void {
-      const globalNamespace = this.transformer.context.variables.get('globals');
       const idtfr = createExpressionString(item.base);
       const isNativeVarHasIndex =
-        idtfr === globalNamespace + '.hasIndex' ||
+        idtfr === 'globals.hasIndex' ||
         idtfr === 'locals.hasIndex' ||
         idtfr === 'outer.hasIndex';
       let argItem;

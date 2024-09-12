@@ -11,7 +11,8 @@ export {
   FactoryGetter,
   FactoryMake,
   Token,
-  TokenType
+  TokenType,
+  DefaultFactoryOptions
 } from './build-map/factory';
 export { UglifyFactory } from './build-map/uglify';
 export { Context, ContextDataProperty, ContextOptions } from './context';
