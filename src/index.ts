@@ -7,7 +7,11 @@ export {
   Factory,
   FactoryConstructor,
   FactoryGetter,
-  FactoryMake
+  FactoryMake,
+  Token,
+  TokenType,
+  CommentToken,
+  BasicToken
 } from './build-map/factory';
 export { UglifyFactory } from './build-map/uglify';
 export { Context, ContextDataProperty, ContextOptions } from './context';
