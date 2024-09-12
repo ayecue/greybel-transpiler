@@ -64,7 +64,7 @@ export class DirectTranspiler extends EventEmitter {
   parse(): string {
     const me = this;
 
-    const mapFactory = getFactory(me.buildType);
+    const factoryConstructor = getFactory(me.buildType);
     const parser = new Parser(me.code);
     const chunk = parser.parseChunk() as ASTChunkAdvanced;
     const namespaces = fetchNamespaces(chunk);
@@ -89,7 +89,7 @@ export class DirectTranspiler extends EventEmitter {
 
     const transformer = new Transformer({
       buildOptions: me.buildOptions,
-      mapFactory,
+      factoryConstructor,
       context,
       environmentVariables: me.environmentVariables
     });

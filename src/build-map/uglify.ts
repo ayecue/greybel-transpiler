@@ -39,550 +39,1201 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
+import { DependencyLike } from '../types/dependency';
 import { TransformerDataObject } from '../types/transformer';
-import { DefaultFactoryOptions, Factory } from './factory';
+import { createExpressionString } from '../utils/create-expression-string';
+import { DefaultFactoryOptions, Factory, TokenType } from './factory';
 
-export const uglifyFactory: Factory<DefaultFactoryOptions> = (transformer) => {
-  const { isDevMode = false } = transformer.buildOptions;
+export class UglifyFactory extends Factory<DefaultFactoryOptions> {
+  transform(item: ASTChunk, dependency: DependencyLike): string {
+    this._tokens = [];
+    this._currentDependency = dependency;
+    this.process(item);
 
-  return {
-    ParenthesisExpression: (
+    let output = '';
+
+    for (let index = 0; index < this.tokens.length - 1; index++) {
+      const token = this.tokens[index];
+
+      if (token.type === TokenType.Text) {
+        output += token.value;
+      } else if (token.type === TokenType.EndOfLine) {
+        output += ';';
+      } else {
+        throw new Error('Unknown token type!');
+      }
+    }
+
+    return output;
+  }
+
+  handlers = {
+    ParenthesisExpression: function (
+      this: UglifyFactory,
       item: ASTParenthesisExpression,
       _data: TransformerDataObject
-    ): string => {
-      const expr = transformer.make(item.expression);
-
-      return '(' + expr + ')';
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '(',
+        ref: item
+      });
+      this.process(item.expression);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ')',
+        ref: item
+      });
     },
-    Comment: (_item: ASTComment, _data: TransformerDataObject): string => {
-      return '';
-    },
-    AssignmentStatement: (
+    Comment: function (
+      this: UglifyFactory,
+      _item: ASTComment,
+      _data: TransformerDataObject
+    ): void {},
+    AssignmentStatement: function (
+      this: UglifyFactory,
       item: ASTAssignmentStatement,
-      data: TransformerDataObject
-    ): string => {
-      const varibale = item.variable;
+      _data: TransformerDataObject
+    ): void {
+      const variable = item.variable;
       const init = item.init;
-      const left = transformer.make(varibale);
-      const right = transformer.make(init, data);
 
-      return left + '=' + right;
+      this.process(variable);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '=',
+        ref: item
+      });
+      this.process(init);
     },
-    MemberExpression: (
+    MemberExpression: function (
+      this: UglifyFactory,
       item: ASTMemberExpression,
       _data: TransformerDataObject
-    ): string => {
-      const identifier = item.identifier;
-      const base = transformer.make(item.base);
-      const globalNamespace = transformer.context.variables.get('globals');
+    ): void {
+      this.process(item.base);
 
-      const value = transformer.make(identifier, {
-        usesNativeVar:
-          base === globalNamespace || base === 'locals' || base === 'outer',
-        isMember: true
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.indexer,
+        ref: item
       });
 
-      return [base, value].join(item.indexer);
+      const idtfr = createExpressionString(item.base);
+      const globalNamespace = this.transformer.context.variables.get('globals');
+
+      this.process(item.identifier, {
+        usesNativeVar:
+          idtfr === globalNamespace || idtfr === 'locals' || idtfr === 'outer',
+        isMember: true
+      });
     },
-    FunctionDeclaration: (
+    FunctionDeclaration: function (
+      this: UglifyFactory,
       item: ASTFunctionStatement,
       _data: TransformerDataObject
-    ): string => {
-      const parameters = [];
-      const body = [];
-      let parameterItem;
-      let bodyItem;
+    ): void {
+      if (item.parameters.length === 0) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'function',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
+      } else {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'function(',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
 
-      for (parameterItem of item.parameters) {
-        parameters.push(transformer.make(parameterItem, { isArgument: true }));
+        for (let index = 0; index < item.parameters.length; index++) {
+          const arg = item.parameters[index];
+          this.process(arg);
+          if (index !== item.parameters.length - 1)
+            this.tokens.push({
+              type: TokenType.Text,
+              value: ',',
+              ref: arg
+            });
+        }
+
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
       }
 
-      for (bodyItem of item.body) {
-        const transformed = transformer.make(bodyItem);
-        if (transformed === '') continue;
-        body.push(transformed);
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      for (const bodyItem of item.body) {
+        this.process(bodyItem);
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
       }
 
-      if (parameters.length === 0) {
-        return 'function\n' + body.join('\n') + '\nend function';
-      }
-
-      return (
-        'function(' +
-        parameters.join(',') +
-        ')\n' +
-        body.join('\n') +
-        '\nend function'
-      );
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'end function',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    MapConstructorExpression: (
+    MapConstructorExpression: function (
+      this: UglifyFactory,
       item: ASTMapConstructorExpression,
       _data: TransformerDataObject
-    ): string => {
-      const fields = [];
-      let fieldItem;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '{',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      for (fieldItem of item.fields) {
-        fields.push(transformer.make(fieldItem));
+      for (let index = 0; index < item.fields.length; index++) {
+        const fieldItem = item.fields[index];
+        this.process(fieldItem);
+        if (index !== item.fields.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ',',
+            ref: fieldItem
+          });
       }
 
-      return '{' + fields.join(',') + '}';
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '}',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    MapKeyString: (
+    MapKeyString: function (
+      this: UglifyFactory,
       item: ASTMapKeyString,
       _data: TransformerDataObject
-    ): string => {
-      const key = transformer.make(item.key);
-      const value = transformer.make(item.value);
-
-      return [key, value].join(':');
+    ): void {
+      this.process(item.key);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ':',
+        ref: item
+      });
+      this.process(item.value);
     },
-    Identifier: (item: ASTIdentifier, data: TransformerDataObject): string => {
+    Identifier: function (
+      this: UglifyFactory,
+      item: ASTIdentifier,
+      data: TransformerDataObject
+    ): void {
       const name = item.name;
 
       if (data.isMember) {
         if (data.usesNativeVar) {
-          return transformer.context.variables.get(name) || name;
+          this.tokens.push({
+            type: TokenType.Text,
+            value: this.transformer.context.variables.get(name) || name,
+            ref: item
+          });
+          return;
         }
 
-        return name;
+        this.tokens.push({
+          type: TokenType.Text,
+          value: name,
+          ref: item
+        });
+
+        return;
       }
 
-      return transformer.context.variables.get(name) || name;
+      this.tokens.push({
+        type: TokenType.Text,
+        value: this.transformer.context.variables.get(name) || name,
+        ref: item
+      });
     },
-    ReturnStatement: (
+    ReturnStatement: function (
+      this: UglifyFactory,
       item: ASTReturnStatement,
       _data: TransformerDataObject
-    ): string => {
-      const arg = item.argument ? transformer.make(item.argument) : '';
-      return 'return ' + arg;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'return ',
+        ref: item
+      });
+      if (item.argument) this.process(item.argument);
     },
-    NumericLiteral: (
+    NumericLiteral: function (
+      this: UglifyFactory,
       item: ASTNumericLiteral,
       { isArgument = false }: TransformerDataObject
-    ): string => {
-      const literal = transformer.context.literals.get(item);
-      if (!isArgument && literal != null && literal.namespace != null)
-        return literal.namespace;
-      return (item.negated ? '-' : '') + item.value.toString();
+    ): void {
+      const literal = this.transformer.context.literals.get(item);
+      if (!isArgument && literal !== null && literal.namespace !== null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: literal.namespace,
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: (item.negated ? '-' : '') + item.value.toString(),
+        ref: item
+      });
     },
-    WhileStatement: (
+    WhileStatement: function (
+      this: UglifyFactory,
       item: ASTWhileStatement,
       _data: TransformerDataObject
-    ): string => {
-      const condition = transformer.make(item.condition);
-      const body = [];
-      let bodyItem;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'while ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(item.condition);
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
 
-      for (bodyItem of item.body) {
-        const transformed = transformer.make(bodyItem);
-        if (transformed === '') continue;
-        body.push(transformed);
+      for (const bodyItem of item.body) {
+        this.process(bodyItem);
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
       }
 
-      return 'while ' + condition + '\n' + body.join('\n') + '\nend while';
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'end while',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    CallExpression: (
+    CallExpression: function (
+      this: UglifyFactory,
       item: ASTCallExpression,
       _data: TransformerDataObject
-    ): string => {
-      const base = transformer.make(item.base);
-      const globalNamespace = transformer.context.variables.get('globals');
+    ): void {
+      const globalNamespace = this.transformer.context.variables.get('globals');
+      const idtfr = createExpressionString(item.base);
       const isNativeVarHasIndex =
-        base === globalNamespace + '.hasIndex' ||
-        base === 'locals.hasIndex' ||
-        base === 'outer.hasIndex';
+        idtfr === globalNamespace + '.hasIndex' ||
+        idtfr === 'locals.hasIndex' ||
+        idtfr === 'outer.hasIndex';
       let argItem;
+
+      this.process(item.base);
 
       if (isNativeVarHasIndex) {
         argItem = item.arguments[0];
 
         if (argItem.type === 'StringLiteral') {
           const namespace = (argItem as ASTLiteral).value.toString();
-          const optNamespace = transformer.context.variables.get(namespace);
-          return base + '("' + (optNamespace ?? namespace) + '")';
+          const optNamespace =
+            this.transformer.context.variables.get(namespace);
+          this.tokens.push({
+            type: TokenType.Text,
+            value: '("' + (optNamespace ?? namespace) + '")',
+            ref: {
+              start: item.start,
+              end: item.start
+            }
+          });
+          return;
         }
 
-        return base + '(' + transformer.make(argItem) + ')';
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '(',
+          ref: {
+            start: item.start,
+            end: item.start
+          }
+        });
+        this.process(argItem);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: {
+            start: item.end,
+            end: item.end
+          }
+        });
+        return;
       }
 
-      const args = [];
-
-      for (argItem of item.arguments) {
-        args.push(transformer.make(argItem));
+      if (item.arguments.length === 0) {
+        return;
       }
 
-      if (args.length === 0) return base;
-      return base + '(' + args.join(',') + ')';
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '(',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      for (let index = 0; index < item.arguments.length; index++) {
+        const argItem = item.arguments[index];
+        this.process(argItem);
+        if (index !== item.arguments.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ',',
+            ref: argItem
+          });
+      }
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ')',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    StringLiteral: (
+    StringLiteral: function (
+      this: UglifyFactory,
       item: ASTLiteral,
       { isArgument = false }: TransformerDataObject
-    ): string => {
-      const literal = transformer.context.literals.get(item);
-      if (!isArgument && literal != null && literal.namespace != null)
-        return literal.namespace;
-      return item.raw.toString();
+    ): void {
+      const literal = this.transformer.context.literals.get(item);
+      if (!isArgument && literal !== null && literal.namespace !== null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: literal.namespace,
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.raw.toString(),
+        ref: item
+      });
     },
-    SliceExpression: (
+    SliceExpression: function (
+      this: UglifyFactory,
       item: ASTSliceExpression,
       _data: TransformerDataObject
-    ): string => {
-      const base = transformer.make(item.base);
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
-
-      return base + '[' + [left, right].join(':') + ']';
+    ): void {
+      this.process(item.base);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '[',
+        ref: item
+      });
+      this.process(item.left);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ':',
+        ref: item
+      });
+      this.process(item.right);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ']',
+        ref: item
+      });
     },
-    IndexExpression: (
+    IndexExpression: function (
+      this: UglifyFactory,
       item: ASTIndexExpression,
       _data: TransformerDataObject
-    ): string => {
-      const base = transformer.make(item.base);
-      const index = transformer.make(item.index);
-
-      return base + '[' + index + ']';
+    ): void {
+      this.process(item.base);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '[',
+        ref: item
+      });
+      this.process(item.index);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ']',
+        ref: item
+      });
     },
-    UnaryExpression: (
+    UnaryExpression: function (
+      this: UglifyFactory,
       item: ASTUnaryExpression,
       _data: TransformerDataObject
-    ): string => {
-      const arg = transformer.make(item.argument);
+    ): void {
+      if (item.operator === 'new') {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: item.operator + ' ',
+          ref: item
+        });
+      } else {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: item.operator,
+          ref: item
+        });
+      }
 
-      if (item.operator === 'new') return item.operator + ' ' + arg;
-
-      return item.operator + arg;
+      this.process(item.argument);
     },
-    NegationExpression: (
+    NegationExpression: function (
+      this: UglifyFactory,
       item: ASTUnaryExpression,
       _data: TransformerDataObject
-    ): string => {
-      const arg = transformer.make(item.argument);
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'not ',
+        ref: item
+      });
 
-      return 'not ' + arg;
+      this.process(item.argument);
     },
-    FeatureEnvarExpression: (
+    FeatureEnvarExpression: function (
+      this: UglifyFactory,
       item: ASTFeatureEnvarExpression,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return `#envar ${item.name}`;
-      const value = transformer.environmentVariables.get(item.name);
-      if (!value) return 'null';
-      return `"${value}"`;
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#envar ${item.name}`,
+          ref: item
+        });
+        return;
+      }
+
+      const value = this.transformer.environmentVariables.get(item.name);
+
+      if (!value) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'null',
+          ref: item
+        });
+        return;
+      }
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `"${value}"`,
+        ref: item
+      });
     },
-    FeatureDebuggerExpression: (
-      _item: ASTBase,
-      _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return `debugger`;
-      return '//debugger';
-    },
-    FeatureLineExpression: (
+    FeatureDebuggerExpression: function (
+      this: UglifyFactory,
       item: ASTBase,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return `#line`;
-      return `${item.start.line}`;
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'debugger',
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '//debugger',
+        ref: item
+      });
     },
-    FeatureFileExpression: (
+    FeatureLineExpression: function (
+      this: UglifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#line',
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `${item.start.line}`,
+        ref: item
+      });
+    },
+    FeatureFileExpression: function (
+      this: UglifyFactory,
       item: ASTFeatureFileExpression,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return `#filename`;
-      return `"${basename(item.filename).replace(/"/g, '"')}"`;
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#filename',
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `"${basename(item.filename).replace(/"/g, '"')}"`,
+        ref: item
+      });
     },
-    IfShortcutStatement: (
+    IfShortcutStatement: function (
+      this: UglifyFactory,
       item: ASTIfStatement,
       _data: TransformerDataObject
-    ): string => {
-      const clauses = [];
-      let clausesItem;
-
-      for (clausesItem of item.clauses) {
-        clauses.push(transformer.make(clausesItem));
+    ): void {
+      for (let index = 0; index < item.clauses.length; index++) {
+        const clausesItem = item.clauses[index];
+        this.process(clausesItem);
+        if (index !== item.clauses.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ' ',
+            ref: item
+          });
       }
-
-      return clauses.join('\n') + '\nend if';
     },
-    IfShortcutClause: (
+    IfShortcutClause: function (
+      this: UglifyFactory,
       item: ASTIfClause,
       _data: TransformerDataObject
-    ): string => {
-      const condition = transformer.make(item.condition);
-      const statement = transformer.make(item.body[0]);
-
-      return 'if ' + condition + ' then\n' + statement;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'if ',
+        ref: item
+      });
+      this.process(item.condition);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then ',
+        ref: item
+      });
+      this.process(item.body[0]);
     },
-    ElseifShortcutClause: (
+    ElseifShortcutClause: function (
+      this: UglifyFactory,
       item: ASTIfClause,
       _data: TransformerDataObject
-    ): string => {
-      const condition = transformer.make(item.condition);
-      const statement = transformer.make(item.body[0]);
-
-      return 'else if ' + condition + ' then\n' + statement;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'else if ',
+        ref: item
+      });
+      this.process(item.condition);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then ',
+        ref: item
+      });
+      this.process(item.body[0]);
     },
-    ElseShortcutClause: (
+    ElseShortcutClause: function (
+      this: UglifyFactory,
       item: ASTElseClause,
       _data: TransformerDataObject
-    ): string => {
-      const statement = transformer.make(item.body[0]);
-
-      return 'else\n' + statement;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'else ',
+        ref: item
+      });
+      this.process(item.body[0]);
     },
-    NilLiteral: (
+    NilLiteral: function (
+      this: UglifyFactory,
       item: ASTLiteral,
       { isArgument = false }: TransformerDataObject
-    ): string => {
-      const literal = transformer.context.literals.get(item);
-      if (!isArgument && literal != null && literal.namespace != null)
-        return literal.namespace;
-      return 'null';
+    ): void {
+      const literal = this.transformer.context.literals.get(item);
+      if (!isArgument && literal !== null && literal.namespace !== null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: literal.namespace,
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'null',
+        ref: item
+      });
     },
-    ForGenericStatement: (
+    ForGenericStatement: function (
+      this: UglifyFactory,
       item: ASTForGenericStatement,
       _data: TransformerDataObject
-    ): string => {
-      const variable = transformer.make(item.variable);
-      const iterator = transformer.make(item.iterator);
-      const body = [];
-      let bodyItem;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'for ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(item.variable);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' in ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(item.iterator);
 
-      for (bodyItem of item.body) {
-        const transformed = transformer.make(bodyItem);
-        if (transformed === '') continue;
-        body.push(transformed);
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      for (const bodyItem of item.body) {
+        this.process(bodyItem);
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
       }
 
-      return (
-        'for ' +
-        variable +
-        ' in ' +
-        iterator +
-        '\n' +
-        body.join('\n') +
-        '\nend for'
-      );
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'end for',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    IfStatement: (
+    IfStatement: function (
+      this: UglifyFactory,
       item: ASTIfStatement,
       _data: TransformerDataObject
-    ): string => {
-      const clauses = [];
-      let clausesItem;
-
-      for (clausesItem of item.clauses) {
-        clauses.push(transformer.make(clausesItem));
+    ): void {
+      for (const clausesItem of item.clauses) {
+        this.process(clausesItem);
       }
 
-      return clauses.join('\n') + '\nend if';
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'end if',
+        ref: {
+          start: item.end,
+          end: item.end
+        }
+      });
     },
-    IfClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const condition = transformer.make(item.condition);
-      const body = [];
-      let bodyItem;
-
-      for (bodyItem of item.body) {
-        const transformed = transformer.make(bodyItem);
-        if (transformed === '') continue;
-        body.push(transformed);
-      }
-
-      return 'if ' + condition + ' then\n' + body.join('\n');
-    },
-    ElseifClause: (item: ASTIfClause, _data: TransformerDataObject): string => {
-      const condition = transformer.make(item.condition);
-      const body = [];
-      let bodyItem;
-
-      for (bodyItem of item.body) {
-        const transformed = transformer.make(bodyItem);
-        if (transformed === '') continue;
-        body.push(transformed);
-      }
-
-      return 'else if ' + condition + ' then\n' + body.join('\n');
-    },
-    ElseClause: (item: ASTElseClause, _data: TransformerDataObject): string => {
-      const body = [];
-      let bodyItem;
-
-      for (bodyItem of item.body) {
-        const transformed = transformer.make(bodyItem);
-        if (transformed === '') continue;
-        body.push(transformed);
-      }
-
-      return 'else\n' + body.join('\n');
-    },
-    ContinueStatement: (
-      _item: ASTBase,
+    IfClause: function (
+      this: UglifyFactory,
+      item: ASTIfClause,
       _data: TransformerDataObject
-    ): string => {
-      return 'continue';
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'if ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(item.condition);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      for (const bodyItem of item.body) {
+        this.process(bodyItem);
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
+      }
     },
-    BreakStatement: (_item: ASTBase, _data: TransformerDataObject): string => {
-      return 'break';
+    ElseifClause: function (
+      this: UglifyFactory,
+      item: ASTIfClause,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'else if ',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.process(item.condition);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' then',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      for (const bodyItem of item.body) {
+        this.process(bodyItem);
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
+      }
     },
-    CallStatement: (
+    ElseClause: function (
+      this: UglifyFactory,
+      item: ASTElseClause,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'else',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+      this.tokens.push({
+        type: TokenType.EndOfLine,
+        value: '\n',
+        ref: {
+          start: item.start,
+          end: item.start
+        }
+      });
+
+      for (const bodyItem of item.body) {
+        this.process(bodyItem);
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
+      }
+    },
+    ContinueStatement: function (
+      this: UglifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'continue',
+        ref: item
+      });
+    },
+    BreakStatement: function (
+      this: UglifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: 'break',
+        ref: item
+      });
+    },
+    CallStatement: function (
+      this: UglifyFactory,
       item: ASTCallStatement,
       _data: TransformerDataObject
-    ): string => {
-      return transformer.make(item.expression);
+    ): void {
+      this.process(item.expression);
     },
-    FeatureInjectExpression: (
+    FeatureInjectExpression: function (
+      this: UglifyFactory,
       item: ASTFeatureInjectExpression,
       _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return `#inject "${item.path}";`;
-      if (transformer.currentDependency === null)
-        return `#inject "${item.path}";`;
-
-      const content = transformer.currentDependency.injections.get(item.path);
-
-      if (content == null) return 'null';
-
-      return `"${content.replace(/"/g, '""')}"`;
-    },
-    FeatureImportExpression: (
-      item: ASTFeatureImportExpression,
-      _data: TransformerDataObject
-    ): string => {
-      if (isDevMode)
-        return (
-          '#import ' +
-          transformer.make(item.name) +
-          ' from "' +
-          item.path +
-          '";'
-        );
-      if (!item.chunk)
-        return (
-          '#import ' +
-          transformer.make(item.name) +
-          ' from "' +
-          item.path +
-          '";'
-        );
-
-      const requireMethodName = transformer.context.variables.get('__REQUIRE');
-      return (
-        transformer.make(item.name) +
-        '=' +
-        requireMethodName +
-        '("' +
-        item.namespace +
-        '")'
-      );
-    },
-    FeatureIncludeExpression: (
-      item: ASTFeatureIncludeExpression,
-      _data: TransformerDataObject
-    ): string => {
-      if (isDevMode) return '#include "' + item.path + '";';
-      if (!item.chunk) return '#include "' + item.path + '";';
-      return transformer.make(item.chunk);
-    },
-    ListConstructorExpression: (
-      item: ASTListConstructorExpression,
-      _data: TransformerDataObject
-    ): string => {
-      const fields = [];
-      let fieldItem;
-
-      for (fieldItem of item.fields) {
-        fields.push(transformer.make(fieldItem));
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#inject "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+      if (this.currentDependency === null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#inject "${item.path}";`,
+          ref: item
+        });
+        return;
       }
 
-      return '[' + fields.join(',') + ']';
+      const content = this.currentDependency.injections.get(item.path);
+
+      if (content == null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'null',
+          ref: item
+        });
+        return;
+      }
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: `"${content.replace(/"/g, '""')}"`,
+        ref: item
+      });
     },
-    ListValue: (item: ASTListValue, _data: TransformerDataObject): string => {
-      return transformer.make(item.value);
+    FeatureImportExpression: function (
+      this: UglifyFactory,
+      item: ASTFeatureImportExpression,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#import ',
+          ref: item
+        });
+        this.process(item.name);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ` from "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+      if (!item.chunk) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: '#import ',
+          ref: item
+        });
+        this.process(item.name);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ` from "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+
+      this.process(item.name);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' = __REQUIRE("' + item.namespace + '")',
+        ref: item
+      });
     },
-    BooleanLiteral: (
+    FeatureIncludeExpression: function (
+      this: UglifyFactory,
+      item: ASTFeatureIncludeExpression,
+      _data: TransformerDataObject
+    ): void {
+      if (this.transformer.buildOptions.isDevMode) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#include "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+      if (!item.chunk) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: `#include "${item.path}";`,
+          ref: item
+        });
+        return;
+      }
+
+      this.process(item.chunk);
+    },
+    ListConstructorExpression: function (
+      this: UglifyFactory,
+      item: ASTListConstructorExpression,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '[',
+        ref: item
+      });
+
+      for (let index = 0; index < item.fields.length; index++) {
+        const fieldItem = item.fields[index];
+        this.process(fieldItem);
+        if (index !== item.fields.length - 1)
+          this.tokens.push({
+            type: TokenType.Text,
+            value: ',',
+            ref: fieldItem
+          });
+      }
+
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ']',
+        ref: item
+      });
+    },
+    ListValue: function (
+      this: UglifyFactory,
+      item: ASTListValue,
+      _data: TransformerDataObject
+    ): void {
+      this.process(item.value);
+    },
+    BooleanLiteral: function (
+      this: UglifyFactory,
       item: ASTBooleanLiteral,
       { isArgument = false }: TransformerDataObject
-    ): string => {
-      const literal = transformer.context.literals.get(item);
-      if (!isArgument && literal != null && literal.namespace != null)
-        return literal.namespace;
-      return (item.negated ? '-' : '') + item.raw.toString();
+    ): void {
+      const literal = this.transformer.context.literals.get(item);
+      if (!isArgument && literal !== null && literal.namespace !== null) {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: literal.namespace,
+          ref: item
+        });
+        return;
+      }
+      this.tokens.push({
+        type: TokenType.Text,
+        value: (item.negated ? '-' : '') + item.raw.toString(),
+        ref: item
+      });
     },
-    EmptyExpression: (_item: ASTBase, _data: TransformerDataObject): string => {
-      return '';
+    EmptyExpression: function (
+      this: UglifyFactory,
+      item: ASTBase,
+      _data: TransformerDataObject
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: '',
+        ref: item
+      });
     },
-    IsaExpression: (
+    IsaExpression: function (
+      this: UglifyFactory,
       item: ASTIsaExpression,
       _data: TransformerDataObject
-    ): string => {
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
-
-      return left + ' ' + item.operator + ' ' + right;
+    ): void {
+      this.process(item.left);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' ' + item.operator + ' ',
+        ref: item
+      });
+      this.process(item.right);
     },
-    LogicalExpression: (
+    LogicalExpression: function (
+      this: UglifyFactory,
       item: ASTLogicalExpression,
       _data: TransformerDataObject
-    ): string => {
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
-
-      return left + ' ' + item.operator + ' ' + right;
+    ): void {
+      this.process(item.left);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: ' ' + item.operator + ' ',
+        ref: item
+      });
+      this.process(item.right);
     },
-    BinaryExpression: (
+    BinaryExpression: function (
+      this: UglifyFactory,
       item: ASTBinaryExpression,
       _data: TransformerDataObject
-    ): string => {
-      const left = transformer.make(item.left);
-      const right = transformer.make(item.right);
-      const operator = item.operator;
-      let expression = left + operator + right;
-
-      if (operator === '|') {
-        expression = 'bitOr(' + [left, right].join(',') + ')';
-      } else if (operator === '&') {
-        expression = 'bitAnd(' + [left, right].join(',') + ')';
-      } else if (operator === '<<' || operator === '>>' || operator === '>>>') {
+    ): void {
+      if (item.operator === '|') {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'bitOr(',
+          ref: item
+        });
+        this.process(item.left);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ',',
+          ref: item
+        });
+        this.process(item.right);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: item
+        });
+        return;
+      } else if (item.operator === '&') {
+        this.tokens.push({
+          type: TokenType.Text,
+          value: 'bitAnd(',
+          ref: item
+        });
+        this.process(item.left);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ',',
+          ref: item
+        });
+        this.process(item.right);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: ')',
+          ref: item
+        });
+        return;
+      } else if (
+        item.operator === '<<' ||
+        item.operator === '>>' ||
+        item.operator === '>>>'
+      ) {
         throw new Error('Operators in binary expression are not supported');
       }
 
-      return expression;
+      this.process(item.left);
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.operator,
+        ref: item
+      });
+      this.process(item.right);
     },
-    BinaryNegatedExpression: (
+    BinaryNegatedExpression: function (
+      this: UglifyFactory,
       item: ASTUnaryExpression,
       _data: TransformerDataObject
-    ): string => {
-      const arg = transformer.make(item.argument);
-      const operator = item.operator;
-
-      return operator + arg;
+    ): void {
+      this.tokens.push({
+        type: TokenType.Text,
+        value: item.operator,
+        ref: item
+      });
+      this.process(item.argument);
     },
-    ComparisonGroupExpression: (
+    ComparisonGroupExpression: function (
+      this: UglifyFactory,
       item: ASTComparisonGroupExpression,
       _data: TransformerDataObject
-    ): string => {
-      const expressions: string[] = item.expressions.map((it) =>
-        transformer.make(it)
-      );
-      const segments: string[] = [expressions[0]];
+    ): void {
+      this.process(item.expressions[0]);
 
       for (let index = 0; index < item.operators.length; index++) {
-        segments.push(item.operators[index], expressions[index + 1]);
+        this.tokens.push({
+          type: TokenType.Text,
+          value: item.operators[index],
+          ref: item
+        });
+        this.process(item.expressions[index + 1]);
       }
-
-      return segments.join('');
     },
-    Chunk: (item: ASTChunk, _data: TransformerDataObject): string => {
-      const body = [];
-      let bodyItem;
-
-      for (bodyItem of item.body) {
-        const transformed = transformer.make(bodyItem);
-        if (transformed === '') continue;
-        body.push(transformed);
+    Chunk: function (
+      this: UglifyFactory,
+      item: ASTChunk,
+      _data: TransformerDataObject
+    ): void {
+      for (const bodyItem of item.body) {
+        this.process(bodyItem);
+        this.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
       }
-
-      return body.join('\n');
     }
   };
-};
+}

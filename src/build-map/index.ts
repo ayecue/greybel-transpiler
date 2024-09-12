@@ -1,7 +1,7 @@
-import { beautifyFactory } from './beautify';
-import { defaultFactory } from './default';
-import { DefaultFactoryOptions, Factory } from './factory';
-import { uglifyFactory } from './uglify';
+import { BeautifyFactory } from './beautify';
+import { DefaultFactory } from './default';
+import { DefaultFactoryOptions, FactoryConstructor } from './factory';
+import { UglifyFactory } from './uglify';
 
 export enum BuildType {
   DEFAULT,
@@ -9,15 +9,18 @@ export enum BuildType {
   BEAUTIFY
 }
 
-const FACTORIES: Record<BuildType, Factory<DefaultFactoryOptions>> = {
-  [BuildType.DEFAULT]: defaultFactory,
-  [BuildType.UGLIFY]: uglifyFactory,
-  [BuildType.BEAUTIFY]: beautifyFactory
+const FACTORIES: Record<
+  BuildType,
+  FactoryConstructor<DefaultFactoryOptions>
+> = {
+  [BuildType.DEFAULT]: DefaultFactory,
+  [BuildType.UGLIFY]: UglifyFactory,
+  [BuildType.BEAUTIFY]: BeautifyFactory
 };
 
 export function getFactory(
   type: BuildType = BuildType.DEFAULT
-): Factory<DefaultFactoryOptions> {
+): FactoryConstructor<DefaultFactoryOptions> {
   const factory = FACTORIES[type];
 
   if (!factory) {
