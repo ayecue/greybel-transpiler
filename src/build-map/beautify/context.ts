@@ -151,16 +151,18 @@ export class BeautifyContext {
       this.factory.process(bodyItem, {
         isCommand: true
       });
-      this.factory.tokens[startIndex].value =
-        this.getIndent() + this.factory.tokens[startIndex].value;
-      this.factory.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: bodyItem.end,
-          end: bodyItem.end
-        }
-      });
+      if (startIndex < this.factory.tokens.length) {
+        this.factory.tokens[startIndex].value =
+          this.getIndent() + this.factory.tokens[startIndex].value;
+        this.factory.tokens.push({
+          type: TokenType.EndOfLine,
+          value: '\n',
+          ref: {
+            start: bodyItem.end,
+            end: bodyItem.end
+          }
+        });
+      }
 
       previous = bodyItem;
     }
