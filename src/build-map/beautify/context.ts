@@ -5,11 +5,11 @@ import {
   ASTIfClause,
   ASTIfStatement,
   ASTType,
-  ASTWhileStatement
+  ASTWhileStatement,
+  ASTChunk
 } from 'miniscript-core';
 
 import { DefaultFactoryOptions, Factory, TokenType } from '../factory';
-import { getLastComment } from './utils';
 
 export enum IndentationType {
   Tab,
@@ -57,7 +57,7 @@ export class BeautifyContext {
       options.indentation === IndentationType.Tab
         ? (offset: number = 0) => '\t'.repeat(this._indent + offset)
         : (offset: number = 0) =>
-            ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
+          ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
   }
 
   disableMultiline() {
@@ -83,6 +83,8 @@ export class BeautifyContext {
       return block.condition.end.line;
     } else if (block instanceof ASTForGenericStatement) {
       return block.iterator.end.line;
+    } else if (block instanceof ASTChunk) {
+      return block.start.line - 1;
     }
 
     return block.start.line;
@@ -119,7 +121,6 @@ export class BeautifyContext {
 
     block.body.sort((a, b) => a.range[0] - b.range[0]);
 
-    const existingLines: Set<number> = new Set();
     let previous: ASTBase | null = null;
 
     for (let index = 0; index < block.body.length; index++) {
