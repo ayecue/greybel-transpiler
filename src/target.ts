@@ -13,11 +13,6 @@ export interface TargetOptions {
   context: Context;
 }
 
-export interface TargetParseOptions {
-  disableLiteralsOptimization?: boolean;
-  disableNamespacesOptimization?: boolean;
-}
-
 export interface TargetParseResultItem {
   chunk: ASTChunkAdvanced;
   dependency: Dependency;
@@ -42,7 +37,7 @@ export class Target extends EventEmitter {
     me.context = options.context;
   }
 
-  async parse(options: TargetParseOptions): Promise<TargetParseResult> {
+  async parse(): Promise<TargetParseResult> {
     const me = this;
     const resourceHandler = me.resourceHandler;
     const target = await resourceHandler.resolve(me.target);
@@ -69,19 +64,14 @@ export class Target extends EventEmitter {
       });
 
       const { namespaces, literals } = await dependency.findDependencies();
+      const uniqueNamespaces = new Set(namespaces);
 
-      if (!options.disableNamespacesOptimization) {
-        const uniqueNamespaces = new Set(namespaces);
-
-        for (const namespace of uniqueNamespaces) {
-          context.variables.createNamespace(namespace);
-        }
+      for (const namespace of uniqueNamespaces) {
+        context.variables.createNamespace(namespace);
       }
 
-      if (!options.disableLiteralsOptimization) {
-        for (const literal of literals) {
-          context.literals.add(literal as ASTLiteral);
-        }
+      for (const literal of literals) {
+        context.literals.add(literal as ASTLiteral);
       }
 
       return {

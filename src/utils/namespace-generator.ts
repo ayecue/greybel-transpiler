@@ -98,6 +98,10 @@ export class NamespaceGenerator {
       return me.generateNamespace();
     }
 
+    if (me.mapping.has(name)) {
+      return me.generateNamespace();
+    }
+
     return name;
   }
 

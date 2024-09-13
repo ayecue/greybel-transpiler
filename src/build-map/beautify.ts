@@ -54,7 +54,7 @@ import {
 } from './beautify/utils';
 import { Factory, TokenType } from './factory';
 
-export type BeautifyOptions = BeautifyContextOptions;
+export type BeautifyOptions = Partial<BeautifyContextOptions>;
 
 export class BeautifyFactory extends Factory<BeautifyOptions> {
   readonly context: BeautifyContext;

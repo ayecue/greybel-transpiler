@@ -8,7 +8,7 @@ import type {
 import { Stack } from '../utils/stack';
 
 export interface DefaultFactoryOptions {
-  isDevMode: boolean;
+  isDevMode?: boolean;
 }
 
 export type FactoryMake = (

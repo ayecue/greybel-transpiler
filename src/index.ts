@@ -6,15 +6,15 @@ export { DefaultFactory } from './build-map/default';
 export {
   BasicToken,
   CommentToken,
+  DefaultFactoryOptions,
   Factory,
   FactoryConstructor,
   FactoryGetter,
   FactoryMake,
   Token,
-  TokenType,
-  DefaultFactoryOptions
+  TokenType
 } from './build-map/factory';
-export { UglifyFactory } from './build-map/uglify';
+export { UglifyFactory, UglifyOptions } from './build-map/uglify';
 export { Context, ContextDataProperty, ContextOptions } from './context';
 export {
   Dependency,
@@ -28,7 +28,6 @@ export * from './resource';
 export {
   Target,
   TargetOptions,
-  TargetParseOptions,
   TargetParseResult,
   TargetParseResultItem
 } from './target';

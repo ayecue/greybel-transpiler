@@ -3,6 +3,7 @@ import { MODULE_BOILERPLATE } from './boilerplates';
 import { BuildType, getFactory } from './build-map';
 import { BeautifyOptions } from './build-map/beautify';
 import { DefaultFactoryOptions } from './build-map/factory';
+import { UglifyOptions } from './build-map/uglify';
 import { Context } from './context';
 import { Dependency } from './dependency';
 import { ResourceHandler, ResourceProvider } from './resource';
@@ -20,11 +21,9 @@ export interface TranspilerOptions {
 
   obfuscation?: boolean;
   buildType?: BuildType;
-  buildOptions?: BeautifyOptions | DefaultFactoryOptions;
+  buildOptions?: BeautifyOptions & UglifyOptions & DefaultFactoryOptions;
   installer?: boolean;
   excludedNamespaces?: string[];
-  disableLiteralsOptimization?: boolean;
-  disableNamespacesOptimization?: boolean;
   environmentVariables?: Map<string, string>;
 }
 
@@ -39,10 +38,8 @@ export class Transpiler {
 
   obfuscation: boolean;
   buildType: BuildType;
-  buildOptions: BeautifyOptions | DefaultFactoryOptions;
+  buildOptions: BeautifyOptions & UglifyOptions & DefaultFactoryOptions;
   installer: boolean;
-  disableLiteralsOptimization: boolean;
-  disableNamespacesOptimization: boolean;
   environmentVariables: Map<string, string>;
 
   constructor(options: TranspilerOptions) {
@@ -66,11 +63,6 @@ export class Transpiler {
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.buildOptions = options.buildOptions || { isDevMode: false };
     me.installer = options.installer || false;
-    me.disableLiteralsOptimization =
-      options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
-    me.disableNamespacesOptimization =
-      options.disableNamespacesOptimization ||
-      me.buildType !== BuildType.UGLIFY;
     me.environmentVariables = options.environmentVariables || new Map();
   }
 
@@ -83,10 +75,7 @@ export class Transpiler {
       resourceHandler: me.resourceHandler,
       context: me.context
     });
-    const targetParseResult: TargetParseResult = await target.parse({
-      disableLiteralsOptimization: me.disableLiteralsOptimization,
-      disableNamespacesOptimization: me.disableNamespacesOptimization
-    });
+    const targetParseResult: TargetParseResult = await target.parse();
 
     // create builder
     const transformer = new Transformer({
@@ -144,7 +133,11 @@ export class Transpiler {
     };
 
     return {
-      [me.target]: build(mainModule.dependency, !me.disableLiteralsOptimization)
+      [me.target]: build(
+        mainModule.dependency,
+        this.buildType === BuildType.UGLIFY &&
+          !me.buildOptions.disableLiteralsOptimization
+      )
     };
   }
 }

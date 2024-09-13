@@ -1,12 +1,12 @@
 import {
   ASTBase,
   ASTBaseBlock,
+  ASTChunk,
   ASTForGenericStatement,
   ASTIfClause,
   ASTIfStatement,
   ASTType,
-  ASTWhileStatement,
-  ASTChunk
+  ASTWhileStatement
 } from 'miniscript-core';
 
 import { DefaultFactoryOptions, Factory, TokenType } from '../factory';
@@ -26,7 +26,7 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
 export class BeautifyContext {
   readonly options: BeautifyContextOptions;
 
-  private factory: Factory<BeautifyContextOptions>;
+  private factory: Factory<Partial<BeautifyContextOptions>>;
   private _indent: number;
   private _isMultilineAllowed: boolean;
   private _usedComments: Set<ASTBase>;
@@ -45,7 +45,7 @@ export class BeautifyContext {
   }
 
   constructor(
-    factory: Factory<BeautifyContextOptions>,
+    factory: Factory<Partial<BeautifyContextOptions>>,
     options: BeautifyContextOptions
   ) {
     this.factory = factory;
@@ -57,7 +57,7 @@ export class BeautifyContext {
       options.indentation === IndentationType.Tab
         ? (offset: number = 0) => '\t'.repeat(this._indent + offset)
         : (offset: number = 0) =>
-          ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
+            ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
   }
 
   disableMultiline() {

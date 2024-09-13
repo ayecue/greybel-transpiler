@@ -5,6 +5,7 @@ import { ASTLiteral } from 'miniscript-core';
 import { BuildType, getFactory } from './build-map';
 import { BeautifyOptions } from './build-map/beautify';
 import { DefaultFactoryOptions } from './build-map/factory';
+import { UglifyOptions } from './build-map/uglify';
 import { Context } from './context';
 import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
@@ -18,9 +19,7 @@ export interface DirectTranspilerOptions {
 
   obfuscation?: boolean;
   buildType?: BuildType;
-  buildOptions?: BeautifyOptions | DefaultFactoryOptions;
-  disableLiteralsOptimization?: boolean;
-  disableNamespacesOptimization?: boolean;
+  buildOptions?: UglifyOptions & BeautifyOptions & DefaultFactoryOptions;
   environmentVariables?: Map<string, string>;
 
   excludedNamespaces?: string[];
@@ -31,10 +30,8 @@ export class DirectTranspiler extends EventEmitter {
 
   obfuscation: boolean;
   buildType: BuildType;
-  buildOptions: BeautifyOptions | DefaultFactoryOptions;
+  buildOptions: UglifyOptions & BeautifyOptions & DefaultFactoryOptions;
   installer: boolean;
-  disableLiteralsOptimization: boolean;
-  disableNamespacesOptimization: boolean;
   environmentVariables: Map<string, string>;
 
   excludedNamespaces: string[];
@@ -51,11 +48,6 @@ export class DirectTranspiler extends EventEmitter {
       : true;
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.buildOptions = options.buildOptions || { isDevMode: false };
-    me.disableLiteralsOptimization =
-      options.disableLiteralsOptimization || me.buildType !== BuildType.UGLIFY;
-    me.disableNamespacesOptimization =
-      options.disableNamespacesOptimization ||
-      me.buildType !== BuildType.UGLIFY;
     me.environmentVariables = options.environmentVariables || new Map();
 
     me.excludedNamespaces = options.excludedNamespaces || [];
@@ -75,17 +67,12 @@ export class DirectTranspiler extends EventEmitter {
       variablesExcluded: me.excludedNamespaces,
       modulesCharset: charsetMap.modules
     });
+    const uniqueNamespaces = new Set(namespaces);
+    uniqueNamespaces.forEach((namespace: string) =>
+      context.variables.createNamespace(namespace)
+    );
 
-    if (!me.disableNamespacesOptimization) {
-      const uniqueNamespaces = new Set(namespaces);
-      uniqueNamespaces.forEach((namespace: string) =>
-        context.variables.createNamespace(namespace)
-      );
-    }
-
-    if (!me.disableLiteralsOptimization) {
-      literals.forEach((literal: ASTLiteral) => context.literals.add(literal));
-    }
+    literals.forEach((literal: ASTLiteral) => context.literals.add(literal));
 
     const transformer = new Transformer({
       buildOptions: me.buildOptions,
@@ -95,7 +82,12 @@ export class DirectTranspiler extends EventEmitter {
     });
     const output = new OutputProcessor(context, transformer);
 
-    if (!me.disableLiteralsOptimization) output.addLiteralsOptimization();
+    if (
+      this.buildType === BuildType.UGLIFY &&
+      !me.buildOptions.disableLiteralsOptimization
+    ) {
+      output.addLiteralsOptimization();
+    }
 
     const result = transformer.transform(chunk);
 
