@@ -1139,8 +1139,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         _data: TransformerDataObject
       ): void {
         for (const bodyItem of item.body) {
+          const index = this.tokens.length;
           this.process(bodyItem);
-          this.tokens.push({
+          if (index < this.tokens.length) this.tokens.push({
             type: TokenType.EndOfLine,
             value: '\n',
             ref: {
