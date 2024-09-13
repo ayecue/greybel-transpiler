@@ -528,79 +528,79 @@ print(AsciiGen.gen(\\"Hallo\\"))"
 
 exports[`parse default scripts ascii.src uglify 1`] = `
 "globals.H=globals
-H.u=\\"||¯|| \\"
-H.t=\\"||_|| \\"
-H.q=\\"|| || \\"
-H.o=\\"||¯ \\"
-H.s=\\"||  \\"
-H.p=\\"||_ \\"
-H.v=\\"||¯\\\\\\\\ \\"
-H.r=\\"|| \\"
-H.w=\\"  \\"
-H.x=\\"<color=#\\"
-H.z=\\">\\"
-H.y=\\"</color>\\"
+H.ϻ=\\"||¯|| \\"
+H.Ϻ=\\"||_|| \\"
+H.Ϸ=\\"|| || \\"
+H.ϵ=\\"||¯ \\"
+H.Ϲ=\\"||  \\"
+H.϶=\\"||_ \\"
+H.ϼ=\\"||¯\\\\\\\\ \\"
+H.ϸ=\\"|| \\"
+H.Ͻ=\\"  \\"
+H.Ͼ=\\"<color=#\\"
+H.Ѐ=\\">\\"
+H.Ͽ=\\"</color>\\"
 I={}
 map={}
-map.a=[u,t,q]
+map.a=[ϻ,Ϻ,Ϸ]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[o,s,p]
-map.d=[v,\\"|| // \\",\\"||//  \\"]
-map.e=[o,\\"||- \\",p]
-map.f=[o,p,s]
-map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",t]
-map.h=[q,\\"||-|| \\",q]
-map.i=[r,r,r]
+map.c=[ϵ,Ϲ,϶]
+map.d=[ϼ,\\"|| // \\",\\"||//  \\"]
+map.e=[ϵ,\\"||- \\",϶]
+map.f=[ϵ,϶,Ϲ]
+map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",Ϻ]
+map.h=[Ϸ,\\"||-|| \\",Ϸ]
+map.i=[ϸ,ϸ,ϸ]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",v]
-map.l=[s,s,p]
+map.k=[\\"||  / \\",\\"|| /  \\",ϼ]
+map.l=[Ϲ,Ϲ,϶]
 map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[u,q,t]
-map.p=[u,t,\\"||    \\"]
+map.o=[ϻ,Ϸ,Ϻ]
+map.p=[ϻ,Ϻ,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[u,v,q]
+map.r=[ϻ,ϼ,Ϸ]
 map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
 map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
-map.u=[q,q,t]
+map.u=[Ϸ,Ϸ,Ϻ]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",p]
-map[\\"0\\"]=[u,\\"||x|| \\",t]
+map.z=[\\"¯// \\",\\"//  \\",϶]
+map[\\"0\\"]=[ϻ,\\"||x|| \\",Ϻ]
 map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
 map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[\\"||¯¯  \\",u,t]
+map[\\"6\\"]=[\\"||¯¯  \\",ϻ,Ϻ]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[u,\\"||-|| \\",t]
-map[\\"9\\"]=[u,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[w,w,w]
+map[\\"8\\"]=[ϻ,\\"||-|| \\",Ϻ]
+map[\\"9\\"]=[ϻ,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[Ͻ,Ͻ,Ͻ]
 I.MAP=map
-I.gen=function(str,l)
-a=[[],[],[]]
-m=self.MAP
+I.gen=function(str,ϲ)
+ϭ=[[],[],[]]
+ϳ=self.MAP
 for char in str
 char=char.lower
-if (m.hasIndex(char)) then
-a[0].push(m[char][0])
-a[1].push(m[char][1])
-a[2].push(m[char][2])
+if (ϳ.hasIndex(char)) then
+ϭ[0].push(ϳ[char][0])
+ϭ[1].push(ϳ[char][1])
+ϭ[2].push(ϳ[char][2])
 end if
 end for
-if (n(l)==\\"string\\") then
-a[0]=[x+l+z]+a[0]+[y]
-a[1]=[x+l+z]+a[1]+[y]
-a[2]=[x+l+z]+a[2]+[y]
-else if (n(l)==\\"list\\") then
-a[0]=[x+l[0]+z]+a[0]+[y]
-a[1]=[x+l[1]+z]+a[1]+[y]
-a[2]=[x+l[2]+z]+a[2]+[y]
+if (ϴ(ϲ)==\\"string\\") then
+ϭ[0]=[Ͼ+ϲ+Ѐ]+ϭ[0]+[Ͽ]
+ϭ[1]=[Ͼ+ϲ+Ѐ]+ϭ[1]+[Ͽ]
+ϭ[2]=[Ͼ+ϲ+Ѐ]+ϭ[2]+[Ͽ]
+else if (ϴ(ϲ)==\\"list\\") then
+ϭ[0]=[Ͼ+ϲ[0]+Ѐ]+ϭ[0]+[Ͽ]
+ϭ[1]=[Ͼ+ϲ[1]+Ѐ]+ϭ[1]+[Ͽ]
+ϭ[2]=[Ͼ+ϲ[2]+Ѐ]+ϭ[2]+[Ͽ]
 end if
-return [a[0].join(\\"\\"),a[1].join(\\"\\"),a[2].join(\\"\\")].join(\\"\\\\n\\")
+return [ϭ[0].join(\\"\\"),ϭ[1].join(\\"\\"),ϭ[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
 print(I.gen(\\"Hallo\\"))"
 `;
@@ -2944,9 +2944,9 @@ print(decrypted)"
 
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 "globals.H=globals
-H.Ͻ=1
-H.ϻ=null
-H.ϼ=63
+H.Ͽ=1
+H.Ͻ=null
+H.Ͼ=63
 I={}
 I.constructor=function(str)
 self.str=str
@@ -2958,7 +2958,7 @@ e=0
 f=values.len
 while e<f
 d=d.replace(\\"$\\"+e,values[e])
-e=e+Ͻ
+e=e+Ͽ
 end while
 return (new self).constructor(d)
 end function
@@ -2994,144 +2994,144 @@ Q.String=I
 Q.constructor=function(k,values)
 l=self
 l.message=k
-if (values!=ϻ) then
+if (values!=Ͻ) then
 l.message=(new l.String).constructor(k).parse(values).toString
 end if
 return l
 end function
 Q.throw=function
-m(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
+n(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
 end function
 S={}
 S.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
 S.defaultSecret=\\"test123\\"
 S.maxCharCode=55295
 S.Error=Q
-S.constructor=function(U,n,o)
-p=self
-p.defaultSecret=U
-p.table=o
-p.hashFn=@n
-if (@n==ϻ) then p.hashFn=@r
-if o==ϻ then p.table=p.defaultCharset
-if p.table.len!=64 then (new p.Error).constructor(\\"Invalid charset $0...\\",[p.table]).throw
-return p
+S.constructor=function(U,o,p)
+q=self
+q.defaultSecret=U
+q.table=p
+q.hashFn=@o
+if (@o==Ͻ) then q.hashFn=@s
+if p==Ͻ then q.table=q.defaultCharset
+if q.table.len!=64 then (new q.Error).constructor(\\"Invalid charset $0...\\",[q.table]).throw
+return q
 end function
-S.getHash=function(s)
-p=self
+S.getHash=function(t)
+q=self
 hash=[]
-t=p.hashFn(s)
-for char in t
+u=q.hashFn(t)
+for char in u
 hash.push(char.code)
 end for
 hash.reverse
 return hash
 end function
-S.encrypt=function(str,s)
-p=self
-if (s==ϻ) then s=p.defaultSecret
-hash=p.getHash(s)
-ϳ=0
-w=[]
-x=0
-y=str.len%3
-z=str.len-y
-_=function(ϲ)
-if (not p.table.hasIndex(ϲ)) then
-(new p.Error).constructor(\\"Invalid index $0...\\",[ϲ]).throw
+S.encrypt=function(str,t)
+q=self
+if (t==Ͻ) then t=q.defaultSecret
+hash=q.getHash(t)
+w=0
+y=[]
+z=0
+_=str.len%3
+Ϩ=str.len-_
+ϩ=function(ϴ)
+if (not q.table.hasIndex(ϴ)) then
+(new q.Error).constructor(\\"Invalid index $0...\\",[ϴ]).throw
 end if
-return p.table[ϲ]
+return q.table[ϴ]
 end function
-Ϩ=function(ϫ,ϭ)
-return bitwise(\\"&\\",ϫ,ϭ)
+Ϫ=function(ϭ,ϯ)
+return bitwise(\\"&\\",ϭ,ϯ)
 end function
-ϩ=function(ϫ,ϭ)
-return bitwise(\\"<<\\",ϫ,ϭ)
+ϫ=function(ϭ,ϯ)
+return bitwise(\\"<<\\",ϭ,ϯ)
 end function
-Ϫ=function(ϫ,ϭ)
-return bitwise(\\">>\\",ϫ,ϭ)
+Ϭ=function(ϭ,ϯ)
+return bitwise(\\">>\\",ϭ,ϯ)
 end function
-while x<z
-l=hash[x%hash.len-Ͻ]
-ϫ=ϩ(str[x].code+l,16)
-ϭ=ϩ(str[x+Ͻ].code+l,8)
-ϯ=str[x+2].code+l
-ϱ=ϫ+ϭ+ϯ
-w.push(_(Ϩ(Ϫ(ϱ,18),ϼ)))
-w.push(_(Ϩ(Ϫ(ϱ,12),ϼ)))
-w.push(_(Ϩ(Ϫ(ϱ,6),ϼ)))
-w.push(_(Ϩ(ϱ,ϼ)))
-x=x+3
+while z<Ϩ
+l=hash[z%hash.len-Ͽ]
+ϭ=ϫ(str[z].code+l,16)
+ϯ=ϫ(str[z+Ͽ].code+l,8)
+ϱ=str[z+2].code+l
+ϳ=ϭ+ϯ+ϱ
+y.push(ϩ(Ϫ(Ϭ(ϳ,18),Ͼ)))
+y.push(ϩ(Ϫ(Ϭ(ϳ,12),Ͼ)))
+y.push(ϩ(Ϫ(Ϭ(ϳ,6),Ͼ)))
+y.push(ϩ(Ϫ(ϳ,Ͼ)))
+z=z+3
 end while
-if (y==2) then
-l=hash[x%hash.len-Ͻ]
-ϫ=ϩ(str[x].code+l,8)
-ϭ=str[x+Ͻ].code+l
-ϱ=ϫ+ϭ
-w.push(_(Ϫ(ϱ,10)))
-w.push(_(Ϩ(Ϫ(ϱ,4),ϼ)))
-w.push(_(Ϩ(ϩ(ϱ,2),ϼ)))
-w.push(\\"=\\")
-else if (y==Ͻ) then
-l=hash[x%hash.len-Ͻ]
-ϱ=str[x].code+l
-w.push(_(Ϫ(ϱ,2)))
-w.push(_(Ϩ(ϩ(ϱ,4),ϼ)))
-w.push(\\"==\\")
+if (_==2) then
+l=hash[z%hash.len-Ͽ]
+ϭ=ϫ(str[z].code+l,8)
+ϯ=str[z+Ͽ].code+l
+ϳ=ϭ+ϯ
+y.push(ϩ(Ϭ(ϳ,10)))
+y.push(ϩ(Ϫ(Ϭ(ϳ,4),Ͼ)))
+y.push(ϩ(Ϫ(ϫ(ϳ,2),Ͼ)))
+y.push(\\"=\\")
+else if (_==Ͽ) then
+l=hash[z%hash.len-Ͽ]
+ϳ=str[z].code+l
+y.push(ϩ(Ϭ(ϳ,2)))
+y.push(ϩ(Ϫ(ϫ(ϳ,4),Ͼ)))
+y.push(\\"==\\")
 end if
-return w.join(\\"\\")
+return y.join(\\"\\")
 end function
-S.decrypt=function(str,s)
-p=self
-if (s==ϻ) then s=p.defaultSecret
-hash=p.getHash(s)
-ϳ=0
-ϴ=hash.len
-w=[]
-ϵ=0
-϶=0
-x=0
-ϳ=0
-z=str.len
-Ϩ=function(ϫ,ϭ)
-return bitwise(\\"&\\",ϫ,ϭ)
+S.decrypt=function(str,t)
+q=self
+if (t==Ͻ) then t=q.defaultSecret
+hash=q.getHash(t)
+w=0
+϶=hash.len
+y=[]
+Ϸ=0
+ϸ=0
+z=0
+w=0
+Ϩ=str.len
+Ϫ=function(ϭ,ϯ)
+return bitwise(\\"&\\",ϭ,ϯ)
 end function
-Ϫ=function(ϫ,ϭ)
-return bitwise(\\">>\\",ϫ,ϭ)
+Ϭ=function(ϭ,ϯ)
+return bitwise(\\">>\\",ϭ,ϯ)
 end function
-while x<z
-ϱ=p.table.indexOf(str[x])
-Ϸ=ϵ
-ϵ=ϵ+Ͻ
-if (Ϸ%4) then
-϶=϶*64+ϱ
+while z<Ϩ
+ϳ=q.table.indexOf(str[z])
+Ϲ=Ϸ
+Ϸ=Ϸ+Ͽ
+if (Ϲ%4) then
+ϸ=ϸ*64+ϳ
 else
-϶=ϱ
+ϸ=ϳ
 end if
-if (Ϸ%4) then
-ϸ=(floor(ϳ/3)*3)%ϴ-Ͻ
-if (not hash.hasIndex(ϸ)) then break
-l=hash[ϸ]
-Ϲ=Ϩ(-2*ϵ,6)
-Ϲ=Ϫ(϶,Ϲ)
-Ϲ=Ϩ(255,Ϲ)
-if (Ϲ!=0) then
-Ϻ=Ϲ-l
-if (Ϻ>p.maxCharCode) then break
-w.push(char(Ϻ))
+if (Ϲ%4) then
+Ϻ=(floor(w/3)*3)%϶-Ͽ
+if (not hash.hasIndex(Ϻ)) then break
+l=hash[Ϻ]
+ϻ=Ϫ(-2*Ϸ,6)
+ϻ=Ϭ(ϸ,ϻ)
+ϻ=Ϫ(255,ϻ)
+if (ϻ!=0) then
+ϼ=ϻ-l
+if (ϼ>q.maxCharCode) then break
+y.push(char(ϼ))
 end if
-ϳ=ϳ+Ͻ
+w=w+Ͽ
 end if
-x=x+Ͻ
+z=z+Ͽ
 end while
-return w.join(\\"\\")
+return y.join(\\"\\")
 end function
 Z=(new S).constructor(\\"test\\")
-Ϭ=\\"abcde\\"
-Ϯ=Z.encrypt(Ϭ)
-ϰ=Z.decrypt(Ϯ)
-print(Ϯ)
-print(ϰ)"
+Ϯ=\\"abcde\\"
+ϰ=Z.encrypt(Ϯ)
+ϲ=Z.decrypt(ϰ)
+print(ϰ)
+print(ϲ)"
 `;
 
 exports[`parse default scripts random.src 1`] = `
