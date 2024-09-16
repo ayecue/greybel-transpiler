@@ -1252,7 +1252,8 @@ a or b"
 `;
 
 exports[`parse default scripts binary-expressions.src uglify 1`] = `
-"I=I/(J)
+"globals.H=globals
+I=I/(J)
 I=I*(J)
 I=I-(J)
 I=I+(J)
@@ -1284,7 +1285,8 @@ test = 2 // comment3"
 `;
 
 exports[`parse default scripts comments.src uglify 1`] = `
-"I
+"globals.H=globals
+I
 J=2"
 `;
 
@@ -1363,7 +1365,8 @@ print(#envar test2)"
 `;
 
 exports[`parse default scripts envar.src uglify 1`] = `
-"#include \\"../fixtures/envar-include.src\\";
+"globals.H=globals
+#include \\"../fixtures/envar-include.src\\";
 I=\\"\\"foo\\"\\"
 print(\\"0.2\\")"
 `;
@@ -1390,10 +1393,22 @@ print + 123"
 `;
 
 exports[`parse default scripts expressions.src uglify 1`] = `
-"\\"as\\"+\\"wa\\"
+"globals.H=globals
+\\"as\\"+\\"wa\\"
 print(\\"was\\")-print(\\"hallo\\")
 print(-123)
 print+123"
+`;
+
+exports[`parse default scripts globals.src 1`] = `"print(globals)"`;
+
+exports[`parse default scripts globals.src beautify 1`] = `"print globals"`;
+
+exports[`parse default scripts globals.src beautify with custom settings 1`] = `"print(globals)"`;
+
+exports[`parse default scripts globals.src uglify 1`] = `
+"globals.H=globals
+print(H)"
 `;
 
 exports[`parse default scripts greybel-utils.src 1`] = `
@@ -1440,7 +1455,8 @@ print(#inject \\"../fixtures/inject.src\\";)"
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
-"#import I from \\"./ascii.src\\";
+"globals.H=globals
+#import I from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -1475,7 +1491,8 @@ debugger"
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src uglify 1`] = `
-"#import I from \\"./ascii.src\\";
+"globals.H=globals
+#import I from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -1512,7 +1529,8 @@ print(locals.hasIndex(\\"doesNotExist\\"))"
 `;
 
 exports[`parse default scripts has-index.src uglify 1`] = `
-"H.I=\\"was\\"
+"globals.H=globals
+H.I=\\"was\\"
 locals.J=\\"moo\\"
 print(H.hasIndex(\\"I\\"))
 print(locals.hasIndex(\\"J\\"))
@@ -1734,7 +1752,10 @@ print(\\"test\\") /*
   */ // one line comment"
 `;
 
-exports[`parse default scripts multiline-comment.src uglify 1`] = `"print(\\"test\\")"`;
+exports[`parse default scripts multiline-comment.src uglify 1`] = `
+"globals.H=globals
+print(\\"test\\")"
+`;
 
 exports[`parse default scripts negation.src 1`] = `
 "test=-1+2+-2+3
@@ -1768,7 +1789,8 @@ print(foo)"
 `;
 
 exports[`parse default scripts negation.src uglify 1`] = `
-"I=-1+2+-2+3
+"globals.H=globals
+I=-1+2+-2+3
 J=[-1,-2+4,(-2)+-4+6]
 print(I)
 print(J)"
@@ -2047,7 +2069,8 @@ main"
 `;
 
 exports[`parse default scripts outer.src uglify 1`] = `
-"I=function
+"globals.H=globals
+I=function
 J=0
 K=function
 L
@@ -2268,7 +2291,8 @@ print(result)"
 `;
 
 exports[`parse default scripts password-generator.src uglify 1`] = `
-"I={}
+"globals.H=globals
+I={}
 I.MAX_PASSWORD_LENGTH=15
 I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
 I.NUMBER_CHARACTERS=\\"0123456789\\"
@@ -3334,7 +3358,8 @@ print(Random.seq(
 `;
 
 exports[`parse default scripts random.src uglify 1`] = `
-"I={}
+"globals.H=globals
+I={}
 I.pool={}
 I.defaultSeed=\\"random\\"
 I.createPool=function(Q,val)
@@ -3423,7 +3448,8 @@ print(test.was)"
 `;
 
 exports[`parse default scripts simple-object.src uglify 1`] = `
-"I={}
+"globals.H=globals
+I={}
 I.here=\\"was\\"
 I.was=function
 super.here
@@ -3484,7 +3510,8 @@ print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))"
 `;
 
 exports[`parse default scripts slice.src uglify 1`] = `
-"I=function(str,J)
+"globals.H=globals
+I=function(str,J)
 K=0
 L=str.len
 M=[]

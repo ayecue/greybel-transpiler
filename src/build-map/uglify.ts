@@ -1365,7 +1365,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
     const tempVarForGlobal = context.variables.get('globals');
     const lines = [];
 
-    if (this.disableLiteralsOptimization || literalMapping.length > 0) {
+    if (!this.disableNamespacesOptimization || literalMapping.length > 0) {
       lines.push(`globals.${tempVarForGlobal}=globals`);
     }
 
