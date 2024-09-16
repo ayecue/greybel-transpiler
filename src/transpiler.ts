@@ -87,10 +87,7 @@ export class Transpiler {
     });
     const mainModule = targetParseResult.main;
     const moduleBoilerplate = transformer.transform(MODULE_BOILERPLATE);
-    const build = (
-      mainDependency: Dependency,
-      optimizeLiterals: boolean
-    ): string => {
+    const build = (mainDependency: Dependency): string => {
       const mainNamespace = context.modules.get(mainDependency.getId());
       const modules: { [key: string]: string } = {};
       let moduleCount = 0;
@@ -118,7 +115,7 @@ export class Transpiler {
 
       const output = new OutputProcessor(context, transformer);
 
-      if (optimizeLiterals) output.addLiteralsOptimization();
+      output.addOptimizations();
       if (moduleCount > 0) output.addHeader();
 
       Object.keys(modules).forEach((moduleKey: string) =>
@@ -133,11 +130,7 @@ export class Transpiler {
     };
 
     return {
-      [me.target]: build(
-        mainModule.dependency,
-        this.buildType === BuildType.UGLIFY &&
-          !me.buildOptions.disableLiteralsOptimization
-      )
+      [me.target]: build(mainModule.dependency)
     };
   }
 }

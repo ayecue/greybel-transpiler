@@ -26,6 +26,10 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
   private _factory: Factory<DefaultFactoryOptions>;
   private _resourceHandler: ResourceHandler | null;
 
+  get factory() {
+    return this._factory;
+  }
+
   get buildOptions() {
     return this._buildOptions;
   }

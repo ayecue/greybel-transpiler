@@ -31,22 +31,8 @@ export class OutputProcessor {
     this.mainBoilerplate = this.transformer.transform(main);
   }
 
-  addLiteralsOptimization() {
-    const context = this.context;
-    const literalMapping = Array.from(
-      context.literals.getMapping().values()
-    ).filter((literal) => literal.namespace != null);
-    const tempVarForGlobal = context.variables.get('globals');
-
-    if (literalMapping.length > 0) {
-      this.processed.push(
-        'globals.' + tempVarForGlobal + '=globals',
-        ...literalMapping.map((literal) => {
-          return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`;
-        })
-      );
-    }
-
+  addOptimizations() {
+    this.processed.push(...this.transformer.factory.generateOptimizations());
     return this;
   }
 

@@ -1159,4 +1159,8 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       }
     }
   };
+
+  generateOptimizations(): string[] {
+    return [];
+  }
 }

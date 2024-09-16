@@ -88,6 +88,7 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
   }
 
   abstract transform(item: ASTChunk, dependency: DependencyLike): string;
+  abstract generateOptimizations(): string[];
 }
 
 export type FactoryConstructor<T extends DefaultFactoryOptions> = new (

@@ -82,12 +82,7 @@ export class DirectTranspiler extends EventEmitter {
     });
     const output = new OutputProcessor(context, transformer);
 
-    if (
-      this.buildType === BuildType.UGLIFY &&
-      !me.buildOptions.disableLiteralsOptimization
-    ) {
-      output.addLiteralsOptimization();
-    }
+    output.addOptimizations();
 
     const result = transformer.transform(chunk);
 

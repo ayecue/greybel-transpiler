@@ -1500,4 +1500,8 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.context.buildBlock(item);
     }
   };
+
+  generateOptimizations(): string[] {
+    return [];
+  }
 }
