@@ -12,6 +12,7 @@ import { ResourceHandler } from './resource';
 import { DependencyLike, DependencyType } from './types/dependency';
 import { BuildError } from './utils/error';
 import { fetchNamespaces } from './utils/fetch-namespaces';
+import { merge } from './utils/merge';
 
 export interface DependencyOptions {
   target: string;
@@ -209,8 +210,8 @@ export class Dependency extends EventEmitter implements DependencyLike {
 
       const relatedDependencies = await dependency.findDependencies();
 
-      namespaces.push(...relatedDependencies.namespaces);
-      literals.push(...relatedDependencies.literals);
+      merge(namespaces, relatedDependencies.namespaces);
+      merge(literals, relatedDependencies.literals);
       result.push(dependency);
     }
 

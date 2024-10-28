@@ -3,6 +3,7 @@ import { ASTChunk } from 'miniscript-core';
 import { HEADER_BOILERPLATE, MAIN_BOILERPLATE } from '../boilerplates';
 import { Context } from '../context';
 import { Transformer } from '../transformer';
+import { merge } from './merge';
 
 export interface OutputProcessorBoilerplateOptions {
   header?: ASTChunk;
@@ -32,7 +33,7 @@ export class OutputProcessor {
   }
 
   addOptimizations() {
-    this.processed.push(...this.transformer.factory.generateOptimizations());
+    merge(this.processed, this.transformer.factory.generateOptimizations());
     return this;
   }
 

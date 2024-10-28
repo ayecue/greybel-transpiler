@@ -52,3 +52,4 @@ export {
 export { OutputProcessor } from './utils/output-processor';
 export { Stack } from './utils/stack';
 export { unwrap } from './utils/unwrap';
+export { merge } from './utils/merge';
