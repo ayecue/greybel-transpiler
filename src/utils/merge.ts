@@ -1,4 +1,8 @@
-export function merge<T>(target: T[], source: T[], chunkSize: number = 10000): void {
+export function merge<T>(
+  target: T[],
+  source: T[],
+  chunkSize: number = 10000
+): void {
   if (source.length <= chunkSize) {
     Array.prototype.push.apply(target, source);
     return;

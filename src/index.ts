@@ -45,6 +45,7 @@ export { createExpressionString } from './utils/create-expression-string';
 export { BuildError } from './utils/error';
 export { fetchNamespaces } from './utils/fetch-namespaces';
 export { LiteralMetaData, LiteralsMapper } from './utils/literals-mapper';
+export { merge } from './utils/merge';
 export {
   NamespaceGenerator,
   NamespaceGeneratorOptions
@@ -52,4 +53,3 @@ export {
 export { OutputProcessor } from './utils/output-processor';
 export { Stack } from './utils/stack';
 export { unwrap } from './utils/unwrap';
-export { merge } from './utils/merge';

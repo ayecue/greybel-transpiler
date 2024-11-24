@@ -1,4 +1,5 @@
 import { Keyword } from 'miniscript-core';
+
 import { LiteralsMapper } from './utils/literals-mapper';
 import { NamespaceGenerator } from './utils/namespace-generator';
 

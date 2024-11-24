@@ -53,6 +53,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
   readonly disableLiteralsOptimization: boolean;
   readonly disableNamespacesOptimization: boolean;
 
+  private forIdxMapping: Map<string, string>;
   private isWithinArgument: boolean;
 
   constructor(transformer: TransformerLike<UglifyOptions>) {
@@ -62,6 +63,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       transformer.buildOptions.disableLiteralsOptimization ?? false;
     this.disableNamespacesOptimization =
       transformer.buildOptions.disableNamespacesOptimization ?? false;
+    this.forIdxMapping = new Map();
     this.isWithinArgument = false;
   }
 
@@ -281,7 +283,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       item: ASTIdentifier,
       data: TransformerDataObject
     ): void {
-      const name = item.name;
+      let name = item.name;
 
       if (this.disableNamespacesOptimization) {
         this.tokens.push({
@@ -292,28 +294,27 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         return;
       }
 
-      if (data.isMember) {
-        if (data.usesNativeVar) {
-          this.tokens.push({
-            type: TokenType.Text,
-            value: this.transformer.context.variables.get(name) || name,
-            ref: item
-          });
-          return;
-        }
+      if (data.isMember && data.usesNativeVar) {
+        name =
+          this.forIdxMapping.get(name) ||
+          this.transformer.context.variables.get(name) ||
+          name;
+      } else if (!data.isMember) {
+        name =
+          this.forIdxMapping.get(name) ||
+          this.transformer.context.variables.get(name) ||
+          name;
+      }
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: name,
-          ref: item
-        });
-
-        return;
+      if (data.isForVariable && item.name !== name) {
+        const idxVarName = `__${item.name}_idx`;
+        const idxOptimizedVarName = `__${name}_idx`;
+        this.forIdxMapping.set(idxVarName, idxOptimizedVarName);
       }
 
       this.tokens.push({
         type: TokenType.Text,
-        value: this.transformer.context.variables.get(name) || name,
+        value: name,
         ref: item
       });
     },
@@ -806,7 +807,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
           end: item.start
         }
       });
-      this.process(item.variable);
+      this.process(item.variable, { isForVariable: true });
       this.tokens.push({
         type: TokenType.Text,
         value: ' in ',
