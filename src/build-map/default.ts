@@ -6,6 +6,7 @@ import {
   ASTFeatureIncludeExpression,
   ASTFeatureInjectExpression
 } from 'greybel-core';
+import { get } from 'http';
 import {
   ASTAssignmentStatement,
   ASTBase,
@@ -42,6 +43,10 @@ import { basename } from 'path';
 
 import { DependencyLike } from '../types/dependency';
 import { TransformerDataObject } from '../types/transformer';
+import {
+  getLiteralRawValue,
+  getLiteralValue
+} from '../utils/get-literal-value';
 import { DefaultFactoryOptions, Factory, TokenType } from './factory';
 
 export class DefaultFactory extends Factory<DefaultFactoryOptions> {
@@ -294,7 +299,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: (item.negated ? '-' : '') + item.value.toString(),
+        value: getLiteralValue(item),
         ref: item
       });
     },
@@ -391,7 +396,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: item.raw.toString(),
+        value: getLiteralRawValue(item),
         ref: item
       });
     },
@@ -573,7 +578,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: 'null',
+        value: getLiteralRawValue(item),
         ref: item
       });
     },
@@ -1011,7 +1016,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: (item.negated ? '-' : '') + item.raw.toString(),
+        value: getLiteralRawValue(item),
         ref: item
       });
     },

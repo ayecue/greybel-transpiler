@@ -44,6 +44,7 @@ export { createExpressionHash } from './utils/create-expression-hash';
 export { createExpressionString } from './utils/create-expression-string';
 export { BuildError } from './utils/error';
 export { fetchNamespaces } from './utils/fetch-namespaces';
+export { getLiteralRawValue, getLiteralValue } from './utils/get-literal-value';
 export { LiteralMetaData, LiteralsMapper } from './utils/literals-mapper';
 export { merge } from './utils/merge';
 export {

@@ -1,6 +1,7 @@
 import md5 from 'blueimp-md5';
 import { ASTLiteral } from 'miniscript-core';
 
+import { getLiteralRawValue } from './get-literal-value';
 import { NamespaceGenerator } from './namespace-generator';
 
 export interface LiteralMetaData {
@@ -28,7 +29,7 @@ export class LiteralsMapper {
 
   add(literal: ASTLiteral): LiteralsMapper {
     const me = this;
-    const raw = literal.raw.toString();
+    const raw = getLiteralRawValue(literal);
     if (!me.mapping.has(raw)) {
       me.mapping.set(raw, {
         literal,
@@ -55,7 +56,7 @@ export class LiteralsMapper {
 
   get(literal: ASTLiteral): LiteralMetaData {
     const me = this;
-    const raw = literal.raw.toString();
+    const raw = getLiteralRawValue(literal);
     if (me.mapping.has(raw)) {
       return me.mapping.get(raw);
     }

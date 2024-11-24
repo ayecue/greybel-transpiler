@@ -5,6 +5,7 @@ import {
   ASTFeatureIncludeExpression,
   ASTFeatureInjectExpression
 } from 'greybel-core';
+import { get } from 'http';
 import {
   ASTAssignmentStatement,
   ASTBase,
@@ -42,6 +43,11 @@ import { basename } from 'path';
 import { DependencyLike } from '../types/dependency';
 import { TransformerDataObject, TransformerLike } from '../types/transformer';
 import { createExpressionString } from '../utils/create-expression-string';
+import {
+  getLiteralRawValue,
+  getLiteralValue
+} from '../utils/get-literal-value';
+import { merge } from '../utils/merge';
 import { DefaultFactoryOptions, Factory, TokenType } from './factory';
 
 export interface UglifyOptions extends DefaultFactoryOptions {
@@ -338,7 +344,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       if (this.disableLiteralsOptimization) {
         this.tokens.push({
           type: TokenType.Text,
-          value: (item.negated ? '-' : '') + item.value.toString(),
+          value: getLiteralValue(item),
           ref: item
         });
         return;
@@ -361,7 +367,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
 
       this.tokens.push({
         type: TokenType.Text,
-        value: (item.negated ? '-' : '') + item.value.toString(),
+        value: getLiteralValue(item),
         ref: item
       });
     },
@@ -429,7 +435,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         argItem = item.arguments[0];
 
         if (argItem.type === 'StringLiteral') {
-          const namespace = (argItem as ASTLiteral).value.toString();
+          const namespace = getLiteralValue(argItem as ASTLiteral);
           const optNamespace =
             this.transformer.context.variables.get(namespace);
           this.tokens.push({
@@ -504,7 +510,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       if (this.disableLiteralsOptimization) {
         this.tokens.push({
           type: TokenType.Text,
-          value: item.raw.toString(),
+          value: getLiteralRawValue(item),
           ref: item
         });
         return;
@@ -527,7 +533,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
 
       this.tokens.push({
         type: TokenType.Text,
-        value: item.raw.toString(),
+        value: getLiteralRawValue(item),
         ref: item
       });
     },
@@ -767,7 +773,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       if (this.disableLiteralsOptimization) {
         this.tokens.push({
           type: TokenType.Text,
-          value: 'null',
+          value: getLiteralRawValue(item),
           ref: item
         });
         return;
@@ -790,7 +796,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
 
       this.tokens.push({
         type: TokenType.Text,
-        value: 'null',
+        value: getLiteralRawValue(item),
         ref: item
       });
     },
@@ -1186,7 +1192,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       if (this.disableLiteralsOptimization) {
         this.tokens.push({
           type: TokenType.Text,
-          value: (item.negated ? '-' : '') + item.raw.toString(),
+          value: getLiteralRawValue(item),
           ref: item
         });
         return;
@@ -1209,7 +1215,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
 
       this.tokens.push({
         type: TokenType.Text,
-        value: (item.negated ? '-' : '') + item.raw.toString(),
+        value: getLiteralRawValue(item),
         ref: item
       });
     },
@@ -1371,11 +1377,12 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
     }
 
     if (literalMapping.length > 0) {
-      lines.push(
-        ...literalMapping.map((literal) => {
-          return `${tempVarForGlobal}.${literal.namespace}=${literal.literal.raw}`;
-        })
-      );
+      const literals = literalMapping.map((meta) => {
+        return `${tempVarForGlobal}.${meta.namespace}=${getLiteralRawValue(
+          meta.literal
+        )}`;
+      });
+      merge(lines, literals);
     }
 
     return lines;

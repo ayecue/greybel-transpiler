@@ -5,6 +5,7 @@ import {
   ASTFeatureIncludeExpression,
   ASTFeatureInjectExpression
 } from 'greybel-core';
+import { get } from 'http';
 import {
   ASTAssignmentStatement,
   ASTBase,
@@ -42,6 +43,10 @@ import { basename } from 'path';
 import { DependencyLike } from '../types/dependency';
 import { TransformerDataObject, TransformerLike } from '../types/transformer';
 import { createExpressionHash } from '../utils/create-expression-hash';
+import {
+  getLiteralRawValue,
+  getLiteralValue
+} from '../utils/get-literal-value';
 import {
   BeautifyContext,
   BeautifyContextOptions,
@@ -450,7 +455,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: (item.negated ? '-' : '') + item.value.toString(),
+        value: getLiteralValue(item),
         ref: item
       });
     },
@@ -657,7 +662,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: item.raw.toString(),
+        value: getLiteralRawValue(item),
         ref: {
           start: item.end,
           end: item.end
@@ -842,7 +847,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: 'null',
+        value: getLiteralRawValue(item),
         ref: item
       });
     },
@@ -1320,7 +1325,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     ): void {
       this.tokens.push({
         type: TokenType.Text,
-        value: (item.negated ? '-' : '') + item.raw.toString(),
+        value: getLiteralRawValue(item),
         ref: item
       });
     },
