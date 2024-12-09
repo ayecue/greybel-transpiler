@@ -5,7 +5,6 @@ import {
   ASTFeatureIncludeExpression,
   ASTFeatureInjectExpression
 } from 'greybel-core';
-import { get } from 'http';
 import {
   ASTAssignmentStatement,
   ASTBase,
@@ -697,7 +696,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       }
       this.tokens.push({
         type: TokenType.Text,
-        value: `"${basename(item.filename).replace(/"/g, '"')}"`,
+        value: `"${basename(item.filename).replace(/"/g, () => '"')}"`,
         ref: item
       });
     },
@@ -1066,7 +1065,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
 
       this.tokens.push({
         type: TokenType.Text,
-        value: `"${content.replace(/"/g, '""')}"`,
+        value: `"${content.replace(/"/g, () => '""')}"`,
         ref: item
       });
     },

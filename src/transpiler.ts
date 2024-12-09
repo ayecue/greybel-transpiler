@@ -101,8 +101,8 @@ export class Transpiler {
         ) {
           const code = transformer.transform(item.chunk, item);
           modules[moduleName] = moduleBoilerplate
-            .replace('"$0"', '"' + moduleName + '"')
-            .replace('"$1"', code);
+            .replace('"$0"', () => '"' + moduleName + '"')
+            .replace('"$1"', () => code);
           moduleCount++;
         }
 

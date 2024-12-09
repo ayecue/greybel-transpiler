@@ -44,7 +44,7 @@ export class OutputProcessor {
 
   addCode(code: string, isMainModule: boolean = false) {
     if (isMainModule) {
-      const moduleCode = this.mainBoilerplate.replace('"$0"', code);
+      const moduleCode = this.mainBoilerplate.replace('"$0"', () => code);
       this.processed.push(moduleCode);
     } else {
       this.processed.push(code);
