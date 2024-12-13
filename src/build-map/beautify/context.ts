@@ -2,6 +2,7 @@ import {
   ASTBase,
   ASTBaseBlock,
   ASTChunk,
+  ASTComment,
   ASTForGenericStatement,
   ASTIfClause,
   ASTIfStatement,
@@ -9,7 +10,8 @@ import {
   ASTWhileStatement
 } from 'miniscript-core';
 
-import { DefaultFactoryOptions, Factory, TokenType } from '../factory';
+import { DefaultFactoryOptions, Factory } from '../factory';
+import { BeautifyBodyIterator, FILLER_TYPE } from './body-iterator';
 
 export enum IndentationType {
   Tab,
@@ -23,13 +25,19 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
   isDevMode: boolean;
 }
 
+interface ChunkContext {
+  commentBuckets: Map<number, ASTComment[]>
+}
+
 export class BeautifyContext {
   readonly options: BeautifyContextOptions;
 
   private factory: Factory<Partial<BeautifyContextOptions>>;
   private _indent: number;
   private _isMultilineAllowed: boolean;
-  private _usedComments: Set<ASTBase>;
+  private _stack: ASTChunk[];
+  private _contexts: Map<ASTChunk, ChunkContext>;
+
   public getIndent: (offset?: number) => string;
 
   get indent() {
@@ -40,10 +48,6 @@ export class BeautifyContext {
     return this._isMultilineAllowed;
   }
 
-  get usedComments() {
-    return this._usedComments;
-  }
-
   constructor(
     factory: Factory<Partial<BeautifyContextOptions>>,
     options: BeautifyContextOptions
@@ -51,13 +55,52 @@ export class BeautifyContext {
     this.factory = factory;
     this.options = options;
     this._indent = 0;
+    this._stack = [];
+    this._contexts = new Map();
     this._isMultilineAllowed = true;
-    this._usedComments = new Set();
     this.getIndent =
       options.indentation === IndentationType.Tab
         ? (offset: number = 0) => '\t'.repeat(this._indent + offset)
         : (offset: number = 0) =>
             ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
+  }
+
+  private buildChunkContext(chunk: ASTChunk): ChunkContext {
+    const commentBuckets: Map<number, ASTComment[]> = new Map();
+    const lineIdxs = Object.keys(chunk.lines);
+
+    for (const idx of lineIdxs) {
+      const nr = Number(idx);
+      const line = chunk.lines[nr];
+      const comments = line.filter((it) => it.type === ASTType.Comment) as ASTComment[];
+
+      if (!commentBuckets.has(nr)) {
+        commentBuckets.set(nr, []);
+      }
+
+      commentBuckets.get(nr).push(...comments);
+    }
+
+    return {
+      commentBuckets
+    };
+  }
+
+  getChunkContext(chunk: ASTChunk): ChunkContext {
+    return this._contexts.get(chunk);
+  }
+
+  getCurrentChunk() {
+    return this._stack[this._stack.length - 1];
+  }
+
+  pushStack(chunk: ASTChunk) {
+    this._stack.push(chunk);
+    this._contexts.set(chunk, this.buildChunkContext(chunk));
+  }
+
+  popStack() {
+    this._stack.pop();
   }
 
   disableMultiline() {
@@ -101,93 +144,32 @@ export class BeautifyContext {
     return item.end.line;
   }
 
-  containsNewLineInRange(
-    start: number,
-    end: number = this.factory.tokens.length
-  ) {
-    const max = Math.min(end, this.factory.tokens.length);
-
-    for (let index = start; index < max; index++) {
-      if (this.factory.tokens[index].type === TokenType.EndOfLine) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   buildBlock(block: ASTBaseBlock): void {
     if (block.body.length === 0) return;
 
-    block.body.sort((a, b) => a.range[0] - b.range[0]);
+    const iterator = new BeautifyBodyIterator(block, block.body);
+    let next = iterator.next();
 
-    let previous: ASTBase | null = null;
+    while (!next.done) {
+      const current = next.value;
+      const startIndex = this.factory.lines.length;
 
-    for (let index = 0; index < block.body.length; index++) {
-      const bodyItem = block.body[index];
-      const lastEndLine = previous
-        ? this.getPreviousEndLine(previous)
-        : this.getBlockOpenerEndLine(block);
-      const diff = Math.max(bodyItem.start.line - lastEndLine - 1, 0);
-
-      if (diff > 0) {
-        for (let j = 0; j < diff; j++) {
-          const pos = {
-            line: lastEndLine + j + 1,
-            character: 0
-          };
-          this.factory.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: pos,
-              end: pos
-            }
-          });
-        }
+      if (current.type === FILLER_TYPE) {
+        this.factory.pushSegment(this.getIndent());
+        this.factory.pushComment(current.start.line);
+        this.factory.eol();
+        next = iterator.next();
+        continue;
       }
 
-      const startIndex = this.factory.tokens.length;
-      this.factory.process(bodyItem, {
+      this.factory.process(current, {
         isCommand: true
       });
-      if (startIndex < this.factory.tokens.length) {
-        this.factory.tokens[startIndex].value =
-          this.getIndent() + this.factory.tokens[startIndex].value;
-        this.factory.tokens.push({
-          type: TokenType.EndOfLine,
-          value: '\n',
-          ref: {
-            start: bodyItem.end,
-            end: bodyItem.end
-          }
-        });
+      if (startIndex < this.factory.lines.length) {
+        this.factory.lines[startIndex].segments.unshift(this.getIndent());
+        this.factory.eol();
       }
-
-      previous = bodyItem;
-    }
-
-    const last = block.body[block.body.length - 1];
-    const size = Math.max(
-      block.end.line - this.getPreviousEndLine(last) - 1,
-      0
-    );
-
-    if (size > 0) {
-      for (let j = 0; j < size; j++) {
-        const pos = {
-          line: last.end.line + j + 1,
-          character: 0
-        };
-        this.factory.tokens.push({
-          type: TokenType.EndOfLine,
-          value: '\n',
-          ref: {
-            start: pos,
-            end: pos
-          }
-        });
-      }
+      next = iterator.next();
     }
   }
 }

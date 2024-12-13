@@ -1,18 +1,16 @@
 export { BuildType, getFactory } from './build-map';
-export { BeautifyFactory, BeautifyOptions } from './build-map/beautify';
+export { BeautifyFactory, BeautifyOptions, BeautifyLine } from './build-map/beautify';
 export { BeautifyContext } from './build-map/beautify/context';
 export * as BeautifyUtils from './build-map/beautify/utils';
 export { DefaultFactory } from './build-map/default';
 export {
-  BasicToken,
-  CommentToken,
+  Line,
+  LineRef,
   DefaultFactoryOptions,
   Factory,
   FactoryConstructor,
   FactoryGetter,
-  FactoryMake,
-  Token,
-  TokenType
+  FactoryMake
 } from './build-map/factory';
 export { UglifyFactory, UglifyOptions } from './build-map/uglify';
 export { Context, ContextDataProperty, ContextOptions } from './context';

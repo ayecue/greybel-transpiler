@@ -46,16 +46,16 @@ import {
   getLiteralRawValue,
   getLiteralValue
 } from '../utils/get-literal-value';
-import { DefaultFactoryOptions, Factory, TokenType } from './factory';
+import { DefaultFactoryOptions, Factory } from './factory';
 
 export class DefaultFactory extends Factory<DefaultFactoryOptions> {
   transform(item: ASTChunk, dependency: DependencyLike): string {
-    this._tokens = [];
+    this.reset();
     this._currentDependency = dependency;
     this.process(item);
 
     let output = '';
-
+/*
     for (let index = 0; index < this.tokens.length - 1; index++) {
       const token = this.tokens[index];
 
@@ -66,7 +66,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       } else {
         throw new Error('Unknown token type!');
       }
-    }
+    }*/
 
     return output;
   }
@@ -80,17 +80,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTParenthesisExpression,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '(',
-        ref: item
-      });
+      this.pushSegment('(');
       this.process(item.expression);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ')',
-        ref: item
-      });
+      this.pushSegment(')');
     },
     Comment: function (
       this: DefaultFactory,
@@ -98,22 +90,14 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.isMultiline) {
-        this.tokens.push({
-          type: TokenType.Comment,
-          value: item.value
-            .split('\n')
-            .map((line) => `//${line}`)
-            .join('\n'),
-          ref: item
-        });
+        this.pushSegment(item.value
+          .split('\n')
+          .map((line) => `//${line}`)
+          .join('\n'));
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Comment,
-        value: '//' + item.value,
-        ref: item
-      });
+      this.pushSegment('//' + item.value,);
     },
     AssignmentStatement: function (
       this: DefaultFactory,
@@ -124,11 +108,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       const init = item.init;
 
       this.process(variable);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '=',
-        ref: item
-      });
+      this.pushSegment('=');
       this.process(init);
     },
     MemberExpression: function (
@@ -137,11 +117,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: item.indexer,
-        ref: item
-      });
+      this.pushSegment(item.indexer);
       this.process(item.identifier);
     },
     FunctionDeclaration: function (
@@ -150,110 +126,49 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.parameters.length === 0) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'function',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
-        });
+        this.pushSegment('function');
       } else {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'function(',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
-        });
+        this.pushSegment('function(');
 
         for (let index = 0; index < item.parameters.length; index++) {
           const arg = item.parameters[index];
           this.process(arg);
-          if (index !== item.parameters.length - 1)
-            this.tokens.push({
-              type: TokenType.Text,
-              value: ',',
-              ref: arg
-            });
+          if (index !== item.parameters.length - 1) {
+            this.pushSegment(',');
+          }
         }
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
-        });
+        this.pushSegment(')');
       }
 
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.tokens.length;
+        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.tokens.length)
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: bodyItem.end,
-              end: bodyItem.end
-            }
-          });
+        if (index < this.lines.length) {
+          this.eol();
+        }
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'end function',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
-      });
+      this.pushSegment('end function');
     },
     MapConstructorExpression: function (
       this: DefaultFactory,
       item: ASTMapConstructorExpression,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '{',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment('{');
 
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
         this.process(fieldItem);
-        if (index !== item.fields.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ',',
-            ref: fieldItem
-          });
+        if (index !== item.fields.length - 1) {
+          this.pushSegment(',');
+        }
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '}',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
-      });
+      this.pushSegment('}');
     },
     MapKeyString: function (
       this: DefaultFactory,
@@ -261,11 +176,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.key);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ':',
-        ref: item
-      });
+      this.pushSegment(':');
       this.process(item.value);
     },
     Identifier: function (
@@ -273,22 +184,14 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTIdentifier,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: item.name,
-        ref: item
-      });
+      this.pushSegment(item.name);
     },
     ReturnStatement: function (
       this: DefaultFactory,
       item: ASTReturnStatement,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'return ',
-        ref: item
-      });
+      this.pushSegment('return ');
       if (item.argument) this.process(item.argument);
     },
     NumericLiteral: function (
@@ -296,57 +199,26 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTNumericLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralValue(item),
-        ref: item
-      });
+      this.pushSegment(getLiteralValue(item));
     },
     WhileStatement: function (
       this: DefaultFactory,
       item: ASTWhileStatement,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'while ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment('while ');
       this.process(item.condition);
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.tokens.length;
+        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.tokens.length)
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: bodyItem.end,
-              end: bodyItem.end
-            }
-          });
+        if (index < this.lines.length) {
+          this.eol();
+        }
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'end while',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
-      });
+      this.pushSegment('end while');
     },
     CallExpression: function (
       this: DefaultFactory,
@@ -359,45 +231,24 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '(',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment('(');
 
       for (let index = 0; index < item.arguments.length; index++) {
         const argItem = item.arguments[index];
         this.process(argItem);
-        if (index !== item.arguments.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ',',
-            ref: argItem
-          });
+        if (index !== item.arguments.length - 1) {
+          this.pushSegment(',');
+        }
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ')',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
-      });
+      this.pushSegment(')');
     },
     StringLiteral: function (
       this: DefaultFactory,
       item: ASTLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralRawValue(item),
-        ref: item
-      });
+      this.pushSegment(getLiteralRawValue(item));
     },
     SliceExpression: function (
       this: DefaultFactory,
@@ -405,23 +256,11 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '[',
-        ref: item
-      });
+      this.pushSegment('[');
       this.process(item.left);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ':',
-        ref: item
-      });
+      this.pushSegment(':');
       this.process(item.right);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ']',
-        ref: item
-      });
+      this.pushSegment(']');
     },
     IndexExpression: function (
       this: DefaultFactory,
@@ -429,17 +268,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '[',
-        ref: item
-      });
+      this.pushSegment('[');
       this.process(item.index);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ']',
-        ref: item
-      });
+      this.pushSegment(']');
     },
     UnaryExpression: function (
       this: DefaultFactory,
@@ -447,17 +278,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.operator === 'new') {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: item.operator + ' ',
-          ref: item
-        });
+        this.pushSegment(item.operator + ' ');
       } else {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: item.operator,
-          ref: item
-        });
+        this.pushSegment(item.operator);
       }
 
       this.process(item.argument);
@@ -467,12 +290,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'not ',
-        ref: item
-      });
-
+      this.pushSegment(item.operator + ' ');
       this.process(item.argument);
     },
     FeatureEnvarExpression: function (
@@ -481,30 +299,18 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#envar ${item.name}`,
-          ref: item
-        });
+        this.pushSegment(`#envar ${item.name}`);
         return;
       }
 
       const value = this.transformer.environmentVariables.get(item.name);
 
       if (!value) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'null',
-          ref: item
-        });
+        this.pushSegment('null');
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `"${value}"`,
-        ref: item
-      });
+      this.pushSegment(`"${value}"`);
     },
     IfShortcutStatement: function (
       this: DefaultFactory,
@@ -514,12 +320,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       for (let index = 0; index < item.clauses.length; index++) {
         const clausesItem = item.clauses[index];
         this.process(clausesItem);
-        if (index !== item.clauses.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ' ',
-            ref: item
-          });
+        if (index !== item.clauses.length - 1) {
+          this.pushSegment(' ');
+        }
       }
     },
     IfShortcutClause: function (
@@ -527,17 +330,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'if ',
-        ref: item
-      });
+      this.pushSegment('if ');
       this.process(item.condition);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then ',
-        ref: item
-      });
+      this.pushSegment(' then ');
       this.process(item.body[0]);
     },
     ElseifShortcutClause: function (
@@ -545,17 +340,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'else if ',
-        ref: item
-      });
+      this.pushSegment('else if ');
       this.process(item.condition);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then ',
-        ref: item
-      });
+      this.pushSegment(' then ');
       this.process(item.body[0]);
     },
     ElseShortcutClause: function (
@@ -563,11 +350,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'else ',
-        ref: item
-      });
+      this.pushSegment('else ');
       this.process(item.body[0]);
     },
     NilLiteral: function (
@@ -575,67 +358,28 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralRawValue(item),
-        ref: item
-      });
+      this.pushSegment(getLiteralRawValue(item));
     },
     ForGenericStatement: function (
       this: DefaultFactory,
       item: ASTForGenericStatement,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'for ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment('for ');
       this.process(item.variable);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' in ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment(' in ');
       this.process(item.iterator);
-
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.tokens.length;
+        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.tokens.length)
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: bodyItem.end,
-              end: bodyItem.end
-            }
-          });
+        if (index < this.lines.length) {
+          this.eol();
+        }
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'end for',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
-      });
+      this.pushSegment('end for');
     },
     IfStatement: function (
       this: DefaultFactory,
@@ -646,59 +390,24 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.process(clausesItem);
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'end if',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
-      });
+      this.pushSegment('end if');
     },
     IfClause: function (
       this: DefaultFactory,
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'if ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment('if ');
       this.process(item.condition);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
-
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment(' then');
+      this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.tokens.length;
+        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.tokens.length)
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: bodyItem.end,
-              end: bodyItem.end
-            }
-          });
+        if (index < this.lines.length) {
+          this.eol();
+        }
       }
     },
     ElseifClause: function (
@@ -706,45 +415,17 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'else if ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment('else if ');
       this.process(item.condition);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
-
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment(' then');
+      this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.tokens.length;
+        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.tokens.length)
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: bodyItem.end,
-              end: bodyItem.end
-            }
-          });
+        if (index < this.lines.length) {
+          this.eol();
+        }
       }
     },
     ElseClause: function (
@@ -752,35 +433,15 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'else',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.pushSegment('else');
+      this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.tokens.length;
+        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.tokens.length)
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: bodyItem.end,
-              end: bodyItem.end
-            }
-          });
+        if (index < this.lines.length) {
+          this.eol();
+        }
       }
     },
     ContinueStatement: function (
@@ -788,22 +449,14 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'continue',
-        ref: item
-      });
+      this.pushSegment('continue');
     },
     BreakStatement: function (
       this: DefaultFactory,
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'break',
-        ref: item
-      });
+      this.pushSegment('break');
     },
     CallStatement: function (
       this: DefaultFactory,
@@ -818,38 +471,22 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#inject "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#inject "${item.path}"`);
         return;
       }
       if (this.currentDependency === null) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#inject "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#inject "${item.path}";`);
         return;
       }
 
       const content = this.currentDependency.injections.get(item.path);
 
       if (content == null) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'null',
-          ref: item
-        });
+        this.pushSegment('null');
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `"${content.replace(/"/g, () => '""')}"`,
-        ref: item
-      });
+      this.pushSegment(`"${content.replace(/"/g, () => '""')}"`);
     },
     FeatureImportExpression: function (
       this: DefaultFactory,
@@ -857,40 +494,20 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#import ',
-          ref: item
-        });
+        this.pushSegment('#import ');
         this.process(item.name);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ` from "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(` from "${item.path}";`);
         return;
       }
       if (!item.chunk) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#import ',
-          ref: item
-        });
+        this.pushSegment('#import ');
         this.process(item.name);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ` from "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(` from "${item.path}";`);
         return;
       }
 
       this.process(item.name);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' = __REQUIRE("' + item.namespace + '")',
-        ref: item
-      });
+      this.pushSegment(' = __REQUIRE("' + item.namespace + '")');
     },
     FeatureIncludeExpression: function (
       this: DefaultFactory,
@@ -898,19 +515,11 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#include "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#include "${item.path}";`);
         return;
       }
       if (!item.chunk) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#include "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#include "${item.path}";`);
         return;
       }
 
@@ -922,18 +531,10 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'debugger',
-          ref: item
-        });
+        this.pushSegment('debugger');
         return;
       }
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '//debugger',
-        ref: item
-      });
+      this.pushSegment('//debugger');
     },
     FeatureLineExpression: function (
       this: DefaultFactory,
@@ -941,18 +542,10 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#line',
-          ref: item
-        });
+        this.pushSegment('#line');
         return;
       }
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `${item.start.line}`,
-        ref: item
-      });
+      this.pushSegment(`${item.start.line}`);
     },
     FeatureFileExpression: function (
       this: DefaultFactory,
@@ -960,46 +553,27 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#filename',
-          ref: item
-        });
+        this.pushSegment('#filename');
         return;
       }
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `"${basename(item.filename).replace(/"/g, () => '"')}"`,
-        ref: item
-      });
+      this.pushSegment(`"${basename(item.filename).replace(/"/g, () => '"')}"`);
     },
     ListConstructorExpression: function (
       this: DefaultFactory,
       item: ASTListConstructorExpression,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '[',
-        ref: item
-      });
+      this.pushSegment('[');
 
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
         this.process(fieldItem);
-        if (index !== item.fields.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ',',
-            ref: fieldItem
-          });
+        if (index !== item.fields.length - 1) {
+          this.pushSegment(',');
+        }
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ']',
-        ref: item
-      });
+      this.pushSegment(']');
     },
     ListValue: function (
       this: DefaultFactory,
@@ -1013,22 +587,14 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTBooleanLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralRawValue(item),
-        ref: item
-      });
+      this.pushSegment(getLiteralRawValue(item));
     },
     EmptyExpression: function (
       this: DefaultFactory,
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '',
-        ref: item
-      });
+      this.pushSegment('');
     },
     IsaExpression: function (
       this: DefaultFactory,
@@ -1036,11 +602,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.left);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' ' + item.operator + ' ',
-        ref: item
-      });
+      this.pushSegment(' ' + item.operator + ' ');
       this.process(item.right);
     },
     LogicalExpression: function (
@@ -1049,11 +611,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.left);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' ' + item.operator + ' ',
-        ref: item
-      });
+      this.pushSegment(' ' + item.operator + ' ');
       this.process(item.right);
     },
     BinaryExpression: function (
@@ -1062,42 +620,18 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.operator === '|') {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'bitOr(',
-          ref: item
-        });
+        this.pushSegment('bitOr(');
         this.process(item.left);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ',',
-          ref: item
-        });
+        this.pushSegment(',');
         this.process(item.right);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: item
-        });
+        this.pushSegment(')');
         return;
       } else if (item.operator === '&') {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'bitAnd(',
-          ref: item
-        });
+        this.pushSegment('bitAnd(');
         this.process(item.left);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ',',
-          ref: item
-        });
+        this.pushSegment(',');
         this.process(item.right);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: item
-        });
+        this.pushSegment(')');
         return;
       } else if (
         item.operator === '<<' ||
@@ -1108,11 +642,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       }
 
       this.process(item.left);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: item.operator,
-        ref: item
-      });
+      this.pushSegment(item.operator);
       this.process(item.right);
     },
     BinaryNegatedExpression: function (
@@ -1120,11 +650,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: item.operator,
-        ref: item
-      });
+      this.pushSegment(item.operator);
       this.process(item.argument);
     },
     ComparisonGroupExpression: function (
@@ -1135,11 +661,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.process(item.expressions[0]);
 
       for (let index = 0; index < item.operators.length; index++) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: item.operators[index],
-          ref: item
-        });
+        this.pushSegment(item.operators[index]);
         this.process(item.expressions[index + 1]);
       }
     },
@@ -1149,17 +671,11 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       for (const bodyItem of item.body) {
-        const index = this.tokens.length;
+        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.tokens.length)
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: {
-              start: bodyItem.end,
-              end: bodyItem.end
-            }
-          });
+        if (index < this.lines.length) {
+          this.eol();
+        }
       }
     }
   };
