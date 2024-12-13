@@ -152,7 +152,6 @@ export class BeautifyContext {
 
     while (!next.done) {
       const current = next.value;
-      const startIndex = this.factory.lines.length;
 
       if (current.type === FILLER_TYPE) {
         this.factory.pushSegment(this.getIndent());
@@ -162,13 +161,11 @@ export class BeautifyContext {
         continue;
       }
 
+      this.factory.pushSegment(this.getIndent());
       this.factory.process(current, {
         isCommand: true
       });
-      if (startIndex < this.factory.lines.length) {
-        this.factory.lines[startIndex].segments.unshift(this.getIndent());
-        this.factory.eol();
-      }
+      this.factory.eol();
       next = iterator.next();
     }
   }

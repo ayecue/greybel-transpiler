@@ -121,7 +121,23 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
     this.process(item);
 
-    console.log(this._lines);
+    const simplifiedOutput = this._lines.map((line) => {
+      let output = line.segments.join('');
+      const actualContent = output.trim();
+
+      if (line.comments.length === 0) {
+        return output;
+      }
+
+      if (actualContent.length > 0) {
+        output += ' ';
+      }
+
+      return output + '//' + line.comments.map((comment) => comment.value).join(' ');
+    });
+
+
+    console.log(JSON.stringify(simplifiedOutput, null, 2));
 
     let output = '';
 

@@ -33,6 +33,10 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
   protected _currentDependency: DependencyLike | null;
   protected _currentStack: Stack;
 
+  get activeLine() {
+    return this._activeLine;
+  }
+
   get lines() {
     return this._lines;
   }
