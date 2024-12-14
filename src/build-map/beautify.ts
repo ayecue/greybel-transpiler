@@ -173,39 +173,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     },
     Comment: function (
       this: BeautifyFactory,
-      item: ASTComment,
+      _item: ASTComment,
       _data: TransformerDataObject
     ): void {
-      /*if (item.isMultiline) {
-        if (this.transformer.buildOptions.isDevMode) {
-          this.tokens.push({
-            type: TokenType.Comment,
-            value: `${item.value}`,
-            ref: item,
-            isMultiline: true
-          });
-          return;
-        }
-
-        this.tokens.push({
-          type: TokenType.Comment,
-          value: item.value
-            .split('\n')
-            .map((line) => `//${line}`)
-            .join('\n'),
-          ref: item,
-          isMultiline: true
-        });
-
-        return;
-      }
-
-      this.tokens.push({
-        type: TokenType.Comment,
-        value: '// ' + item.value.trimStart(),
-        ref: item,
-        isMultiline: false
-      });*/
     },
     AssignmentStatement: function (
       this: BeautifyFactory,
