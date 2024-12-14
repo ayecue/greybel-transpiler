@@ -99,8 +99,9 @@ export class BeautifyBodyIterator<T extends ASTBase = ASTBase>
 
     if (this._index >= this._items.length) {
       if (!this._checkedIndexes.has(this._items.length)) {
-        const last = this._items[this._items.length - 1];
-        const lastEndLine = this.getPreviousEndLine(last);
+        const lastEndLine = this._previous
+          ? this.getPreviousEndLine(this._previous)
+          : this.getBlockOpenerEndLine(this._base);
         const size = Math.max(
           this.getBlockCloseEndLine(this._base) - lastEndLine - 1,
           0

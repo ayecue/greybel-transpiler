@@ -188,8 +188,6 @@ export class BeautifyContext {
   }
 
   buildBlock(block: ASTBaseBlock): void {
-    if (block.body.length === 0) return;
-
     const iterator = new BeautifyBodyIterator(block, block.body);
     let next = iterator.next();
 
