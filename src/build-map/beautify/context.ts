@@ -27,7 +27,7 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
 }
 
 export interface ChunkContext {
-  commentBuckets: Map<number, CommentNode[]>
+  commentBuckets: Map<number, CommentNode[]>;
 }
 
 export class BeautifyContext {
@@ -74,7 +74,9 @@ export class BeautifyContext {
     for (let i = 0; i < lineIdxs.length; i++) {
       const nr = Number(lineIdxs[i]);
       const line = chunk.lines[nr];
-      const comments = line.filter((it) => it.type === ASTType.Comment) as ASTComment[];
+      const comments = line.filter(
+        (it) => it.type === ASTType.Comment
+      ) as ASTComment[];
 
       for (let j = 0; j < comments.length; j++) {
         const comment = comments[j];
@@ -91,7 +93,9 @@ export class BeautifyContext {
             }
 
             const line = chunk.lines[currentNr];
-            const nodes = line.filter((it) => it.type !== ASTType.Comment).map((it) => it.start.character);
+            const nodes = line
+              .filter((it) => it.type !== ASTType.Comment)
+              .map((it) => it.start.character);
             const firstNode = nodes.length > 0 ? Math.min(...nodes) : -1;
             const isStart = currentNr === nr;
             const isEnd = currentNr === nr + commentLines.length - 1;

@@ -1,4 +1,3 @@
-
 import {
   ASTBase,
   ASTForGenericStatement,
@@ -10,7 +9,9 @@ import {
 
 export const FILLER_TYPE = 'FILLER' as unknown as ASTType;
 
-export class BeautifyBodyIterator<T extends ASTBase = ASTBase> implements Iterator<T> {
+export class BeautifyBodyIterator<T extends ASTBase = ASTBase>
+  implements Iterator<T>
+{
   private _base: ASTBase;
   private _items: T[];
   private _index: number;
@@ -20,10 +21,7 @@ export class BeautifyBodyIterator<T extends ASTBase = ASTBase> implements Iterat
   private _lastEndLine: number;
   private _previous: T | null;
 
-  constructor(
-    base: ASTBase,
-    items: T[]
-  ) {
+  constructor(base: ASTBase, items: T[]) {
     this._base = base;
     this._items = items.sort((a, b) => a.range[0] - b.range[0]);
     this._index = 0;
@@ -90,7 +88,6 @@ export class BeautifyBodyIterator<T extends ASTBase = ASTBase> implements Iterat
       scope: this._base.scope
     }) as T;
   }
-
 
   next(): IteratorResult<T> {
     if (this._freeSpace > this._freeSpaceIndex) {

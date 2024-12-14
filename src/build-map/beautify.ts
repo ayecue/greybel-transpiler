@@ -34,7 +34,6 @@ import {
   ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
-  ASTType,
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
@@ -47,6 +46,7 @@ import {
   getLiteralRawValue,
   getLiteralValue
 } from '../utils/get-literal-value';
+import { BeautifyBodyIterator, FILLER_TYPE } from './beautify/body-iterator';
 import {
   BeautifyContext,
   BeautifyContextOptions,
@@ -60,7 +60,6 @@ import {
   unwrap
 } from './beautify/utils';
 import { Factory, Line, LineRef } from './factory';
-import { BeautifyBodyIterator, FILLER_TYPE } from './beautify/body-iterator';
 
 export type BeautifyOptions = Partial<BeautifyContextOptions>;
 
@@ -123,37 +122,43 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
     this.process(item);
 
-    return this._lines.map((line) => {
-      let output = line.segments.join('');
-      const actualContent = output.trim();
+    return this._lines
+      .map((line) => {
+        let output = line.segments.join('');
+        const actualContent = output.trim();
 
-      if (line.comments.length === 0) {
-        if (actualContent.length === 0) {
+        if (line.comments.length === 0) {
+          if (actualContent.length === 0) {
+            return '';
+          }
+
+          return output;
+        }
+
+        const before = line.comments.filter((node) => node.isBefore);
+        const beforeOutput = before.map(commentToText).join('');
+        const after = line.comments.filter((node) => !node.isBefore);
+        const afterOutput = after.map(commentToText).join('');
+
+        if (
+          actualContent.length === 0 &&
+          before.length === 0 &&
+          after.length === 0
+        ) {
           return '';
         }
 
-        return output;
-      }
+        if (actualContent.length > 0 && before.length > 0) {
+          output = ' ' + output;
+        }
 
-      const before = line.comments.filter((node) => node.isBefore);
-      const beforeOutput = before.map(commentToText).join('');
-      const after = line.comments.filter((node) => !node.isBefore)
-      const afterOutput = after.map(commentToText).join('');
+        if (actualContent.length > 0 && after.length > 0) {
+          output = output + ' ';
+        }
 
-      if (actualContent.length === 0 && before.length === 0 && after.length === 0) {
-        return '';
-      }
-
-      if (actualContent.length > 0 && before.length > 0) {
-        output = ' ' + output;
-      }
-
-      if (actualContent.length > 0 && after.length > 0) {
-        output = output + ' ';
-      }
-
-      return beforeOutput + output + afterOutput;
-    }).join('\n');
+        return beforeOutput + output + afterOutput;
+      })
+      .join('\n');
   }
 
   handlers: Record<
@@ -175,8 +180,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this: BeautifyFactory,
       _item: ASTComment,
       _data: TransformerDataObject
-    ): void {
-    },
+    ): void {},
     AssignmentStatement: function (
       this: BeautifyFactory,
       item: ASTAssignmentStatement,
@@ -822,7 +826,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment('#filename', item);
         return;
       }
-      this.pushSegment(`"${basename(item.filename).replace(/"/g, () => '"')}"`, item);
+      this.pushSegment(
+        `"${basename(item.filename).replace(/"/g, () => '"')}"`,
+        item
+      );
     },
     ListConstructorExpression: function (
       this: BeautifyFactory,

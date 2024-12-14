@@ -54,9 +54,11 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     this._currentDependency = dependency;
     this.process(item);
 
-    return this._lines.map((line) => {
-      return line.segments.join('');
-    }).join('\n');
+    return this._lines
+      .map((line) => {
+        return line.segments.join('');
+      })
+      .join('\n');
   }
 
   handlers: Record<
@@ -78,14 +80,16 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.isMultiline) {
-        this.pushSegment(item.value
-          .split('\n')
-          .map((line) => `//${line}`)
-          .join('\n'));
+        this.pushSegment(
+          item.value
+            .split('\n')
+            .map((line) => `//${line}`)
+            .join('\n')
+        );
         return;
       }
 
-      this.pushSegment('//' + item.value,);
+      this.pushSegment('//' + item.value);
     },
     AssignmentStatement: function (
       this: DefaultFactory,

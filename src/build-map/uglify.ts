@@ -77,9 +77,11 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
     this._currentDependency = dependency;
     this.process(item);
 
-    return this._lines.map((line) => {
-      return line.segments.join('');
-    }).join('\n');
+    return this._lines
+      .map((line) => {
+        return line.segments.join('');
+      })
+      .join('\n');
   }
 
   handlers: Record<

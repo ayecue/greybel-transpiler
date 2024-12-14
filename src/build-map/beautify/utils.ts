@@ -97,4 +97,4 @@ export const commentToText = (node: CommentNode) => {
   }
 
   return '// ' + node.value.trim();
-}
+};

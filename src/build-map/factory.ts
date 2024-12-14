@@ -1,4 +1,4 @@
-import { ASTBase, ASTChunk, ASTComment, ASTPosition } from 'miniscript-core';
+import { ASTBase, ASTChunk, ASTPosition } from 'miniscript-core';
 
 import { DependencyLike } from '../types/dependency';
 import type {
