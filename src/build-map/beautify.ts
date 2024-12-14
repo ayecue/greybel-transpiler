@@ -400,6 +400,8 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTCallExpression,
       data: TransformerDataObject
     ): void {
+      const startIndex = this.lines.length - 1;
+
       this.process(item.base);
 
       if (item.arguments.length === 0) {
@@ -435,8 +437,6 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         return;
       }
 
-      const startIndex = this.lines.length;
-
       if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
         this.pushSegment(' ', {
           start: item.start,
@@ -449,6 +449,8 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         });
       }
 
+      const argIndex = this.lines.length;
+
       for (let index = 0; index < item.arguments.length; index++) {
         const argItem = item.arguments[index];
         this.process(argItem);
@@ -456,10 +458,14 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
           this.pushSegment(', ', argItem);
       }
 
-      const containsNewLine = startIndex !== this.lines.length;
+      const containsNewLine = argIndex !== this.lines.length;
 
       if (item.arguments.length > 1 && containsNewLine) {
-        this._lines = this._lines.slice(0, startIndex);
+        this.eol();
+        this._lines = this._lines.slice(0, startIndex + 1);
+
+        this.pushSegment(this.context.getIndent(), item.base);
+        this.process(item.base);
 
         this.pushSegment('(', {
           start: item.start,
