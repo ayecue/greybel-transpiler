@@ -76,22 +76,10 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
     this.reset();
     this._currentDependency = dependency;
     this.process(item);
-/*
-    let output = '';
 
-    for (let index = 0; index < this.tokens.length - 1; index++) {
-      const token = this.tokens[index];
-
-      if (token.type === TokenType.Text || token.type === TokenType.Comment) {
-        output += token.value;
-      } else if (token.type === TokenType.EndOfLine) {
-        output += '\n';
-      } else {
-        throw new Error('Unknown token type!');
-      }
-    }
-*/
-    return '';
+    return this._lines.map((line) => {
+      return line.segments.join('');
+    }).join('\n');
   }
 
   handlers: Record<
@@ -165,9 +153,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.lines.length) {
+        if (this._activeLine.segments.length > 0) {
           this.eol();
         }
       }
@@ -273,9 +260,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.lines.length) {
+        if (this._activeLine.segments.length > 0) {
           this.eol();
         }
       }
@@ -523,9 +509,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.lines.length) {
+        if (this._activeLine.segments.length > 0) {
           this.eol();
         }
       }
@@ -554,9 +539,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.lines.length) {
+        if (this._activeLine.segments.length > 0) {
           this.eol();
         }
       }
@@ -572,9 +556,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.lines.length) {
+        if (this._activeLine.segments.length > 0) {
           this.eol();
         }
       }
@@ -588,9 +571,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
-        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.lines.length) {
+        if (this._activeLine.segments.length > 0) {
           this.eol();
         }
       }
@@ -814,9 +796,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       for (const bodyItem of item.body) {
-        const index = this.lines.length;
         this.process(bodyItem);
-        if (index < this.lines.length) {
+        if (this._activeLine.segments.length > 0) {
           this.eol();
         }
       }

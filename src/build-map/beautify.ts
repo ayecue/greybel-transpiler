@@ -50,10 +50,11 @@ import {
 import {
   BeautifyContext,
   BeautifyContextOptions,
-  CommentNode,
   IndentationType
 } from './beautify/context';
 import {
+  CommentNode,
+  commentToText,
   countRightBinaryExpressions,
   SHORTHAND_OPERATORS,
   unwrap
@@ -122,23 +123,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
     this.process(item);
 
-    const commentToText = (node: CommentNode) => {
-      if (node.isMultiline) {
-        if (node.isStart && !node.isEnd) {
-          return '/*' + node.value;
-        } else if (!node.isStart && node.isEnd) {
-          return node.value + '*/';
-        } else if (node.isStart && node.isEnd) {
-          return '/*' + node.value + '*/';
-        }
-
-        return node.value;
-      }
-
-      return '//' + node.value;
-    }
-    const simplifiedOutput = this._lines.map((line) => {
+    return this._lines.map((line) => {
       let output = line.segments.join('');
+      const actualContent = output.trim();
 
       if (line.comments.length === 0) {
         return output;
@@ -149,6 +136,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       const after = line.comments.filter((node) => !node.isBefore)
       const afterOutput = after.map(commentToText).join('');
 
+      if (actualContent.length === 0 && before.length === 0 && after.length === 0) {
+        return '';
+      }
+
       if (before.length > 0) {
         output = ' ' + output;
       }
@@ -158,14 +149,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       }
 
       return beforeOutput + output + afterOutput;
-    });
-
-
-    console.log(JSON.stringify(simplifiedOutput, null, 2));
-
-    let output = '';
-
-    return '';
+    }).join('\n');
   }
 
   handlers: Record<

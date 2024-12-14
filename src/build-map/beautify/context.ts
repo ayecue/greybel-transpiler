@@ -12,6 +12,7 @@ import {
 
 import { DefaultFactoryOptions, Factory } from '../factory';
 import { BeautifyBodyIterator, FILLER_TYPE } from './body-iterator';
+import { CommentNode } from './utils';
 
 export enum IndentationType {
   Tab,
@@ -23,14 +24,6 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
   indentation: IndentationType;
   indentationSpaces: number;
   isDevMode: boolean;
-}
-
-export interface CommentNode {
-  isMultiline: boolean;
-  isStart: boolean;
-  isEnd: boolean;
-  isBefore: boolean;
-  value: string;
 }
 
 export interface ChunkContext {
