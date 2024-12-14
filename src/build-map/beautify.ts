@@ -50,6 +50,7 @@ import {
 import {
   BeautifyContext,
   BeautifyContextOptions,
+  CommentNode,
   IndentationType
 } from './beautify/context';
 import {
@@ -63,7 +64,7 @@ import { BeautifyBodyIterator, FILLER_TYPE } from './beautify/body-iterator';
 export type BeautifyOptions = Partial<BeautifyContextOptions>;
 
 export interface BeautifyLine extends Line {
-  comments: ASTComment[];
+  comments: CommentNode[];
 }
 
 export class BeautifyFactory extends Factory<BeautifyOptions> {
@@ -121,19 +122,42 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
     this.process(item);
 
+    const commentToText = (node: CommentNode) => {
+      if (node.isMultiline) {
+        if (node.isStart && !node.isEnd) {
+          return '/*' + node.value;
+        } else if (!node.isStart && node.isEnd) {
+          return node.value + '*/';
+        } else if (node.isStart && node.isEnd) {
+          return '/*' + node.value + '*/';
+        }
+
+        return node.value;
+      }
+
+      return '//' + node.value;
+    }
     const simplifiedOutput = this._lines.map((line) => {
       let output = line.segments.join('');
-      const actualContent = output.trim();
 
       if (line.comments.length === 0) {
         return output;
       }
 
-      if (actualContent.length > 0) {
-        output += ' ';
+      const before = line.comments.filter((node) => node.isBefore);
+      const beforeOutput = before.map(commentToText).join('');
+      const after = line.comments.filter((node) => !node.isBefore)
+      const afterOutput = after.map(commentToText).join('');
+
+      if (before.length > 0) {
+        output = ' ' + output;
       }
 
-      return output + '//' + line.comments.map((comment) => comment.value).join(' ');
+      if (after.length > 0) {
+        output = output + ' ';
+      }
+
+      return beforeOutput + output + afterOutput;
     });
 
 

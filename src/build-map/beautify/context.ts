@@ -25,8 +25,16 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
   isDevMode: boolean;
 }
 
-interface ChunkContext {
-  commentBuckets: Map<number, ASTComment[]>
+export interface CommentNode {
+  isMultiline: boolean;
+  isStart: boolean;
+  isEnd: boolean;
+  isBefore: boolean;
+  value: string;
+}
+
+export interface ChunkContext {
+  commentBuckets: Map<number, CommentNode[]>
 }
 
 export class BeautifyContext {
@@ -66,19 +74,57 @@ export class BeautifyContext {
   }
 
   private buildChunkContext(chunk: ASTChunk): ChunkContext {
-    const commentBuckets: Map<number, ASTComment[]> = new Map();
+    const commentBuckets: Map<number, CommentNode[]> = new Map();
     const lineIdxs = Object.keys(chunk.lines);
+    const visited = new Set<ASTComment>();
 
-    for (const idx of lineIdxs) {
-      const nr = Number(idx);
+    for (let i = 0; i < lineIdxs.length; i++) {
+      const nr = Number(lineIdxs[i]);
       const line = chunk.lines[nr];
       const comments = line.filter((it) => it.type === ASTType.Comment) as ASTComment[];
 
-      if (!commentBuckets.has(nr)) {
-        commentBuckets.set(nr, []);
-      }
+      for (let j = 0; j < comments.length; j++) {
+        const comment = comments[j];
+        if (visited.has(comment)) continue;
+        visited.add(comment);
 
-      commentBuckets.get(nr).push(...comments);
+        if (comment.isMultiline) {
+          const commentLines = comment.value.split('\n');
+          commentLines.forEach((segment, offset) => {
+            const currentNr = nr + offset;
+
+            if (!commentBuckets.has(currentNr)) {
+              commentBuckets.set(currentNr, []);
+            }
+
+            const line = chunk.lines[currentNr];
+            const nodes = line.filter((it) => it.type !== ASTType.Comment).map((it) => it.start.character);
+            const firstNode = nodes.length > 0 ? Math.min(...nodes) : -1;
+            const isStart = currentNr === nr;
+            const isEnd = currentNr === nr + commentLines.length - 1;
+            const isBefore = isEnd ? comment.end.character < firstNode : false;
+
+            commentBuckets.get(currentNr).push({
+              isMultiline: true,
+              isStart,
+              isEnd,
+              isBefore,
+              value: segment
+            });
+          });
+        } else {
+          if (!commentBuckets.has(nr)) {
+            commentBuckets.set(nr, []);
+          }
+          commentBuckets.get(nr).push({
+            isMultiline: false,
+            isStart: false,
+            isEnd: false,
+            isBefore: false,
+            value: comment.value
+          });
+        }
+      }
     }
 
     return {
