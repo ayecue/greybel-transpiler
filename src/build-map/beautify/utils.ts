@@ -74,3 +74,27 @@ export const containsMultilineItemInShortcutClauses = (
 export const hasEmptyBody = (body: ASTBase[]) => {
   return !body.some((it) => !(it instanceof ASTComment));
 };
+
+export interface CommentNode {
+  isMultiline: boolean;
+  isStart: boolean;
+  isEnd: boolean;
+  isBefore: boolean;
+  value: string;
+}
+
+export const commentToText = (node: CommentNode) => {
+  if (node.isMultiline) {
+    if (node.isStart && !node.isEnd) {
+      return '/* ' + node.value.trim();
+    } else if (!node.isStart && node.isEnd) {
+      return node.value.trim() + ' */';
+    } else if (node.isStart && node.isEnd) {
+      return '/* ' + node.value.trim() + ' */';
+    }
+
+    return node.value.trim();
+  }
+
+  return '// ' + node.value.trim();
+};

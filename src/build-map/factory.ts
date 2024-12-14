@@ -16,37 +16,29 @@ export type FactoryMake = (
   data?: TransformerDataObject
 ) => string[];
 
-export enum TokenType {
-  Text,
-  EndOfLine,
-  Comment
+export interface Line {
+  segments: string[];
 }
 
-export interface BasicToken {
-  type: TokenType;
-  value: string;
-  ref: {
-    start: ASTPosition;
-    end: ASTPosition;
-  };
+export interface LineRef {
+  start: ASTPosition;
+  end: ASTPosition;
 }
-
-export interface CommentToken extends BasicToken {
-  type: TokenType.Comment;
-  isMultiline: boolean;
-}
-
-export type Token = BasicToken | CommentToken;
 
 export abstract class Factory<T extends DefaultFactoryOptions> {
   readonly transformer: TransformerLike<T>;
 
-  protected _tokens: Token[];
+  protected _lines: Line[];
+  protected _activeLine: Line;
   protected _currentDependency: DependencyLike | null;
   protected _currentStack: Stack;
 
-  get tokens() {
-    return this._tokens;
+  get activeLine() {
+    return this._activeLine;
+  }
+
+  get lines() {
+    return this._lines;
   }
 
   get currentStack() {
@@ -64,9 +56,32 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
 
   constructor(transformer: TransformerLike<T>) {
     this.transformer = transformer;
-    this._tokens = [];
+    this._activeLine = this.createLine();
+    this._lines = [];
     this._currentDependency = null;
     this._currentStack = new Stack();
+  }
+
+  pushSegment(segment: string, item?: LineRef) {
+    this._activeLine.segments.push(segment);
+  }
+
+  pushComment(lineNr: number) {
+    throw new Error('Not implemented');
+  }
+
+  createLine(): Line {
+    return { segments: [] };
+  }
+
+  eol(item?: LineRef) {
+    this._lines.push(this._activeLine);
+    this._activeLine = this.createLine();
+  }
+
+  reset() {
+    this._activeLine = this.createLine();
+    this._lines = [];
   }
 
   process(item: ASTBase, data: TransformerDataObject = {}): void {

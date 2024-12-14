@@ -46,22 +46,32 @@ import {
   getLiteralRawValue,
   getLiteralValue
 } from '../utils/get-literal-value';
+import { BeautifyBodyIterator, FILLER_TYPE } from './beautify/body-iterator';
 import {
   BeautifyContext,
   BeautifyContextOptions,
   IndentationType
 } from './beautify/context';
 import {
+  CommentNode,
+  commentToText,
   countRightBinaryExpressions,
   SHORTHAND_OPERATORS,
   unwrap
 } from './beautify/utils';
-import { Factory, TokenType } from './factory';
+import { Factory, Line, LineRef } from './factory';
 
 export type BeautifyOptions = Partial<BeautifyContextOptions>;
 
+export interface BeautifyLine extends Line {
+  comments: CommentNode[];
+}
+
 export class BeautifyFactory extends Factory<BeautifyOptions> {
   readonly context: BeautifyContext;
+
+  declare _lines: BeautifyLine[];
+  declare _activeLine: BeautifyLine;
 
   constructor(transformer: TransformerLike<BeautifyOptions>) {
     super(transformer);
@@ -81,39 +91,74 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     });
   }
 
+  createLine(): BeautifyLine {
+    return {
+      segments: [],
+      comments: []
+    };
+  }
+
+  pushSegment(segment: string, item?: LineRef): void {
+    this._activeLine.segments.push(segment);
+    if (item == null) return;
+    this.pushComment(item.start.line);
+  }
+
+  pushComment(lineNr: number): void {
+    const chunk = this.context.getCurrentChunk();
+    const context = this.context.getChunkContext(chunk);
+    const comments = context.commentBuckets.get(lineNr);
+
+    if (comments) {
+      this._activeLine.comments.push(...comments);
+      context.commentBuckets.delete(lineNr);
+    }
+  }
+
   transform(item: ASTChunk, dependency: DependencyLike): string {
-    this._tokens = [];
+    this.reset();
 
     this._currentDependency = dependency;
+
     this.process(item);
 
-    let output = '';
+    return this._lines
+      .map((line) => {
+        let output = line.segments.join('');
+        const actualContent = output.trim();
 
-    for (let index = 0; index < this.tokens.length - 1; index++) {
-      const token = this.tokens[index];
-      const nextToken = this.tokens[index + 1];
+        if (line.comments.length === 0) {
+          if (actualContent.length === 0) {
+            return '';
+          }
 
-      if (token.type === TokenType.Text) {
-        output += token.value;
-      } else if (token.type === TokenType.Comment) {
-        output += token.value;
-      } else if (token.type === TokenType.EndOfLine) {
-        if (
-          nextToken?.type === TokenType.Comment &&
-          token.ref.end.line === nextToken?.ref.start.line
-        ) {
-          output += ' ' + nextToken.value.trim();
-          index++;
-          continue;
+          return output;
         }
 
-        output += '\n';
-      } else {
-        throw new Error('Unknown token type!');
-      }
-    }
+        const before = line.comments.filter((node) => node.isBefore);
+        const beforeOutput = before.map(commentToText).join('');
+        const after = line.comments.filter((node) => !node.isBefore);
+        const afterOutput = after.map(commentToText).join('');
 
-    return output;
+        if (
+          actualContent.length === 0 &&
+          before.length === 0 &&
+          after.length === 0
+        ) {
+          return '';
+        }
+
+        if (actualContent.length > 0 && before.length > 0) {
+          output = ' ' + output;
+        }
+
+        if (actualContent.length > 0 && after.length > 0) {
+          output = output + ' ';
+        }
+
+        return beforeOutput + output + afterOutput;
+      })
+      .join('\n');
   }
 
   handlers: Record<
@@ -125,58 +170,17 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTParenthesisExpression,
       data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '(',
-        ref: item
-      });
+      this.pushSegment('(', item);
       this.process(item.expression, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ')',
-        ref: item
-      });
+      this.pushSegment(')', item);
     },
     Comment: function (
       this: BeautifyFactory,
-      item: ASTComment,
+      _item: ASTComment,
       _data: TransformerDataObject
-    ): void {
-      this.context.usedComments.add(item);
-
-      if (item.isMultiline) {
-        if (this.transformer.buildOptions.isDevMode) {
-          this.tokens.push({
-            type: TokenType.Comment,
-            value: `/*${item.value}*/`,
-            ref: item,
-            isMultiline: true
-          });
-          return;
-        }
-
-        this.tokens.push({
-          type: TokenType.Comment,
-          value: item.value
-            .split('\n')
-            .map((line) => `//${line}`)
-            .join('\n'),
-          ref: item,
-          isMultiline: true
-        });
-
-        return;
-      }
-
-      this.tokens.push({
-        type: TokenType.Comment,
-        value: '// ' + item.value.trimStart(),
-        ref: item,
-        isMultiline: false
-      });
-    },
+    ): void {},
     AssignmentStatement: function (
       this: BeautifyFactory,
       item: ASTAssignmentStatement,
@@ -197,21 +201,12 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         SHORTHAND_OPERATORS.includes(init.operator) &&
         createExpressionHash(variable) === createExpressionHash(init.left)
       ) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ' ' + init.operator + '= ',
-          ref: item
-        });
+        this.pushSegment(' ' + init.operator + '= ', item);
         this.process(unwrap(init.right));
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' = ',
-        ref: item
-      });
-
+      this.pushSegment(' = ', item);
       this.process(init);
     },
     MemberExpression: function (
@@ -220,11 +215,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: item.indexer,
-        ref: item
-      });
+      this.pushSegment(item.indexer, item);
       this.process(item.identifier);
     },
     FunctionDeclaration: function (
@@ -233,69 +224,43 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.parameters.length === 0) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'function',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
+        this.pushSegment('function', {
+          start: item.start,
+          end: item.start
         });
       } else {
         this.context.disableMultiline();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'function(',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
+        this.pushSegment('function(', {
+          start: item.start,
+          end: item.start
         });
 
         for (let index = 0; index < item.parameters.length; index++) {
           const arg = item.parameters[index];
           this.process(arg);
-          if (index !== item.parameters.length - 1)
-            this.tokens.push({
-              type: TokenType.Text,
-              value: ', ',
-              ref: arg
-            });
+          if (index !== item.parameters.length - 1) {
+            this.pushSegment(', ', arg);
+          }
         }
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
+        this.pushSegment(')', {
+          start: item.start,
+          end: item.start
         });
 
         this.context.enableMultiline();
       }
 
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       this.context.incIndent();
       this.context.buildBlock(item);
       this.context.decIndent();
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: this.context.getIndent() + 'end function',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
+      this.pushSegment(this.context.getIndent() + 'end function', {
+        start: item.end,
+        end: item.end
       });
     },
     MapConstructorExpression: function (
@@ -304,111 +269,74 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.fields.length === 0) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '{}',
-          ref: item
-        });
+        this.pushSegment('{}', item);
         return;
       }
 
       if (item.fields.length === 1) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '{ ',
-          ref: item
-        });
+        this.pushSegment('{ ', item);
         this.process(item.fields[0]);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ' }',
-          ref: item
-        });
+        this.pushSegment(' }', item);
         return;
       }
 
       if (this.context.isMultilineAllowed) {
         this.context.incIndent();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '{',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
+        this.pushSegment('{', {
+          start: item.start,
+          end: item.start
         });
-        this.tokens.push({
-          type: TokenType.EndOfLine,
-          value: '\n',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
-        });
+        this.eol();
 
-        for (let index = 0; index < item.fields.length; index++) {
-          const fieldItem = item.fields[index];
-          this.tokens.push({
-            type: TokenType.Text,
-            value: this.context.getIndent(),
-            ref: fieldItem
-          });
-          this.process(fieldItem);
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ',',
-            ref: fieldItem
-          });
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: fieldItem
-          });
+        const iterator = new BeautifyBodyIterator(item, item.fields);
+        let next = iterator.next();
+
+        while (!next.done) {
+          const current = next.value as ASTMapKeyString;
+
+          if (current.type === FILLER_TYPE) {
+            this.pushSegment(this.context.getIndent());
+            this.pushComment(current.start.line);
+            this.eol();
+            next = iterator.next();
+            continue;
+          }
+
+          this.pushSegment(this.context.getIndent(), current);
+          this.process(current);
+          this.pushSegment(',', current);
+          this.eol();
+          next = iterator.next();
         }
 
         this.context.decIndent();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: this.context.getIndent() + '}',
-          ref: {
-            start: item.end,
-            end: item.end
-          }
+        this.pushSegment(this.context.getIndent() + '}', {
+          start: item.end,
+          end: item.end
         });
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '{ ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment('{ ', {
+        start: item.start,
+        end: item.start
       });
 
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
         this.process(fieldItem);
-        if (index !== item.fields.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ', ',
-            ref: fieldItem
-          });
+        if (index !== item.fields.length - 1) {
+          this.pushSegment(', ', fieldItem);
+        }
       }
 
       this.context.decIndent();
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' }',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
+      this.pushSegment(' }', {
+        start: item.end,
+        end: item.end
       });
     },
     MapKeyString: function (
@@ -417,11 +345,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.key);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ': ',
-        ref: item
-      });
+      this.pushSegment(': ', item);
       this.process(item.value);
     },
     Identifier: function (
@@ -429,22 +353,14 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIdentifier,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: item.name,
-        ref: item
-      });
+      this.pushSegment(item.name, item);
     },
     ReturnStatement: function (
       this: BeautifyFactory,
       item: ASTReturnStatement,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'return ',
-        ref: item
-      });
+      this.pushSegment('return ', item);
       if (item.argument) this.process(item.argument);
     },
     NumericLiteral: function (
@@ -452,50 +368,31 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTNumericLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralValue(item),
-        ref: item
-      });
+      this.pushSegment(getLiteralValue(item), item);
     },
     WhileStatement: function (
       this: BeautifyFactory,
       item: ASTWhileStatement,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'while ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment('while ', {
+        start: item.start,
+        end: item.start
       });
 
       this.context.disableMultiline();
       this.process(item.condition);
       this.context.enableMultiline();
 
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       this.context.incIndent();
       this.context.buildBlock(item);
       this.context.decIndent();
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: this.context.getIndent() + 'end while',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
+      this.pushSegment(this.context.getIndent() + 'end while', {
+        start: item.end,
+        end: item.end
       });
     },
     CallExpression: function (
@@ -512,146 +409,93 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       if (item.arguments.length > 3 && this.context.isMultilineAllowed) {
         this.context.incIndent();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '(',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
+        this.pushSegment('(', {
+          start: item.start,
+          end: item.start
         });
-
-        this.tokens.push({
-          type: TokenType.EndOfLine,
-          value: '\n',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
-        });
+        this.eol();
 
         for (let index = 0; index < item.arguments.length; index++) {
           const argItem = item.arguments[index];
-          this.tokens.push({
-            type: TokenType.Text,
-            value: this.context.getIndent(),
-            ref: argItem
-          });
+          this.pushSegment(this.context.getIndent(), argItem);
           this.process(argItem);
           if (index !== item.arguments.length - 1) {
-            this.tokens.push({
-              type: TokenType.Text,
-              value: ',',
-              ref: argItem
-            });
-            this.tokens.push({
-              type: TokenType.EndOfLine,
-              value: '\n',
-              ref: argItem
-            });
+            this.pushSegment(',', argItem);
+            this.eol();
           }
         }
 
         this.context.decIndent();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: {
-            start: item.end,
-            end: item.end
-          }
+        this.pushSegment(')', {
+          start: item.end,
+          end: item.end
         });
 
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '(',
-        ref: {
+      const startIndex = this.lines.length;
+
+      if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
+        this.pushSegment(' ', {
           start: item.start,
           end: item.start
-        }
-      });
-
-      const startIndex = this.tokens.length - 1;
+        });
+      } else {
+        this.pushSegment('(', {
+          start: item.start,
+          end: item.start
+        });
+      }
 
       for (let index = 0; index < item.arguments.length; index++) {
         const argItem = item.arguments[index];
         this.process(argItem);
         if (index !== item.arguments.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ', ',
-            ref: argItem
-          });
+          this.pushSegment(', ', argItem);
       }
 
-      const containsNewLine = this.context.containsNewLineInRange(startIndex);
+      const containsNewLine = startIndex !== this.lines.length;
 
       if (item.arguments.length > 1 && containsNewLine) {
-        this._tokens = this._tokens.slice(0, startIndex + 1);
+        this._lines = this._lines.slice(0, startIndex);
+
+        this.pushSegment('(', {
+          start: item.start,
+          end: item.start
+        });
+        this.eol();
 
         this.context.incIndent();
 
-        this.tokens.push({
-          type: TokenType.EndOfLine,
-          value: '\n',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
-        });
-
         for (let index = 0; index < item.arguments.length; index++) {
           const argItem = item.arguments[index];
-          this.tokens.push({
-            type: TokenType.Text,
-            value: this.context.getIndent(),
-            ref: argItem
-          });
+          this.pushSegment(this.context.getIndent(), argItem);
           this.process(argItem);
           if (index !== item.arguments.length - 1) {
-            this.tokens.push({
-              type: TokenType.Text,
-              value: ',',
-              ref: argItem
-            });
-            this.tokens.push({
-              type: TokenType.EndOfLine,
-              value: '\n',
-              ref: argItem
-            });
+            this.pushSegment(',', argItem);
+            this.eol();
           }
         }
 
         this.context.decIndent();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: {
-            start: item.end,
-            end: item.end
-          }
+        this.pushSegment(')', {
+          start: item.end,
+          end: item.end
         });
 
         return;
       }
 
       if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
-        this.tokens[startIndex].value = ' ';
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ')',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
+      this.pushSegment(')', {
+        start: item.end,
+        end: item.end
       });
     },
     StringLiteral: function (
@@ -659,13 +503,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralRawValue(item),
-        ref: {
-          start: item.end,
-          end: item.end
-        }
+      this.pushSegment(getLiteralRawValue(item), {
+        start: item.end,
+        end: item.end
       });
     },
     SliceExpression: function (
@@ -674,23 +514,11 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '[',
-        ref: item
-      });
+      this.pushSegment('[', item);
       this.process(item.left);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' : ',
-        ref: item
-      });
+      this.pushSegment(' : ', item);
       this.process(item.right);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ']',
-        ref: item
-      });
+      this.pushSegment(']', item);
     },
     IndexExpression: function (
       this: BeautifyFactory,
@@ -698,17 +526,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '[',
-        ref: item
-      });
+      this.pushSegment('[', item);
       this.process(item.index);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ']',
-        ref: item
-      });
+      this.pushSegment(']', item);
     },
     UnaryExpression: function (
       this: BeautifyFactory,
@@ -716,17 +536,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.operator === 'new') {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: item.operator + ' ',
-          ref: item
-        });
+        this.pushSegment(item.operator + ' ', item);
       } else {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: item.operator,
-          ref: item
-        });
+        this.pushSegment(item.operator, item);
       }
 
       this.process(item.argument);
@@ -736,12 +548,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'not ',
-        ref: item
-      });
-
+      this.pushSegment('not ', item);
       this.process(item.argument);
     },
     FeatureEnvarExpression: function (
@@ -750,30 +557,18 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#envar ${item.name}`,
-          ref: item
-        });
+        this.pushSegment(`#envar ${item.name}`, item);
         return;
       }
 
       const value = this.transformer.environmentVariables.get(item.name);
 
       if (!value) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'null',
-          ref: item
-        });
+        this.pushSegment('null', item);
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `"${value}"`,
-        ref: item
-      });
+      this.pushSegment(`"${value}"`, item);
     },
     IfShortcutStatement: function (
       this: BeautifyFactory,
@@ -783,12 +578,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       for (let index = 0; index < item.clauses.length; index++) {
         const clausesItem = item.clauses[index];
         this.process(clausesItem);
-        if (index !== item.clauses.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ' ',
-            ref: item
-          });
+        if (index !== item.clauses.length - 1) {
+          this.pushSegment(' ', item);
+        }
       }
     },
     IfShortcutClause: function (
@@ -796,17 +588,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'if ',
-        ref: item
-      });
+      this.pushSegment('if ', item);
       this.process(unwrap(item.condition));
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then ',
-        ref: item
-      });
+      this.pushSegment(' then ', item);
       this.process(item.body[0]);
     },
     ElseifShortcutClause: function (
@@ -814,17 +598,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'else if ',
-        ref: item
-      });
+      this.pushSegment('else if ', item);
       this.process(unwrap(item.condition));
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then ',
-        ref: item
-      });
+      this.pushSegment(' then ', item);
       this.process(item.body[0]);
     },
     ElseShortcutClause: function (
@@ -832,11 +608,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'else ',
-        ref: item
-      });
+      this.pushSegment('else ', item);
       this.process(item.body[0]);
     },
     NilLiteral: function (
@@ -844,56 +616,33 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralRawValue(item),
-        ref: item
-      });
+      this.pushSegment(getLiteralRawValue(item), item);
     },
     ForGenericStatement: function (
       this: BeautifyFactory,
       item: ASTForGenericStatement,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'for ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment('for ', {
+        start: item.start,
+        end: item.start
       });
       this.process(unwrap(item.variable));
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' in ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment(' in ', {
+        start: item.start,
+        end: item.start
       });
       this.process(unwrap(item.iterator));
 
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       this.context.incIndent();
       this.context.buildBlock(item);
       this.context.decIndent();
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: this.context.getIndent() + 'end for',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
+      this.pushSegment(this.context.getIndent() + 'end for', {
+        start: item.end,
+        end: item.end
       });
     },
     IfStatement: function (
@@ -905,13 +654,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.process(clausesItem);
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: this.context.getIndent() + 'end if',
-        ref: {
-          start: item.end,
-          end: item.end
-        }
+      this.pushSegment(this.context.getIndent() + 'end if', {
+        start: item.end,
+        end: item.end
       });
     },
     IfClause: function (
@@ -919,32 +664,16 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'if ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment('if ', {
+        start: item.start,
+        end: item.start
       });
       this.process(unwrap(item.condition));
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment(' then', {
+        start: item.start,
+        end: item.start
       });
-
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       this.context.incIndent();
       this.context.buildBlock(item);
@@ -955,32 +684,16 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: this.context.getIndent() + 'else if ',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment(this.context.getIndent() + 'else if ', {
+        start: item.start,
+        end: item.start
       });
       this.process(unwrap(item.condition));
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' then',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment(' then', {
+        start: item.start,
+        end: item.start
       });
-
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       this.context.incIndent();
       this.context.buildBlock(item);
@@ -991,22 +704,11 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: this.context.getIndent() + 'else',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
+      this.pushSegment(this.context.getIndent() + 'else', {
+        start: item.start,
+        end: item.start
       });
-      this.tokens.push({
-        type: TokenType.EndOfLine,
-        value: '\n',
-        ref: {
-          start: item.start,
-          end: item.start
-        }
-      });
+      this.eol();
 
       this.context.incIndent();
       this.context.buildBlock(item);
@@ -1017,22 +719,14 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'continue',
-        ref: item
-      });
+      this.pushSegment('continue', item);
     },
     BreakStatement: function (
       this: BeautifyFactory,
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: 'break',
-        ref: item
-      });
+      this.pushSegment('break', item);
     },
     CallStatement: function (
       this: BeautifyFactory,
@@ -1047,38 +741,22 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#inject "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
       if (this.currentDependency === null) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#inject "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
 
       const content = this.currentDependency.injections.get(item.path);
 
       if (content == null) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'null',
-          ref: item
-        });
+        this.pushSegment('null', item);
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `"${content.replace(/"/g, () => '""')}"`,
-        ref: item
-      });
+      this.pushSegment(`"${content.replace(/"/g, () => '""')}"`, item);
     },
     FeatureImportExpression: function (
       this: BeautifyFactory,
@@ -1086,40 +764,20 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#import ',
-          ref: item
-        });
+        this.pushSegment('#import ', item);
         this.process(item.name);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ` from "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(` from "${item.path}";`, item);
         return;
       }
       if (!item.chunk) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#import ',
-          ref: item
-        });
+        this.pushSegment('#import ', item);
         this.process(item.name);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ` from "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(` from "${item.path}";`, item);
         return;
       }
 
       this.process(item.name);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' = __REQUIRE("' + item.namespace + '")',
-        ref: item
-      });
+      this.pushSegment(' = __REQUIRE("' + item.namespace + '")', item);
     },
     FeatureIncludeExpression: function (
       this: BeautifyFactory,
@@ -1127,19 +785,11 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#include "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
       if (!item.chunk) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: `#include "${item.path}";`,
-          ref: item
-        });
+        this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
 
@@ -1151,18 +801,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'debugger',
-          ref: item
-        });
+        this.pushSegment('debugger', item);
         return;
       }
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '//debugger',
-        ref: item
-      });
+      this.pushSegment('//debugger', item);
     },
     FeatureLineExpression: function (
       this: BeautifyFactory,
@@ -1170,18 +812,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#line',
-          ref: item
-        });
+        this.pushSegment('#line', item);
         return;
       }
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `${item.start.line}`,
-        ref: item
-      });
+      this.pushSegment(`${item.start.line}`, item);
     },
     FeatureFileExpression: function (
       this: BeautifyFactory,
@@ -1189,18 +823,13 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '#filename',
-          ref: item
-        });
+        this.pushSegment('#filename', item);
         return;
       }
-      this.tokens.push({
-        type: TokenType.Text,
-        value: `"${basename(item.filename).replace(/"/g, () => '"')}"`,
-        ref: item
-      });
+      this.pushSegment(
+        `"${basename(item.filename).replace(/"/g, () => '"')}"`,
+        item
+      );
     },
     ListConstructorExpression: function (
       this: BeautifyFactory,
@@ -1208,107 +837,68 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.fields.length === 0) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '[]',
-          ref: item
-        });
-
+        this.pushSegment('[]', item);
         return;
       }
 
       if (item.fields.length === 1) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '[ ',
-          ref: item
-        });
+        this.pushSegment('[ ', item);
         this.process(item.fields[0]);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ' ]',
-          ref: item
-        });
+        this.pushSegment(' ]', item);
         return;
       }
 
       if (this.context.isMultilineAllowed) {
         this.context.incIndent();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: '[',
-          ref: {
-            start: item.start,
-            end: item.start
-          }
+        this.pushSegment('[', {
+          start: item.start,
+          end: item.start
         });
+        this.eol();
 
-        this.tokens.push({
-          type: TokenType.EndOfLine,
-          value: '\n',
-          ref: {
-            start: item.start,
-            end: item.start
+        const iterator = new BeautifyBodyIterator(item, item.fields);
+        let next = iterator.next();
+
+        while (!next.done) {
+          const current = next.value as ASTListValue;
+
+          if (current.type === FILLER_TYPE) {
+            this.pushSegment(this.context.getIndent());
+            this.pushComment(current.start.line);
+            this.eol();
+            next = iterator.next();
+            continue;
           }
-        });
 
-        for (let index = 0; index < item.fields.length; index++) {
-          const fieldItem = item.fields[index];
-          this.tokens.push({
-            type: TokenType.Text,
-            value: this.context.getIndent(),
-            ref: fieldItem
-          });
-          this.process(fieldItem);
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ',',
-            ref: fieldItem
-          });
-          this.tokens.push({
-            type: TokenType.EndOfLine,
-            value: '\n',
-            ref: fieldItem
-          });
+          this.pushSegment(this.context.getIndent(), current);
+          this.process(current);
+          this.pushSegment(',', current);
+          this.eol();
+          next = iterator.next();
         }
 
         this.context.decIndent();
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: this.context.getIndent() + ']',
-          ref: {
-            start: item.end,
-            end: item.end
-          }
+        this.pushSegment(this.context.getIndent() + ']', {
+          start: item.end,
+          end: item.end
         });
 
         return;
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '[ ',
-        ref: item
-      });
+      this.pushSegment('[ ', item);
 
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
         this.process(fieldItem);
-        if (index !== item.fields.length - 1)
-          this.tokens.push({
-            type: TokenType.Text,
-            value: ', ',
-            ref: fieldItem
-          });
+        if (index !== item.fields.length - 1) {
+          this.pushSegment(', ', fieldItem);
+        }
       }
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' ]',
-        ref: item
-      });
+      this.pushSegment(' ]', item);
     },
     ListValue: function (
       this: BeautifyFactory,
@@ -1322,22 +912,14 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTBooleanLiteral,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: getLiteralRawValue(item),
-        ref: item
-      });
+      this.pushSegment(getLiteralRawValue(item), item);
     },
     EmptyExpression: function (
       this: BeautifyFactory,
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: '',
-        ref: item
-      });
+      this.pushSegment('', item);
     },
     IsaExpression: function (
       this: BeautifyFactory,
@@ -1347,11 +929,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.process(item.left, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' ' + item.operator + ' ',
-        ref: item
-      });
+      this.pushSegment(' ' + item.operator + ' ', item);
       this.process(item.right, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
@@ -1370,21 +948,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
           hasLogicalIndentActive: true
         });
 
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ' ' + item.operator + ' ',
-          ref: item
-        });
-        this.tokens.push({
-          type: TokenType.EndOfLine,
-          value: '\n',
-          ref: item
-        });
-        this.tokens.push({
-          type: TokenType.Text,
-          value: this.context.getIndent(),
-          ref: item
-        });
+        this.pushSegment(' ' + item.operator + ' ', item);
+        this.eol();
+        this.pushSegment(this.context.getIndent(), item);
 
         this.process(item.right, {
           hasLogicalIndentActive: true
@@ -1399,11 +965,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
 
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' ' + item.operator + ' ',
-        ref: item
-      });
+      this.pushSegment(' ' + item.operator + ' ', item);
 
       this.process(item.right, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
@@ -1415,42 +977,18 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.operator === '|') {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'bitOr(',
-          ref: item
-        });
+        this.pushSegment('bitOr(', item);
         this.process(item.left);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ', ',
-          ref: item
-        });
+        this.pushSegment(', ', item);
         this.process(item.right);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: item
-        });
+        this.pushSegment(')', item);
         return;
       } else if (item.operator === '&') {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: 'bitAnd(',
-          ref: item
-        });
+        this.pushSegment('bitAnd(', item);
         this.process(item.left);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ', ',
-          ref: item
-        });
+        this.pushSegment(', ', item);
         this.process(item.right);
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ')',
-          ref: item
-        });
+        this.pushSegment(')', item);
         return;
       } else if (
         item.operator === '<<' ||
@@ -1461,11 +999,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       }
 
       this.process(item.left);
-      this.tokens.push({
-        type: TokenType.Text,
-        value: ' ' + item.operator + ' ',
-        ref: item
-      });
+      this.pushSegment(' ' + item.operator + ' ', item);
       this.process(item.right);
     },
     BinaryNegatedExpression: function (
@@ -1473,11 +1007,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): void {
-      this.tokens.push({
-        type: TokenType.Text,
-        value: item.operator,
-        ref: item
-      });
+      this.pushSegment(item.operator, item);
       this.process(item.argument);
     },
     ComparisonGroupExpression: function (
@@ -1488,11 +1018,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.process(item.expressions[0]);
 
       for (let index = 0; index < item.operators.length; index++) {
-        this.tokens.push({
-          type: TokenType.Text,
-          value: ' ' + item.operators[index] + ' ',
-          ref: item
-        });
+        this.pushSegment(' ' + item.operators[index] + ' ', item);
         this.process(item.expressions[index + 1]);
       }
     },
@@ -1501,7 +1027,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTChunk,
       _data: TransformerDataObject
     ): void {
+      this.context.pushStack(item);
       this.context.buildBlock(item);
+      this.context.popStack();
     }
   };
 
