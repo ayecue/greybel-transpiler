@@ -128,6 +128,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       const actualContent = output.trim();
 
       if (line.comments.length === 0) {
+        if (actualContent.length === 0) {
+          return '';
+        }
+
         return output;
       }
 
@@ -140,11 +144,11 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         return '';
       }
 
-      if (before.length > 0) {
+      if (actualContent.length > 0 && before.length > 0) {
         output = ' ' + output;
       }
 
-      if (after.length > 0) {
+      if (actualContent.length > 0 && after.length > 0) {
         output = output + ' ';
       }
 
@@ -538,7 +542,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.process(item.base);
       this.pushSegment('[', item);
       this.process(item.left);
-      this.pushSegment(':', item);
+      this.pushSegment(' : ', item);
       this.process(item.right);
       this.pushSegment(']', item);
     },
@@ -630,7 +634,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('then ', item);
+      this.pushSegment('else ', item);
       this.process(item.body[0]);
     },
     NilLiteral: function (
@@ -763,7 +767,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment(`#inject "${item.path}"`, item);
+        this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
       if (this.currentDependency === null) {
@@ -788,7 +792,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       if (this.transformer.buildOptions.isDevMode) {
         this.pushSegment('#import ', item);
         this.process(item.name);
-        this.pushSegment(` from "${item.path}"`, item);
+        this.pushSegment(` from "${item.path}";`, item);
         return;
       }
       if (!item.chunk) {

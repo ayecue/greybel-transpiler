@@ -461,9 +461,9 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('else if ');
+      this.pushSegment(' else if ');
       this.process(item.condition);
-      this.pushSegment(' then ');
+      this.pushSegment(' then');
       this.process(item.body[0]);
     },
     ElseShortcutClause: function (
@@ -550,7 +550,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(' else if ');
+      this.pushSegment('else if ');
       this.process(item.condition);
       this.pushSegment(' then');
       this.eol();
@@ -567,7 +567,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(' else');
+      this.pushSegment('else');
       this.eol();
 
       for (const bodyItem of item.body) {

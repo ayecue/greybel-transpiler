@@ -49,6 +49,15 @@ export class BeautifyBodyIterator<T extends ASTBase = ASTBase> implements Iterat
     return item.start.line;
   }
 
+  private getBlockCloseEndLine(item: ASTBase): number {
+    switch (item.type) {
+      case ASTType.Chunk:
+        return item.end.line + 1;
+    }
+
+    return item.end.line;
+  }
+
   private getPreviousEndLine(item: ASTBase): number {
     if (item == null) {
       return 0;
@@ -96,7 +105,7 @@ export class BeautifyBodyIterator<T extends ASTBase = ASTBase> implements Iterat
         const last = this._items[this._items.length - 1];
         const lastEndLine = this.getPreviousEndLine(last);
         const size = Math.max(
-          this._base.end.line - lastEndLine - 1,
+          this.getBlockCloseEndLine(this._base) - lastEndLine - 1,
           0
         );
 
