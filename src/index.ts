@@ -1,6 +1,6 @@
 export { BuildType, getFactory } from './build-map';
 export { BeautifyFactory, BeautifyOptions, BeautifyLine } from './build-map/beautify';
-export { BeautifyContext } from './build-map/beautify/context';
+export { BeautifyContext, ChunkContext } from './build-map/beautify/context';
 export * as BeautifyUtils from './build-map/beautify/utils';
 export { DefaultFactory } from './build-map/default';
 export {
