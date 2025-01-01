@@ -3067,9 +3067,9 @@ print(decrypted)"
 
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 "globals.H=globals
-H.Ͽ=1
-H.Ͻ=null
-H.Ͼ=63
+H.Ѐ=1
+H.Ͼ=null
+H.Ͽ=63
 I={}
 I.constructor=function(str)
 self.str=str
@@ -3081,7 +3081,7 @@ e=0
 f=values.len
 while e<f
 d=d.replace(\\"$\\"+e,values[e])
-e=e+Ͽ
+e=e+Ѐ
 end while
 return (new self).constructor(d)
 end function
@@ -3117,7 +3117,7 @@ Q.String=I
 Q.constructor=function(k,values)
 l=self
 l.message=k
-if (values!=Ͻ) then
+if (values!=Ͼ) then
 l.message=(new l.String).constructor(k).parse(values).toString
 end if
 return l
@@ -3135,8 +3135,8 @@ q=self
 q.defaultSecret=U
 q.table=p
 q.hashFn=@o
-if (@o==Ͻ) then q.hashFn=@s
-if p==Ͻ then q.table=q.defaultCharset
+if (@o==Ͼ) then q.hashFn=@s
+if p==Ͼ then q.table=q.defaultCharset
 if q.table.len!=64 then (new q.Error).constructor(\\"Invalid charset $0...\\",[q.table]).throw
 return q
 end function
@@ -3152,7 +3152,7 @@ return hash
 end function
 S.encrypt=function(str,t)
 q=self
-if (t==Ͻ) then t=q.defaultSecret
+if (t==Ͼ) then t=q.defaultSecret
 hash=q.getHash(t)
 w=0
 y=[]
@@ -3166,86 +3166,86 @@ end if
 return q.table[ϴ]
 end function
 Ϫ=function(ϭ,ϯ)
-return bitwise(\\"&\\",ϭ,ϯ)
+return ϶(\\"&\\",ϭ,ϯ)
 end function
 ϫ=function(ϭ,ϯ)
-return bitwise(\\"<<\\",ϭ,ϯ)
+return ϶(\\"<<\\",ϭ,ϯ)
 end function
 Ϭ=function(ϭ,ϯ)
-return bitwise(\\">>\\",ϭ,ϯ)
+return ϶(\\">>\\",ϭ,ϯ)
 end function
 while z<Ϩ
-l=hash[z%hash.len-Ͽ]
+l=hash[z%hash.len-Ѐ]
 ϭ=ϫ(str[z].code+l,16)
-ϯ=ϫ(str[z+Ͽ].code+l,8)
+ϯ=ϫ(str[z+Ѐ].code+l,8)
 ϱ=str[z+2].code+l
 ϳ=ϭ+ϯ+ϱ
-y.push(ϩ(Ϫ(Ϭ(ϳ,18),Ͼ)))
-y.push(ϩ(Ϫ(Ϭ(ϳ,12),Ͼ)))
-y.push(ϩ(Ϫ(Ϭ(ϳ,6),Ͼ)))
-y.push(ϩ(Ϫ(ϳ,Ͼ)))
+y.push(ϩ(Ϫ(Ϭ(ϳ,18),Ͽ)))
+y.push(ϩ(Ϫ(Ϭ(ϳ,12),Ͽ)))
+y.push(ϩ(Ϫ(Ϭ(ϳ,6),Ͽ)))
+y.push(ϩ(Ϫ(ϳ,Ͽ)))
 z=z+3
 end while
 if (_==2) then
-l=hash[z%hash.len-Ͽ]
+l=hash[z%hash.len-Ѐ]
 ϭ=ϫ(str[z].code+l,8)
-ϯ=str[z+Ͽ].code+l
+ϯ=str[z+Ѐ].code+l
 ϳ=ϭ+ϯ
 y.push(ϩ(Ϭ(ϳ,10)))
-y.push(ϩ(Ϫ(Ϭ(ϳ,4),Ͼ)))
-y.push(ϩ(Ϫ(ϫ(ϳ,2),Ͼ)))
+y.push(ϩ(Ϫ(Ϭ(ϳ,4),Ͽ)))
+y.push(ϩ(Ϫ(ϫ(ϳ,2),Ͽ)))
 y.push(\\"=\\")
-else if (_==Ͽ) then
-l=hash[z%hash.len-Ͽ]
+else if (_==Ѐ) then
+l=hash[z%hash.len-Ѐ]
 ϳ=str[z].code+l
 y.push(ϩ(Ϭ(ϳ,2)))
-y.push(ϩ(Ϫ(ϫ(ϳ,4),Ͼ)))
+y.push(ϩ(Ϫ(ϫ(ϳ,4),Ͽ)))
 y.push(\\"==\\")
 end if
 return y.join(\\"\\")
 end function
 S.decrypt=function(str,t)
 q=self
-if (t==Ͻ) then t=q.defaultSecret
+if (t==Ͼ) then t=q.defaultSecret
 hash=q.getHash(t)
 w=0
-϶=hash.len
+Ϸ=hash.len
 y=[]
-Ϸ=0
 ϸ=0
+Ϲ=0
 z=0
 w=0
 Ϩ=str.len
 Ϫ=function(ϭ,ϯ)
-return bitwise(\\"&\\",ϭ,ϯ)
+return ϶(\\"&\\",ϭ,ϯ)
 end function
 Ϭ=function(ϭ,ϯ)
-return bitwise(\\">>\\",ϭ,ϯ)
+return ϶(\\">>\\",ϭ,ϯ)
 end function
 while z<Ϩ
 ϳ=q.table.indexOf(str[z])
-Ϲ=Ϸ
-Ϸ=Ϸ+Ͽ
-if (Ϲ%4) then
-ϸ=ϸ*64+ϳ
+Ϻ=ϸ
+ϸ=ϸ+Ѐ
+if (Ϻ%4) then
+Ϲ=Ϲ*64+ϳ
 else
-ϸ=ϳ
+Ϲ=ϳ
 end if
-if (Ϲ%4) then
-Ϻ=(floor(w/3)*3)%϶-Ͽ
-if (not hash.hasIndex(Ϻ)) then break
-l=hash[Ϻ]
-ϻ=Ϫ(-2*Ϸ,6)
-ϻ=Ϭ(ϸ,ϻ)
-ϻ=Ϫ(255,ϻ)
-if (ϻ!=0) then
-ϼ=ϻ-l
-if (ϼ>q.maxCharCode) then break
-y.push(char(ϼ))
+if (Ϻ%4) then
+ϻ=(floor(w/3)*3)%Ϸ-Ѐ
+if (not hash.hasIndex(ϻ)) then break
+l=hash[ϻ]
+ϼ=Ϫ(-2*ϸ,6)
+ϼ=Ϭ(Ϲ,ϼ)
+ϼ=Ϫ(255,ϼ)
+if (ϼ!=0) then
+Ͻ=ϼ-l
+if (Ͻ>q.maxCharCode) then break
+y.push(char(Ͻ))
 end if
-w=w+Ͽ
+w=w+Ѐ
 end if
-z=z+Ͽ
+z=z+Ѐ
 end while
 return y.join(\\"\\")
 end function

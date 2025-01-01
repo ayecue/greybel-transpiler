@@ -1,6 +1,6 @@
-import { ASTChunkAdvanced, Parser } from 'greybel-core';
+import { ASTChunkGreybel, Parser } from 'greybel-core';
 
-export const HEADER_BOILERPLATE: ASTChunkAdvanced = new Parser(
+export const HEADER_BOILERPLATE: ASTChunkGreybel = new Parser(
   `MODULES={}
 	EXPORTED={}
 	__REQUIRE=function(r)
@@ -11,9 +11,9 @@ export const HEADER_BOILERPLATE: ASTChunkAdvanced = new Parser(
 	module=@MODULES[r]
 	return @module(r).exports
 	end function`
-).parseChunk() as ASTChunkAdvanced;
+).parseChunk() as ASTChunkGreybel;
 
-export const MODULE_BOILERPLATE: ASTChunkAdvanced = new Parser(
+export const MODULE_BOILERPLATE: ASTChunkGreybel = new Parser(
   `MODULES["$0"]=function(r)
 	module={}
 	if (EXPORTED.hasIndex(r)) then
@@ -25,8 +25,8 @@ export const MODULE_BOILERPLATE: ASTChunkAdvanced = new Parser(
 	EXPORTED[r]=module
 	return EXPORTED[r]
 	end function`
-).parseChunk() as ASTChunkAdvanced;
+).parseChunk() as ASTChunkGreybel;
 
-export const MAIN_BOILERPLATE: ASTChunkAdvanced = new Parser(
+export const MAIN_BOILERPLATE: ASTChunkGreybel = new Parser(
   `"$0"`
-).parseChunk() as ASTChunkAdvanced;
+).parseChunk() as ASTChunkGreybel;

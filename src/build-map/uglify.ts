@@ -1,4 +1,5 @@
 import {
+  ASTChunkGreybel,
   ASTFeatureEnvarExpression,
   ASTFeatureFileExpression,
   ASTFeatureImportExpression,
@@ -12,7 +13,6 @@ import {
   ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
-  ASTChunk,
   ASTComment,
   ASTComparisonGroupExpression,
   ASTElseClause,
@@ -72,7 +72,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
     this.isWithinArgument = false;
   }
 
-  transform(item: ASTChunk, dependency: DependencyLike): string {
+  transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
     this.reset();
     this._currentDependency = dependency;
     this.process(item);
@@ -794,7 +794,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
     },
     Chunk: function (
       this: UglifyFactory,
-      item: ASTChunk,
+      item: ASTChunkGreybel,
       _data: TransformerDataObject
     ): void {
       for (const bodyItem of item.body) {

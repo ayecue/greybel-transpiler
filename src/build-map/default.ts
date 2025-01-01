@@ -1,5 +1,5 @@
 import {
-  ASTChunkAdvancedOptions,
+  ASTChunkGreybel,
   ASTFeatureEnvarExpression,
   ASTFeatureFileExpression,
   ASTFeatureImportExpression,
@@ -13,7 +13,6 @@ import {
   ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
-  ASTChunk,
   ASTComment,
   ASTComparisonGroupExpression,
   ASTElseClause,
@@ -49,7 +48,7 @@ import {
 import { DefaultFactoryOptions, Factory } from './factory';
 
 export class DefaultFactory extends Factory<DefaultFactoryOptions> {
-  transform(item: ASTChunk, dependency: DependencyLike): string {
+  transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
     this.reset();
     this._currentDependency = dependency;
     this.process(item);
@@ -641,7 +640,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     },
     Chunk: function (
       this: DefaultFactory,
-      item: ASTChunkAdvancedOptions,
+      item: ASTChunkGreybel,
       _data: TransformerDataObject
     ): void {
       for (const bodyItem of item.body) {

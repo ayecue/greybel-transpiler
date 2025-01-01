@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { ASTChunkAdvanced, Parser } from 'greybel-core';
+import { ASTChunkGreybel, Parser } from 'greybel-core';
 import { ASTLiteral } from 'miniscript-core';
 
 import { BuildType, getFactory } from './build-map';
@@ -58,7 +58,7 @@ export class DirectTranspiler extends EventEmitter {
 
     const factoryConstructor = getFactory(me.buildType);
     const parser = new Parser(me.code);
-    const chunk = parser.parseChunk() as ASTChunkAdvanced;
+    const chunk = parser.parseChunk() as ASTChunkGreybel;
     const namespaces = fetchNamespaces(chunk);
     const literals = [].concat(chunk.literals);
     const charsetMap = generateCharsetMap(me.obfuscation);

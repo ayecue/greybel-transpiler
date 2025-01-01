@@ -1,7 +1,7 @@
 import md5 from 'blueimp-md5';
 import EventEmitter from 'events';
 import {
-  ASTChunkAdvanced,
+  ASTChunkGreybel,
   ASTFeatureIncludeExpression,
   Parser
 } from 'greybel-core';
@@ -17,7 +17,7 @@ import { merge } from './utils/merge';
 export interface DependencyOptions {
   target: string;
   resourceHandler: ResourceHandler;
-  chunk: ASTChunkAdvanced;
+  chunk: ASTChunkGreybel;
   context: Context;
 
   type?: DependencyType | number;
@@ -40,7 +40,7 @@ export class Dependency extends EventEmitter implements DependencyLike {
   target: string;
   id: string;
   resourceHandler: ResourceHandler;
-  chunk: ASTChunkAdvanced;
+  chunk: ASTChunkGreybel;
   /* eslint-disable no-use-before-define */
   dependencies: Set<Dependency>;
   context: Context;
@@ -123,7 +123,7 @@ export class Dependency extends EventEmitter implements DependencyLike {
       const parser = new Parser(content, {
         filename: subTarget
       });
-      const chunk = parser.parseChunk() as ASTChunkAdvanced;
+      const chunk = parser.parseChunk() as ASTChunkGreybel;
       const dependency = new Dependency({
         target: subTarget,
         resourceHandler,

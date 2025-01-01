@@ -1,4 +1,4 @@
-import { ASTChunkAdvanced } from 'greybel-core';
+import { ASTChunkGreybel } from 'greybel-core';
 
 import type { DefaultFactoryOptions, Factory } from '../build-map/factory';
 import { Context } from '../context';
@@ -16,5 +16,5 @@ export interface TransformerLike<T extends DefaultFactoryOptions> {
   resourceHandler: ResourceHandler | null;
   factory: Factory<T> | null;
 
-  transform(chunk: ASTChunkAdvanced, dependency: DependencyLike): string;
+  transform(chunk: ASTChunkGreybel, dependency: DependencyLike): string;
 }

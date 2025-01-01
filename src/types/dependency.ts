@@ -1,4 +1,4 @@
-import { ASTChunkAdvanced } from 'greybel-core';
+import { ASTChunkGreybel } from 'greybel-core';
 import { ASTBase } from 'miniscript-core';
 
 import { Context } from '../context';
@@ -14,7 +14,7 @@ export interface DependencyLike {
   target: string;
   id: string;
   resourceHandler: ResourceHandler;
-  chunk: ASTChunkAdvanced;
+  chunk: ASTChunkGreybel;
   /* eslint-disable no-use-before-define */
   dependencies: Set<DependencyLike>;
   context: Context;

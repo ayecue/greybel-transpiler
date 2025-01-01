@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { ASTChunkAdvanced, Parser } from 'greybel-core';
+import { ASTChunkGreybel, Parser } from 'greybel-core';
 import { ASTLiteral } from 'miniscript-core';
 
 import { Context } from './context';
@@ -14,7 +14,7 @@ export interface TargetOptions {
 }
 
 export interface TargetParseResultItem {
-  chunk: ASTChunkAdvanced;
+  chunk: ASTChunkGreybel;
   dependency: Dependency;
 }
 
@@ -55,7 +55,7 @@ export class Target extends EventEmitter {
       const parser = new Parser(content, {
         filename: target
       });
-      const chunk = parser.parseChunk() as ASTChunkAdvanced;
+      const chunk = parser.parseChunk() as ASTChunkGreybel;
       const dependency = new Dependency({
         target,
         resourceHandler,

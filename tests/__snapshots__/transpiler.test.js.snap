@@ -5415,9 +5415,9 @@ print(decrypted)",
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
 Array [
   "globals.H=globals
-H.AY=1
-H.AW=null
-H.AX=63
+H.AZ=1
+H.AX=null
+H.AY=63
 I={}
 I.constructor=function(str)
 self.str=str
@@ -5429,7 +5429,7 @@ e=0
 f=values.len
 while e<f
 d=d.replace(\\"$\\"+e,values[e])
-e=e+AY
+e=e+AZ
 end while
 return (new self).constructor(d)
 end function
@@ -5465,7 +5465,7 @@ Q.String=I
 Q.constructor=function(k,values)
 l=self
 l.message=k
-if (values!=AW) then
+if (values!=AX) then
 l.message=(new l.String).constructor(k).parse(values).toString
 end if
 return l
@@ -5483,8 +5483,8 @@ q=self
 q.defaultSecret=U
 q.table=p
 q.hashFn=@o
-if (@o==AW) then q.hashFn=@s
-if p==AW then q.table=q.defaultCharset
+if (@o==AX) then q.hashFn=@s
+if p==AX then q.table=q.defaultCharset
 if q.table.len!=64 then (new q.Error).constructor(\\"Invalid charset $0...\\",[q.table]).throw
 return q
 end function
@@ -5500,7 +5500,7 @@ return hash
 end function
 S.encrypt=function(str,t)
 q=self
-if (t==AW) then t=q.defaultSecret
+if (t==AX) then t=q.defaultSecret
 hash=q.getHash(t)
 w=0
 y=[]
@@ -5514,86 +5514,86 @@ end if
 return q.table[AN]
 end function
 AD=function(AG,AI)
-return bitwise(\\"&\\",AG,AI)
+return AP(\\"&\\",AG,AI)
 end function
 AE=function(AG,AI)
-return bitwise(\\"<<\\",AG,AI)
+return AP(\\"<<\\",AG,AI)
 end function
 AF=function(AG,AI)
-return bitwise(\\">>\\",AG,AI)
+return AP(\\">>\\",AG,AI)
 end function
 while z<AB
-l=hash[z%hash.len-AY]
+l=hash[z%hash.len-AZ]
 AG=AE(str[z].code+l,16)
-AI=AE(str[z+AY].code+l,8)
+AI=AE(str[z+AZ].code+l,8)
 AK=str[z+2].code+l
 AM=AG+AI+AK
-y.push(AC(AD(AF(AM,18),AX)))
-y.push(AC(AD(AF(AM,12),AX)))
-y.push(AC(AD(AF(AM,6),AX)))
-y.push(AC(AD(AM,AX)))
+y.push(AC(AD(AF(AM,18),AY)))
+y.push(AC(AD(AF(AM,12),AY)))
+y.push(AC(AD(AF(AM,6),AY)))
+y.push(AC(AD(AM,AY)))
 z=z+3
 end while
 if (_A==2) then
-l=hash[z%hash.len-AY]
+l=hash[z%hash.len-AZ]
 AG=AE(str[z].code+l,8)
-AI=str[z+AY].code+l
+AI=str[z+AZ].code+l
 AM=AG+AI
 y.push(AC(AF(AM,10)))
-y.push(AC(AD(AF(AM,4),AX)))
-y.push(AC(AD(AE(AM,2),AX)))
+y.push(AC(AD(AF(AM,4),AY)))
+y.push(AC(AD(AE(AM,2),AY)))
 y.push(\\"=\\")
-else if (_A==AY) then
-l=hash[z%hash.len-AY]
+else if (_A==AZ) then
+l=hash[z%hash.len-AZ]
 AM=str[z].code+l
 y.push(AC(AF(AM,2)))
-y.push(AC(AD(AE(AM,4),AX)))
+y.push(AC(AD(AE(AM,4),AY)))
 y.push(\\"==\\")
 end if
 return y.join(\\"\\")
 end function
 S.decrypt=function(str,t)
 q=self
-if (t==AW) then t=q.defaultSecret
+if (t==AX) then t=q.defaultSecret
 hash=q.getHash(t)
 w=0
-AP=hash.len
+AQ=hash.len
 y=[]
-AQ=0
 AR=0
+AS=0
 z=0
 w=0
 AB=str.len
 AD=function(AG,AI)
-return bitwise(\\"&\\",AG,AI)
+return AP(\\"&\\",AG,AI)
 end function
 AF=function(AG,AI)
-return bitwise(\\">>\\",AG,AI)
+return AP(\\">>\\",AG,AI)
 end function
 while z<AB
 AM=q.table.indexOf(str[z])
-AS=AQ
-AQ=AQ+AY
-if (AS%4) then
-AR=AR*64+AM
+AT=AR
+AR=AR+AZ
+if (AT%4) then
+AS=AS*64+AM
 else
-AR=AM
+AS=AM
 end if
-if (AS%4) then
-AT=(floor(w/3)*3)%AP-AY
-if (not hash.hasIndex(AT)) then break
-l=hash[AT]
-AU=AD(-2*AQ,6)
-AU=AF(AR,AU)
-AU=AD(255,AU)
-if (AU!=0) then
-AV=AU-l
-if (AV>q.maxCharCode) then break
-y.push(char(AV))
+if (AT%4) then
+AU=(floor(w/3)*3)%AQ-AZ
+if (not hash.hasIndex(AU)) then break
+l=hash[AU]
+AV=AD(-2*AR,6)
+AV=AF(AS,AV)
+AV=AD(255,AV)
+if (AV!=0) then
+AW=AV-l
+if (AW>q.maxCharCode) then break
+y.push(char(AW))
 end if
-w=w+AY
+w=w+AZ
 end if
-z=z+AY
+z=z+AZ
 end while
 return y.join(\\"\\")
 end function
