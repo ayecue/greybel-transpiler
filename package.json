@@ -1,6 +1,6 @@
 {
   "name": "greybel-transpiler",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "description": "Transpiler",
   "main": "dist/index",
   "typings": "dist/index",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "blueimp-md5": "^2.19.0",
-    "greybel-core": "~2.5.0"
+    "greybel-core": "~2.5.1"
   },
   "keywords": [
     "miniscript"
