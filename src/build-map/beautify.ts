@@ -458,43 +458,6 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
           this.pushSegment(', ', argItem);
       }
 
-      const containsNewLine = argIndex !== this.lines.length;
-
-      if (item.arguments.length > 1 && containsNewLine) {
-        this.eol();
-        this._lines = this._lines.slice(0, startIndex + 1);
-
-        this.pushSegment(this.context.getIndent(), item.base);
-        this.process(item.base);
-
-        this.pushSegment('(', {
-          start: item.start,
-          end: item.start
-        });
-        this.eol();
-
-        this.context.incIndent();
-
-        for (let index = 0; index < item.arguments.length; index++) {
-          const argItem = item.arguments[index];
-          this.pushSegment(this.context.getIndent(), argItem);
-          this.process(argItem);
-          if (index !== item.arguments.length - 1) {
-            this.pushSegment(',', argItem);
-            this.eol();
-          }
-        }
-
-        this.context.decIndent();
-
-        this.pushSegment(')', {
-          start: item.end,
-          end: item.end
-        });
-
-        return;
-      }
-
       if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
         return;
       }
