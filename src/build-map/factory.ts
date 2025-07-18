@@ -49,6 +49,10 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
     return this._currentDependency;
   }
 
+  set currentDependency(dependency: DependencyLike | null) {
+    this._currentDependency = dependency;
+  }
+
   abstract handlers: Record<
     string,
     (this: Factory<T>, item: ASTBase, data: TransformerDataObject) => void

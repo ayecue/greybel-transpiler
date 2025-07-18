@@ -39,7 +39,8 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { DependencyLike } from '../types/dependency';
+import { Dependency } from '../dependency';
+import { DependencyLike, DependencyType } from '../types/dependency';
 import { TransformerDataObject, TransformerLike } from '../types/transformer';
 import { createExpressionHash } from '../utils/create-expression-hash';
 import {
@@ -738,7 +739,13 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(` from "${item.path}";`, item);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.currentDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Import
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment('#import ', item);
         this.process(item.name);
         this.pushSegment(` from "${item.path}";`, item);
@@ -746,7 +753,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       }
 
       this.process(item.name);
-      this.pushSegment(' = __REQUIRE("' + item.namespace + '")', item);
+      this.pushSegment(
+        ' = __REQUIRE("' + associatedDependency.getNamespace() + '")',
+        item
+      );
     },
     FeatureIncludeExpression: function (
       this: BeautifyFactory,
@@ -757,12 +767,21 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.currentDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Include
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
 
-      this.process(item.chunk);
+      const currentDependency = this.currentDependency;
+      this.currentDependency = associatedDependency;
+      this.process(associatedDependency.chunk);
+      this.currentDependency = currentDependency;
     },
     FeatureDebuggerExpression: function (
       this: BeautifyFactory,

@@ -1,32 +1,26 @@
 import md5 from 'blueimp-md5';
 import EventEmitter from 'events';
-import {
-  ASTChunkGreybel,
-  ASTFeatureIncludeExpression,
-  Parser
-} from 'greybel-core';
+import { ASTChunkGreybel, ASTFeatureIncludeExpression } from 'greybel-core';
 import { ASTBase } from 'miniscript-core';
 
 import { Context, ContextDataProperty } from './context';
-import { ResourceHandler } from './resource';
 import { DependencyLike, DependencyType } from './types/dependency';
+import { ResourceManagerLike } from './types/resource-manager';
 import { BuildError } from './utils/error';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 import { merge } from './utils/merge';
 
 export interface DependencyOptions {
   target: string;
-  resourceHandler: ResourceHandler;
+  resourceManager: ResourceManagerLike;
   chunk: ASTChunkGreybel;
   context: Context;
-
   type?: DependencyType | number;
-  ref?: ASTBase;
 }
 
 export interface DependencyFindResult {
   /* eslint-disable no-use-before-define */
-  dependencies: Set<Dependency>;
+  dependencies: Map<string, Dependency>;
   namespaces: string[];
   literals: ASTBase[];
 }
@@ -39,15 +33,21 @@ export type DependencyCallStack = string[];
 export class Dependency extends EventEmitter implements DependencyLike {
   target: string;
   id: string;
-  resourceHandler: ResourceHandler;
+  resourceManager: ResourceManagerLike;
   chunk: ASTChunkGreybel;
   /* eslint-disable no-use-before-define */
-  dependencies: Set<Dependency>;
+  dependencies: Map<string, Dependency>;
   context: Context;
   injections: Map<string, string>;
 
   type: DependencyType | number;
-  ref?: ASTBase;
+
+  static generateDependencyMappingKey(
+    relativePath: string,
+    type: DependencyType
+  ): string {
+    return `${type}:${relativePath}`;
+  }
 
   constructor(options: DependencyOptions) {
     super();
@@ -56,13 +56,12 @@ export class Dependency extends EventEmitter implements DependencyLike {
 
     me.target = options.target;
     me.id = md5(options.target);
-    me.resourceHandler = options.resourceHandler;
     me.chunk = options.chunk;
-    me.dependencies = new Set<Dependency>();
+    me.resourceManager = options.resourceManager;
+    me.dependencies = new Map();
     me.injections = new Map();
     me.type = options.type || DependencyType.Main;
     me.context = options.context;
-    me.ref = options.ref;
 
     const namespace = me.context.createModuleNamespace(me.id);
     const resourceDependencyMap =
@@ -88,22 +87,15 @@ export class Dependency extends EventEmitter implements DependencyLike {
     return me.context.modules.get(me.id);
   }
 
-  private async resolve(
-    path: string,
-    type: DependencyType,
-    ref?: ASTBase
-  ): Promise<Dependency> {
+  protected resolve(path: string, type: DependencyType): Dependency {
     const me = this;
     const context = me.context;
     const { modules } = context;
     const resourceDependencyMap = context.get<ResourceDependencyMap>(
       ContextDataProperty.ResourceDependencyMap
     );
-    const resourceHandler = me.resourceHandler;
-    const subTarget = await resourceHandler.getTargetRelativeTo(
-      me.target,
-      path
-    );
+    const resourceManager = me.resourceManager;
+    const subTarget = resourceManager.getRelativePathMapping(me.target, path);
     const id = md5(subTarget);
     const namespace = modules.get(id);
 
@@ -111,36 +103,19 @@ export class Dependency extends EventEmitter implements DependencyLike {
       return resourceDependencyMap.get(namespace);
     }
 
-    if (!(await resourceHandler.has(subTarget))) {
-      throw new Error('Dependency ' + subTarget + ' does not exist...');
-    }
-
-    const content = await resourceHandler.get(subTarget);
-
-    me.emit('parse-before', subTarget);
-
     try {
-      const parser = new Parser(content, {
-        filename: subTarget
-      });
-      const chunk = parser.parseChunk() as ASTChunkGreybel;
+      const chunk = this.resourceManager.getResource(subTarget)
+        .chunk as ASTChunkGreybel;
       const dependency = new Dependency({
         target: subTarget,
-        resourceHandler,
+        resourceManager,
         chunk,
         type,
-        context,
-        ref
+        context
       });
-
-      me.emit('parse-after', dependency);
 
       return dependency;
     } catch (err: any) {
-      if (err instanceof BuildError) {
-        throw err;
-      }
-
       throw new BuildError(err.message, {
         target: subTarget,
         range: err.range
@@ -148,22 +123,17 @@ export class Dependency extends EventEmitter implements DependencyLike {
     }
   }
 
-  async findInjections(): Promise<Map<string, string>> {
+  findInjections(): Map<string, string> {
     const me = this;
     const { injects } = me.chunk;
     const injections: Map<string, string> = new Map();
 
     for (const item of injects) {
-      const injectionTarget = await me.resourceHandler.getTargetRelativeTo(
+      const injectionTarget = me.resourceManager.getRelativePathMapping(
         me.target,
         item.path
       );
-
-      if (!(await me.resourceHandler.has(injectionTarget))) {
-        throw new Error('Injection ' + injectionTarget + ' does not exist...');
-      }
-
-      const content = await me.resourceHandler.get(injectionTarget);
+      const content = me.resourceManager.getInjection(injectionTarget);
 
       injections.set(item.path, content);
     }
@@ -173,7 +143,7 @@ export class Dependency extends EventEmitter implements DependencyLike {
     return injections;
   }
 
-  async findDependencies(): Promise<DependencyFindResult> {
+  findDependencies(): DependencyFindResult {
     const me = this;
     const { imports, includes } = me.chunk;
     const sourceNamespace = me.getNamespace();
@@ -182,7 +152,7 @@ export class Dependency extends EventEmitter implements DependencyLike {
     );
     const namespaces: string[] = [...fetchNamespaces(me.chunk)];
     const literals: ASTBase[] = [...me.chunk.literals];
-    const result: Dependency[] = [];
+    const dependencies = new Map<string, Dependency>();
 
     dependencyCallStack.push(sourceNamespace);
 
@@ -194,7 +164,7 @@ export class Dependency extends EventEmitter implements DependencyLike {
         item instanceof ASTFeatureIncludeExpression
           ? DependencyType.Include
           : DependencyType.Import;
-      const dependency = await me.resolve(item.path, type, item);
+      const dependency = me.resolve(item.path, type);
       const namespace = dependency.getNamespace();
 
       if (dependencyCallStack.includes(namespace)) {
@@ -208,16 +178,17 @@ export class Dependency extends EventEmitter implements DependencyLike {
       item.chunk = chunk;
       item.namespace = namespace;
 
-      const relatedDependencies = await dependency.findDependencies();
+      const relatedDependencies = dependency.findDependencies();
 
       merge(namespaces, relatedDependencies.namespaces);
       merge(literals, relatedDependencies.literals);
-      result.push(dependency);
+      dependencies.set(
+        Dependency.generateDependencyMappingKey(item.path, type),
+        dependency
+      );
     }
 
-    await this.findInjections();
-
-    const dependencies = new Set<Dependency>(result);
+    this.findInjections();
 
     me.dependencies = dependencies;
 

@@ -2,7 +2,7 @@ import { ASTChunkGreybel } from 'greybel-core';
 
 import type { DefaultFactoryOptions, Factory } from '../build-map/factory';
 import { Context } from '../context';
-import { ResourceHandler } from '../resource';
+import { ResourceHandler } from '../utils/resource-provider';
 import { DependencyLike } from './dependency';
 
 export interface TransformerDataObject {

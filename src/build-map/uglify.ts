@@ -39,7 +39,8 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { DependencyLike } from '../types/dependency';
+import { Dependency } from '../dependency';
+import { DependencyLike, DependencyType } from '../types/dependency';
 import { TransformerDataObject, TransformerLike } from '../types/transformer';
 import { createExpressionString } from '../utils/create-expression-string';
 import {
@@ -634,7 +635,13 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(` from "${item.path}";`);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.currentDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Import
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment('#import ');
         this.process(item.name);
         this.pushSegment(` from "${item.path}";`);
@@ -651,7 +658,9 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       const requireMethodName =
         this.transformer.context.variables.get('__REQUIRE');
 
-      this.pushSegment(`=${requireMethodName}("${item.namespace}")`);
+      this.pushSegment(
+        `=${requireMethodName}("${associatedDependency.getNamespace()}")`
+      );
     },
     FeatureIncludeExpression: function (
       this: UglifyFactory,
@@ -662,12 +671,21 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.currentDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Include
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
 
-      this.process(item.chunk);
+      const currentDependency = this.currentDependency;
+      this.currentDependency = associatedDependency;
+      this.process(associatedDependency.chunk);
+      this.currentDependency = currentDependency;
     },
     ListConstructorExpression: function (
       this: UglifyFactory,

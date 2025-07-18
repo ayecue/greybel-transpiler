@@ -39,7 +39,8 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { DependencyLike } from '../types/dependency';
+import { Dependency } from '../dependency';
+import { DependencyLike, DependencyType } from '../types/dependency';
 import { TransformerDataObject } from '../types/transformer';
 import {
   getLiteralRawValue,
@@ -472,7 +473,13 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(` from "${item.path}";`);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.currentDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Import
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment('#import ');
         this.process(item.name);
         this.pushSegment(` from "${item.path}";`);
@@ -480,7 +487,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       }
 
       this.process(item.name);
-      this.pushSegment(' = __REQUIRE("' + item.namespace + '")');
+      this.pushSegment(
+        ' = __REQUIRE("' + associatedDependency.getNamespace() + '")'
+      );
     },
     FeatureIncludeExpression: function (
       this: DefaultFactory,
@@ -491,12 +500,21 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.currentDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Include
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
 
-      this.process(item.chunk);
+      const currentDependency = this.currentDependency;
+      this.currentDependency = associatedDependency;
+      this.process(associatedDependency.chunk);
+      this.currentDependency = currentDependency;
     },
     FeatureDebuggerExpression: function (
       this: DefaultFactory,

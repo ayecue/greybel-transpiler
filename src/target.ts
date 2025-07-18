@@ -1,11 +1,13 @@
 import EventEmitter from 'events';
-import { ASTChunkGreybel, Parser } from 'greybel-core';
+import { ASTChunkGreybel } from 'greybel-core';
 import { ASTLiteral } from 'miniscript-core';
 
 import { Context } from './context';
 import { Dependency } from './dependency';
-import { ResourceHandler } from './resource';
+import { ChunkProvider } from './utils/chunk-provider';
 import { BuildError } from './utils/error';
+import { ResourceManager } from './utils/resource-manager';
+import { ResourceHandler } from './utils/resource-provider';
 
 export interface TargetOptions {
   target: string;
@@ -47,23 +49,23 @@ export class Target extends EventEmitter {
     }
 
     const context = me.context;
-    const content = await resourceHandler.get(target);
-
-    me.emit('parse-before', target);
+    const chunkProvider = new ChunkProvider();
+    const resourceManager = new ResourceManager({
+      resourceHandler,
+      chunkProvider
+    });
 
     try {
-      const parser = new Parser(content, {
-        filename: target
-      });
-      const chunk = parser.parseChunk() as ASTChunkGreybel;
+      await resourceManager.load(target);
+
       const dependency = new Dependency({
         target,
-        resourceHandler,
-        chunk,
+        resourceManager,
+        chunk: resourceManager.getEntryPointResource().chunk,
         context
       });
 
-      const { namespaces, literals } = await dependency.findDependencies();
+      const { namespaces, literals } = dependency.findDependencies();
       const uniqueNamespaces = new Set(namespaces);
 
       for (const namespace of uniqueNamespaces) {
@@ -76,7 +78,7 @@ export class Target extends EventEmitter {
 
       return {
         main: {
-          chunk,
+          chunk: resourceManager.getEntryPointResource().chunk,
           dependency
         }
       };
