@@ -61,7 +61,6 @@ export {
   ResourceManager,
   ResourceManagerOptions
 } from './utils/resource-manager';
-export * from './utils/resource-provider';
 export { ResourceHandler, ResourceProvider } from './utils/resource-provider';
 export { Stack } from './utils/stack';
 export { unwrap } from './utils/unwrap';
