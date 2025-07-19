@@ -9,7 +9,7 @@ export class ChunkProvider implements ChunkProviderLike {
     this.cache = new Map<string, ASTChunkGreybel>();
   }
 
-  async parse(target: string, content: string): Promise<ASTChunkGreybel> {
+  parse(target: string, content: string): ASTChunkGreybel {
     const cachedChunk = this.cache.get(target);
 
     if (cachedChunk) {

@@ -94,7 +94,7 @@ export class ResourceManager
 
     const content = await this.resourceHandler.get(target);
     this.emit('parse-before', target);
-    const chunk = await this.chunkProvider.parse(target, content);
+    const chunk = this.chunkProvider.parse(target, content);
     const resource: Resource = {
       target,
       chunk: chunk as ASTChunkGreybel

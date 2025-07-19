@@ -11,6 +11,7 @@ import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 import { OutputProcessor } from './utils/output-processor';
+import { ChunkProvider } from './utils/chunk-provider';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -57,8 +58,8 @@ export class DirectTranspiler extends EventEmitter {
     const me = this;
 
     const factoryConstructor = getFactory(me.buildType);
-    const parser = new Parser(me.code);
-    const chunk = parser.parseChunk() as ASTChunkGreybel;
+    const chunkProvider = new ChunkProvider();
+    const chunk = chunkProvider.parse('unknown', me.code) as ASTChunkGreybel;
     const namespaces = fetchNamespaces(chunk);
     const literals = [].concat(chunk.literals);
     const charsetMap = generateCharsetMap(me.obfuscation);

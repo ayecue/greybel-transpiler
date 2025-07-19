@@ -39,7 +39,7 @@ export class Target extends EventEmitter {
     me.context = options.context;
   }
 
-  async parse(): Promise<TargetParseResult> {
+  async parse(eager: boolean): Promise<TargetParseResult> {
     const me = this;
     const resourceHandler = me.resourceHandler;
     const target = await resourceHandler.resolve(me.target);
@@ -65,15 +65,19 @@ export class Target extends EventEmitter {
         context
       });
 
-      const { namespaces, literals } = dependency.findDependencies();
-      const uniqueNamespaces = new Set(namespaces);
+      if (eager) {
+        const { namespaces, literals } = dependency.findEagerDependencies();
+        const uniqueNamespaces = new Set(namespaces);
 
-      for (const namespace of uniqueNamespaces) {
-        context.variables.createNamespace(namespace);
-      }
+        for (const namespace of uniqueNamespaces) {
+          context.variables.createNamespace(namespace);
+        }
 
-      for (const literal of literals) {
-        context.literals.add(literal as ASTLiteral);
+        for (const literal of literals) {
+          context.literals.add(literal as ASTLiteral);
+        }
+      } else {
+        dependency.findDependencies();
       }
 
       return {

@@ -21,6 +21,9 @@ export interface DependencyOptions {
 export interface DependencyFindResult {
   /* eslint-disable no-use-before-define */
   dependencies: Map<string, Dependency>;
+}
+
+export interface DependencyEagerFindResult extends DependencyFindResult {
   namespaces: string[];
   literals: ASTBase[];
 }
@@ -148,6 +151,53 @@ export class Dependency implements DependencyLike {
     const dependencyCallStack = me.context.get<DependencyCallStack>(
       ContextDataProperty.DependencyCallStack
     );
+    const dependencies = new Map<string, Dependency>();
+
+    dependencyCallStack.push(sourceNamespace);
+
+    // handle internal includes/imports
+    const items = [...imports, ...includes];
+
+    for (const item of items) {
+      const type =
+        item instanceof ASTFeatureIncludeExpression
+          ? DependencyType.Include
+          : DependencyType.Import;
+      const dependency = me.resolve(item.path, type);
+      const namespace = dependency.getNamespace();
+
+      if (dependencyCallStack.includes(namespace)) {
+        throw new Error(
+          `Circular dependency from ${me.target} to ${dependency.target} detected.`
+        );
+      }
+
+      dependency.findDependencies();
+
+      dependencies.set(
+        Dependency.generateDependencyMappingKey(item.path, type),
+        dependency
+      );
+    }
+
+    this.findInjections();
+
+    me.dependencies = dependencies;
+
+    dependencyCallStack.pop();
+
+    return {
+      dependencies
+    };
+  }
+
+  findEagerDependencies(): DependencyEagerFindResult {
+    const me = this;
+    const { imports, includes } = me.chunk;
+    const sourceNamespace = me.getNamespace();
+    const dependencyCallStack = me.context.get<DependencyCallStack>(
+      ContextDataProperty.DependencyCallStack
+    );
     const namespaces: string[] = [...fetchNamespaces(me.chunk)];
     const literals: ASTBase[] = [...me.chunk.literals];
     const dependencies = new Map<string, Dependency>();
@@ -171,7 +221,7 @@ export class Dependency implements DependencyLike {
         );
       }
       
-      const relatedDependencies = dependency.findDependencies();
+      const relatedDependencies = dependency.findEagerDependencies();
 
       merge(namespaces, relatedDependencies.namespaces);
       merge(literals, relatedDependencies.literals);
