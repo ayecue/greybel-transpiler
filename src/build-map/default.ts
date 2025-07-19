@@ -39,7 +39,8 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { DependencyLike } from '../types/dependency';
+import { Dependency } from '../dependency';
+import { DependencyLike, DependencyType } from '../types/dependency';
 import { TransformerDataObject } from '../types/transformer';
 import {
   getLiteralRawValue,
@@ -50,7 +51,8 @@ import { DefaultFactoryOptions, Factory } from './factory';
 export class DefaultFactory extends Factory<DefaultFactoryOptions> {
   transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
     this.reset();
-    this._currentDependency = dependency;
+    this._originDependency = dependency;
+    this._activeDependency = dependency;
     this.process(item);
 
     return this._lines
@@ -447,12 +449,12 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(`#inject "${item.path}"`);
         return;
       }
-      if (this.currentDependency === null) {
+      if (this.activeDependency === null) {
         this.pushSegment(`#inject "${item.path}";`);
         return;
       }
 
-      const content = this.currentDependency.injections.get(item.path);
+      const content = this.activeDependency.injections.get(item.path);
 
       if (content == null) {
         this.pushSegment('null');
@@ -472,7 +474,13 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(` from "${item.path}";`);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.activeDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Import
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment('#import ');
         this.process(item.name);
         this.pushSegment(` from "${item.path}";`);
@@ -480,7 +488,9 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       }
 
       this.process(item.name);
-      this.pushSegment(' = __REQUIRE("' + item.namespace + '")');
+      this.pushSegment(
+        ' = __REQUIRE("' + associatedDependency.getNamespace() + '")'
+      );
     },
     FeatureIncludeExpression: function (
       this: DefaultFactory,
@@ -491,12 +501,21 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.activeDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Include
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
 
-      this.process(item.chunk);
+      const currentDependency = this.activeDependency;
+      this.activeDependency = associatedDependency;
+      this.process(associatedDependency.chunk);
+      this.activeDependency = currentDependency;
     },
     FeatureDebuggerExpression: function (
       this: DefaultFactory,

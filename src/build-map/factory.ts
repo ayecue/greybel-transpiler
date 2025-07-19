@@ -30,7 +30,8 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
 
   protected _lines: Line[];
   protected _activeLine: Line;
-  protected _currentDependency: DependencyLike | null;
+  protected _originDependency: DependencyLike | null;
+  protected _activeDependency: DependencyLike | null;
   protected _currentStack: Stack;
 
   get activeLine() {
@@ -45,8 +46,16 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
     return this._currentStack;
   }
 
-  get currentDependency() {
-    return this._currentDependency;
+  get originDependency() {
+    return this._originDependency;
+  }
+
+  get activeDependency() {
+    return this._activeDependency;
+  }
+
+  set activeDependency(dependency: DependencyLike | null) {
+    this._activeDependency = dependency;
   }
 
   abstract handlers: Record<
@@ -58,7 +67,8 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
     this.transformer = transformer;
     this._activeLine = this.createLine();
     this._lines = [];
-    this._currentDependency = null;
+    this._originDependency = null;
+    this._activeDependency = null;
     this._currentStack = new Stack();
   }
 

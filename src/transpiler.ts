@@ -1,4 +1,3 @@
-import { DependencyType } from '.';
 import { MODULE_BOILERPLATE } from './boilerplates';
 import { BuildType, getFactory } from './build-map';
 import { BeautifyOptions } from './build-map/beautify';
@@ -6,11 +5,12 @@ import { DefaultFactoryOptions } from './build-map/factory';
 import { UglifyOptions } from './build-map/uglify';
 import { Context } from './context';
 import { Dependency } from './dependency';
-import { ResourceHandler, ResourceProvider } from './resource';
 import { Target, TargetParseResult } from './target';
 import { Transformer } from './transformer';
+import { DependencyType } from './types/dependency';
 import { generateCharsetMap } from './utils/charset-generator';
 import { OutputProcessor } from './utils/output-processor';
+import { ResourceHandler, ResourceProvider } from './utils/resource-provider';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -75,7 +75,9 @@ export class Transpiler {
       resourceHandler: me.resourceHandler,
       context: me.context
     });
-    const targetParseResult: TargetParseResult = await target.parse();
+    const targetParseResult: TargetParseResult = await target.parse(
+      me.buildType === BuildType.UGLIFY
+    );
 
     // create builder
     const transformer = new Transformer({
@@ -106,7 +108,7 @@ export class Transpiler {
           moduleCount++;
         }
 
-        for (const subItem of item.dependencies) {
+        for (const subItem of item.dependencies.values()) {
           iterator(subItem);
         }
       };

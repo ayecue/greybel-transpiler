@@ -39,7 +39,8 @@ import {
 } from 'miniscript-core';
 import { basename } from 'path';
 
-import { DependencyLike } from '../types/dependency';
+import { Dependency } from '../dependency';
+import { DependencyLike, DependencyType } from '../types/dependency';
 import { TransformerDataObject, TransformerLike } from '../types/transformer';
 import { createExpressionHash } from '../utils/create-expression-hash';
 import {
@@ -118,7 +119,8 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
   transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
     this.reset();
 
-    this._currentDependency = dependency;
+    this._originDependency = dependency;
+    this._activeDependency = dependency;
 
     this.process(item);
 
@@ -713,12 +715,12 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
-      if (this.currentDependency === null) {
+      if (this.activeDependency === null) {
         this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
 
-      const content = this.currentDependency.injections.get(item.path);
+      const content = this.activeDependency.injections.get(item.path);
 
       if (content == null) {
         this.pushSegment('null', item);
@@ -738,7 +740,13 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(` from "${item.path}";`, item);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.activeDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Import
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment('#import ', item);
         this.process(item.name);
         this.pushSegment(` from "${item.path}";`, item);
@@ -746,7 +754,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       }
 
       this.process(item.name);
-      this.pushSegment(' = __REQUIRE("' + item.namespace + '")', item);
+      this.pushSegment(
+        ' = __REQUIRE("' + associatedDependency.getNamespace() + '")',
+        item
+      );
     },
     FeatureIncludeExpression: function (
       this: BeautifyFactory,
@@ -757,12 +768,21 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
-      if (!item.chunk) {
+      const associatedDependency = this.activeDependency?.dependencies.get(
+        Dependency.generateDependencyMappingKey(
+          item.path,
+          DependencyType.Include
+        )
+      );
+      if (!associatedDependency) {
         this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
 
-      this.process(item.chunk);
+      const currentDependency = this.activeDependency;
+      this.activeDependency = associatedDependency;
+      this.process(associatedDependency.chunk);
+      this.activeDependency = currentDependency;
     },
     FeatureDebuggerExpression: function (
       this: BeautifyFactory,

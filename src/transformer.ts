@@ -6,9 +6,9 @@ import {
   FactoryConstructor
 } from './build-map/factory';
 import { Context } from './context';
-import { ResourceHandler } from './resource';
 import { DependencyLike } from './types/dependency';
 import { TransformerLike } from './types/transformer';
+import { ResourceHandler } from './utils/resource-provider';
 
 export interface TransformerOptions {
   buildOptions: DefaultFactoryOptions;

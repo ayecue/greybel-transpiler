@@ -1,11 +1,13 @@
 import EventEmitter from 'events';
-import { ASTChunkGreybel, Parser } from 'greybel-core';
+import { ASTChunkGreybel } from 'greybel-core';
 import { ASTLiteral } from 'miniscript-core';
 
 import { Context } from './context';
 import { Dependency } from './dependency';
-import { ResourceHandler } from './resource';
+import { ChunkProvider } from './utils/chunk-provider';
 import { BuildError } from './utils/error';
+import { ResourceManager } from './utils/resource-manager';
+import { ResourceHandler } from './utils/resource-provider';
 
 export interface TargetOptions {
   target: string;
@@ -37,7 +39,7 @@ export class Target extends EventEmitter {
     me.context = options.context;
   }
 
-  async parse(): Promise<TargetParseResult> {
+  async parse(withMetadata: boolean): Promise<TargetParseResult> {
     const me = this;
     const resourceHandler = me.resourceHandler;
     const target = await resourceHandler.resolve(me.target);
@@ -47,36 +49,41 @@ export class Target extends EventEmitter {
     }
 
     const context = me.context;
-    const content = await resourceHandler.get(target);
-
-    me.emit('parse-before', target);
+    const chunkProvider = new ChunkProvider();
+    const resourceManager = new ResourceManager({
+      resourceHandler,
+      chunkProvider
+    });
 
     try {
-      const parser = new Parser(content, {
-        filename: target
-      });
-      const chunk = parser.parseChunk() as ASTChunkGreybel;
+      await resourceManager.load(target);
+
       const dependency = new Dependency({
         target,
-        resourceHandler,
-        chunk,
+        resourceManager,
+        chunk: resourceManager.getEntryPointResource().chunk,
         context
       });
 
-      const { namespaces, literals } = await dependency.findDependencies();
-      const uniqueNamespaces = new Set(namespaces);
+      if (withMetadata) {
+        const { namespaces, literals } =
+          dependency.findDependenciesWithMetadata();
+        const uniqueNamespaces = new Set(namespaces);
 
-      for (const namespace of uniqueNamespaces) {
-        context.variables.createNamespace(namespace);
-      }
+        for (const namespace of uniqueNamespaces) {
+          context.variables.createNamespace(namespace);
+        }
 
-      for (const literal of literals) {
-        context.literals.add(literal as ASTLiteral);
+        for (const literal of literals) {
+          context.literals.add(literal as ASTLiteral);
+        }
+      } else {
+        dependency.findDependencies();
       }
 
       return {
         main: {
-          chunk,
+          chunk: resourceManager.getEntryPointResource().chunk,
           dependency
         }
       };
