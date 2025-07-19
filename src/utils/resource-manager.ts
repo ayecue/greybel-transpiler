@@ -1,11 +1,11 @@
 import EventEmitter from 'events';
+import { ASTChunkGreybel } from 'greybel-core';
 
+import { ChunkProviderLike } from '../types/chunk-provider';
 import { Resource, ResourceLoadState } from '../types/resource';
 import { ResourceManagerLike } from '../types/resource-manager';
 import { BuildError } from './error';
 import { ResourceHandler } from './resource-provider';
-import { ChunkProviderLike } from '../types/chunk-provider';
-import { ASTChunkGreybel } from 'greybel-core';
 
 export interface ResourceManagerOptions {
   resourceHandler: ResourceHandler;

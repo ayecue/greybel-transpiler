@@ -39,7 +39,7 @@ export class Target extends EventEmitter {
     me.context = options.context;
   }
 
-  async parse(eager: boolean): Promise<TargetParseResult> {
+  async parse(withMetadata: boolean): Promise<TargetParseResult> {
     const me = this;
     const resourceHandler = me.resourceHandler;
     const target = await resourceHandler.resolve(me.target);
@@ -65,8 +65,9 @@ export class Target extends EventEmitter {
         context
       });
 
-      if (eager) {
-        const { namespaces, literals } = dependency.findEagerDependencies();
+      if (withMetadata) {
+        const { namespaces, literals } =
+          dependency.findDependenciesWithMetaData();
         const uniqueNamespaces = new Set(namespaces);
 
         for (const namespace of uniqueNamespaces) {

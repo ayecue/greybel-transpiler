@@ -9,9 +9,9 @@ import { UglifyOptions } from './build-map/uglify';
 import { Context } from './context';
 import { Transformer } from './transformer';
 import { generateCharsetMap } from './utils/charset-generator';
+import { ChunkProvider } from './utils/chunk-provider';
 import { fetchNamespaces } from './utils/fetch-namespaces';
 import { OutputProcessor } from './utils/output-processor';
-import { ChunkProvider } from './utils/chunk-provider';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 

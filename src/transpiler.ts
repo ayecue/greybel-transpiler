@@ -75,7 +75,9 @@ export class Transpiler {
       resourceHandler: me.resourceHandler,
       context: me.context
     });
-    const targetParseResult: TargetParseResult = await target.parse(me.buildType === BuildType.UGLIFY);
+    const targetParseResult: TargetParseResult = await target.parse(
+      me.buildType === BuildType.UGLIFY
+    );
 
     // create builder
     const transformer = new Transformer({

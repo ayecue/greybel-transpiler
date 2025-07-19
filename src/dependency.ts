@@ -23,7 +23,7 @@ export interface DependencyFindResult {
   dependencies: Map<string, Dependency>;
 }
 
-export interface DependencyEagerFindResult extends DependencyFindResult {
+export interface DependencyFindResultWithMetadata extends DependencyFindResult {
   namespaces: string[];
   literals: ASTBase[];
 }
@@ -191,7 +191,7 @@ export class Dependency implements DependencyLike {
     };
   }
 
-  findEagerDependencies(): DependencyEagerFindResult {
+  findDependenciesWithMetaData(): DependencyFindResultWithMetadata {
     const me = this;
     const { imports, includes } = me.chunk;
     const sourceNamespace = me.getNamespace();
@@ -220,8 +220,8 @@ export class Dependency implements DependencyLike {
           `Circular dependency from ${me.target} to ${dependency.target} detected.`
         );
       }
-      
-      const relatedDependencies = dependency.findEagerDependencies();
+
+      const relatedDependencies = dependency.findDependenciesWithMetaData();
 
       merge(namespaces, relatedDependencies.namespaces);
       merge(literals, relatedDependencies.literals);
