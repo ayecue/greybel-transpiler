@@ -2,13 +2,14 @@ import EventEmitter from 'events';
 
 import { Resource, ResourceLoadState } from '../types/resource';
 import { ResourceManagerLike } from '../types/resource-manager';
-import { ChunkProvider } from './chunk-provider';
 import { BuildError } from './error';
 import { ResourceHandler } from './resource-provider';
+import { ChunkProviderLike } from '../types/chunk-provider';
+import { ASTChunkGreybel } from 'greybel-core';
 
 export interface ResourceManagerOptions {
   resourceHandler: ResourceHandler;
-  chunkProvider: ChunkProvider;
+  chunkProvider: ChunkProviderLike;
 }
 
 export class ResourceManager
@@ -16,15 +17,15 @@ export class ResourceManager
   implements ResourceManagerLike
 {
   private resourceHandler: ResourceHandler;
-  private chunkProvider: ChunkProvider;
+  private chunkProvider: ChunkProviderLike;
 
   private loadStates: Map<string, ResourceLoadState>;
   private loadRequests: Map<string, Promise<Resource>>;
 
-  private entryPointResource: Resource | null;
-  private resources: Map<string, Resource>;
-  private injections: Map<string, string>;
-  private relativePathMappings: Map<string, string>;
+  protected entryPointResource: Resource | null;
+  protected resources: Map<string, Resource>;
+  protected injections: Map<string, string>;
+  protected relativePathMappings: Map<string, string>;
 
   constructor(options: ResourceManagerOptions) {
     super();
@@ -44,7 +45,7 @@ export class ResourceManager
     return this.resourceHandler;
   }
 
-  getChunkProvider(): ChunkProvider {
+  getChunkProvider(): ChunkProviderLike {
     return this.chunkProvider;
   }
 
@@ -96,7 +97,7 @@ export class ResourceManager
     const chunk = await this.chunkProvider.parse(target, content);
     const resource: Resource = {
       target,
-      chunk
+      chunk: chunk as ASTChunkGreybel
     };
 
     this.emit('parse-after', resource);

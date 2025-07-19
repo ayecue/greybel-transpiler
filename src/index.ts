@@ -41,6 +41,7 @@ export {
 export { DependencyLike, DependencyType } from './types/dependency';
 export { Resource, ResourceLoadState } from './types/resource';
 export { ResourceManagerLike } from './types/resource-manager';
+export { ChunkProviderLike } from './types/chunk-provider';
 export { TransformerDataObject, TransformerLike } from './types/transformer';
 export { CharsetMap, generateCharsetMap } from './utils/charset-generator';
 export { ChunkProvider } from './utils/chunk-provider';

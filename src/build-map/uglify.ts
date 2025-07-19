@@ -75,7 +75,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
 
   transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
     this.reset();
-    this._currentDependency = dependency;
+    this._originDependency = dependency;
+    this._activeDependency = dependency;
     this.process(item);
 
     return this._lines
@@ -610,12 +611,12 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(`#inject "${item.path}"`);
         return;
       }
-      if (this.currentDependency === null) {
+      if (this.activeDependency === null) {
         this.pushSegment(`#inject "${item.path}";`);
         return;
       }
 
-      const content = this.currentDependency.injections.get(item.path);
+      const content = this.activeDependency.injections.get(item.path);
 
       if (content == null) {
         this.pushSegment('null');
@@ -635,7 +636,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(` from "${item.path}";`);
         return;
       }
-      const associatedDependency = this.currentDependency?.dependencies.get(
+      const associatedDependency = this.activeDependency?.dependencies.get(
         Dependency.generateDependencyMappingKey(
           item.path,
           DependencyType.Import
@@ -671,7 +672,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
-      const associatedDependency = this.currentDependency?.dependencies.get(
+      const associatedDependency = this.activeDependency?.dependencies.get(
         Dependency.generateDependencyMappingKey(
           item.path,
           DependencyType.Include
@@ -682,10 +683,10 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         return;
       }
 
-      const currentDependency = this.currentDependency;
-      this.currentDependency = associatedDependency;
+      const currentDependency = this.activeDependency;
+      this.activeDependency = associatedDependency;
       this.process(associatedDependency.chunk);
-      this.currentDependency = currentDependency;
+      this.activeDependency = currentDependency;
     },
     ListConstructorExpression: function (
       this: UglifyFactory,

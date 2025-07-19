@@ -30,7 +30,7 @@ export type ResourceDependencyMap = Map<string, Dependency>;
 
 export type DependencyCallStack = string[];
 
-export class Dependency extends EventEmitter implements DependencyLike {
+export class Dependency implements DependencyLike {
   target: string;
   id: string;
   resourceManager: ResourceManagerLike;
@@ -50,8 +50,6 @@ export class Dependency extends EventEmitter implements DependencyLike {
   }
 
   constructor(options: DependencyOptions) {
-    super();
-
     const me = this;
 
     me.target = options.target;
@@ -172,12 +170,7 @@ export class Dependency extends EventEmitter implements DependencyLike {
           `Circular dependency from ${me.target} to ${dependency.target} detected.`
         );
       }
-
-      const chunk = dependency.chunk;
-
-      item.chunk = chunk;
-      item.namespace = namespace;
-
+      
       const relatedDependencies = dependency.findDependencies();
 
       merge(namespaces, relatedDependencies.namespaces);

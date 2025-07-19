@@ -119,7 +119,8 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
   transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
     this.reset();
 
-    this._currentDependency = dependency;
+    this._originDependency = dependency;
+    this._activeDependency = dependency;
 
     this.process(item);
 
@@ -714,12 +715,12 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
-      if (this.currentDependency === null) {
+      if (this.activeDependency === null) {
         this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
 
-      const content = this.currentDependency.injections.get(item.path);
+      const content = this.activeDependency.injections.get(item.path);
 
       if (content == null) {
         this.pushSegment('null', item);
@@ -739,7 +740,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(` from "${item.path}";`, item);
         return;
       }
-      const associatedDependency = this.currentDependency?.dependencies.get(
+      const associatedDependency = this.activeDependency?.dependencies.get(
         Dependency.generateDependencyMappingKey(
           item.path,
           DependencyType.Import
@@ -767,7 +768,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
-      const associatedDependency = this.currentDependency?.dependencies.get(
+      const associatedDependency = this.activeDependency?.dependencies.get(
         Dependency.generateDependencyMappingKey(
           item.path,
           DependencyType.Include
@@ -778,10 +779,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         return;
       }
 
-      const currentDependency = this.currentDependency;
-      this.currentDependency = associatedDependency;
+      const currentDependency = this.activeDependency;
+      this.activeDependency = associatedDependency;
       this.process(associatedDependency.chunk);
-      this.currentDependency = currentDependency;
+      this.activeDependency = currentDependency;
     },
     FeatureDebuggerExpression: function (
       this: BeautifyFactory,
