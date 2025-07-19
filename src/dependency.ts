@@ -191,7 +191,7 @@ export class Dependency implements DependencyLike {
     };
   }
 
-  findDependenciesWithMetaData(): DependencyFindResultWithMetadata {
+  findDependenciesWithMetadata(): DependencyFindResultWithMetadata {
     const me = this;
     const { imports, includes } = me.chunk;
     const sourceNamespace = me.getNamespace();
@@ -221,7 +221,7 @@ export class Dependency implements DependencyLike {
         );
       }
 
-      const relatedDependencies = dependency.findDependenciesWithMetaData();
+      const relatedDependencies = dependency.findDependenciesWithMetadata();
 
       merge(namespaces, relatedDependencies.namespaces);
       merge(literals, relatedDependencies.literals);

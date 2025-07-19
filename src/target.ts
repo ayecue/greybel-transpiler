@@ -67,7 +67,7 @@ export class Target extends EventEmitter {
 
       if (withMetadata) {
         const { namespaces, literals } =
-          dependency.findDependenciesWithMetaData();
+          dependency.findDependenciesWithMetadata();
         const uniqueNamespaces = new Set(namespaces);
 
         for (const namespace of uniqueNamespaces) {
