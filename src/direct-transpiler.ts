@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { ASTChunkGreybel, Parser } from 'greybel-core';
+import { ASTChunkGreybel } from 'greybel-core';
 import { ASTLiteral } from 'miniscript-core';
 
 import { BuildType, getFactory } from './build-map';

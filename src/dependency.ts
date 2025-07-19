@@ -1,5 +1,4 @@
 import md5 from 'blueimp-md5';
-import EventEmitter from 'events';
 import { ASTChunkGreybel, ASTFeatureIncludeExpression } from 'greybel-core';
 import { ASTBase } from 'miniscript-core';
 
