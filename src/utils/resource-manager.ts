@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 import { ASTChunkGreybel } from 'greybel-core';
+import { ASTBase, ASTRange } from 'miniscript-core'
 
 import { ChunkProviderLike } from '../types/chunk-provider';
 import { Resource, ResourceLoadState } from '../types/resource';
@@ -10,6 +11,11 @@ import { ResourceHandler } from './resource-provider';
 export interface ResourceManagerOptions {
   resourceHandler: ResourceHandler;
   chunkProvider: ChunkProviderLike;
+}
+
+export interface ResourceLoadOrigin {
+  target: string;
+  ref: ASTBase | null;
 }
 
 export class ResourceManager
@@ -70,7 +76,7 @@ export class ResourceManager
     return relativePathMapping;
   }
 
-  protected async createInjection(target: string): Promise<string> {
+  protected async createInjection(target: string, resLoadOrigin: ResourceLoadOrigin): Promise<string> {
     const cachedInjection = this.injections.get(target);
 
     if (cachedInjection !== undefined) {
@@ -78,18 +84,24 @@ export class ResourceManager
     }
 
     if (!(await this.resourceHandler.has(target))) {
-      throw new Error('Injection ' + target + ' does not exist...');
+      throw new BuildError('Injection ' + target + ' does not exist...', {
+        target: resLoadOrigin.target,
+        range: resLoadOrigin.ref ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end) : null
+      });
     }
 
     const content = await this.resourceHandler.get(target);
     this.injections.set(target, content);
   }
 
-  protected async createResource(target: string): Promise<Resource> {
+  protected async createResource(target: string, resLoadOrigin: ResourceLoadOrigin): Promise<Resource> {
     const fileExists = await this.resourceHandler.has(target);
 
     if (!fileExists) {
-      throw new Error('Dependency ' + target + ' does not exist...');
+      throw new BuildError('Dependency ' + target + ' does not exist...', {
+        target: resLoadOrigin.target,
+        range: resLoadOrigin.ref ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end) : null
+      });
     }
 
     const content = await this.resourceHandler.get(target);
@@ -107,27 +119,39 @@ export class ResourceManager
 
   protected async enrichResource(resource: Resource): Promise<void> {
     const { imports, includes, injects } = resource.chunk;
-    const resourcePaths = await Promise.all([
+    const resourcePaths: { ref: ASTBase, resolved: string }[] = await Promise.all([
       ...imports.map(async (item) => {
-        return this.createMapping(resource.target, item.path);
+        return {
+          ref: item,
+          resolved: await this.createMapping(resource.target, item.path)
+        };
       }),
       ...includes.map(async (item) => {
-        return this.createMapping(resource.target, item.path);
+        return {
+          ref: item,
+          resolved: await this.createMapping(resource.target, item.path)
+        };
       })
     ]);
 
     await Promise.all([
       ...resourcePaths.map(async (resourcePath) => {
-        await this.loadResource(resourcePath);
+        await this.loadResource(resourcePath.resolved, {
+          target: resource.target,
+          ref: resourcePath.ref
+        });
       }),
       ...injects.map(async (item) => {
         const depTarget = await this.createMapping(resource.target, item.path);
-        await this.createInjection(depTarget);
+        await this.createInjection(depTarget, {
+          target: resource.target,
+          ref: item
+        });
       })
     ]);
   }
 
-  protected async loadResource(target: string): Promise<Resource> {
+  protected async loadResource(target: string, resLoadOrigin: ResourceLoadOrigin): Promise<Resource> {
     const pendingRequest = this.loadRequests.get(target);
 
     if (pendingRequest !== undefined) {
@@ -142,7 +166,7 @@ export class ResourceManager
 
     this.loadStates.set(target, ResourceLoadState.Pending);
 
-    const resourceDefer = this.createResource(target);
+    const resourceDefer = this.createResource(target, resLoadOrigin);
 
     this.loadRequests.set(target, resourceDefer);
 
@@ -220,7 +244,10 @@ export class ResourceManager
 
       this.on('loaded', onLoad);
       this.on('error', onError);
-      this.loadResource(target).catch((err: any) => onComplete(err));
+      this.loadResource(target, {
+        target,
+        ref: null
+      }).catch((err: any) => onComplete(err));
     });
   }
 }
