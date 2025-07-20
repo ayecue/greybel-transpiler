@@ -175,6 +175,10 @@ export class ResourceManager
     try {
       resource = await resourceDefer;
     } catch (err) {
+      if (err instanceof BuildError) {
+        throw err;
+      }
+
       throw new BuildError(err.message, {
         target,
         range: err.range
