@@ -29,7 +29,8 @@ export class LiteralsMapper {
 
   add(literal: ASTLiteral): LiteralsMapper {
     const me = this;
-    const raw = getLiteralRawValue(literal);
+    const raw = getLiteralRawValue(literal, true);
+    if (raw.length < 2) return me; // Ignore very short literals
     if (!me.mapping.has(raw)) {
       me.mapping.set(raw, {
         literal,
@@ -56,7 +57,7 @@ export class LiteralsMapper {
 
   get(literal: ASTLiteral): LiteralMetaData {
     const me = this;
-    const raw = getLiteralRawValue(literal);
+    const raw = getLiteralRawValue(literal, true);
     if (me.mapping.has(raw)) {
       return me.mapping.get(raw);
     }

@@ -579,7 +579,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       item: ASTBooleanLiteral,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(getLiteralRawValue(item));
+      this.pushSegment(getLiteralRawValue(item, true));
     },
     EmptyExpression: function (
       this: DefaultFactory,

@@ -718,7 +718,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.disableLiteralsOptimization) {
-        this.pushSegment(getLiteralRawValue(item));
+        this.pushSegment(getLiteralRawValue(item, true));
         return;
       }
 
@@ -733,7 +733,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         return;
       }
 
-      this.pushSegment(getLiteralRawValue(item));
+      this.pushSegment(getLiteralRawValue(item, true));
     },
     EmptyExpression: function (
       this: UglifyFactory,
