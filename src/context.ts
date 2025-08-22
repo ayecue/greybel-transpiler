@@ -35,6 +35,7 @@ export class Context {
         'MODULES',
         'EXPORTED',
         '__REQUIRE',
+        '__REQUIRE_EVAL',
         'MAIN',
         'module',
         'globals'

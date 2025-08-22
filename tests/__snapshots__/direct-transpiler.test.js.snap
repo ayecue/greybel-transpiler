@@ -527,82 +527,82 @@ print(AsciiGen.gen(\\"Hallo\\"))"
 `;
 
 exports[`parse default scripts ascii.src uglify 1`] = `
-"globals.H=globals
-H.ϻ=\\"||¯|| \\"
-H.Ϻ=\\"||_|| \\"
-H.Ϸ=\\"|| || \\"
-H.ϵ=\\"||¯ \\"
-H.Ϲ=\\"||  \\"
-H.϶=\\"||_ \\"
-H.ϼ=\\"||¯\\\\\\\\ \\"
-H.ϸ=\\"|| \\"
-H.Ͻ=\\"  \\"
-H.Ͼ=\\"<color=#\\"
-H.Ѐ=\\">\\"
-H.Ͽ=\\"</color>\\"
-I={}
+"globals.I=globals
+I.ϼ=\\"||¯|| \\"
+I.ϻ=\\"||_|| \\"
+I.ϸ=\\"|| || \\"
+I.϶=\\"||¯ \\"
+I.Ϻ=\\"||  \\"
+I.Ϸ=\\"||_ \\"
+I.Ͻ=\\"||¯\\\\\\\\ \\"
+I.Ϲ=\\"|| \\"
+I.Ͼ=\\"  \\"
+I.Ͽ=\\"<color=#\\"
+I.Ё=\\">\\"
+I.Ѐ=\\"</color>\\"
+J={}
 map={}
-map.a=[ϻ,Ϻ,Ϸ]
+map.a=[ϼ,ϻ,ϸ]
 map.b=[\\"||¯/ \\",\\"|| \\\\ \\",\\"||_/ \\"]
-map.c=[ϵ,Ϲ,϶]
-map.d=[ϼ,\\"|| // \\",\\"||//  \\"]
-map.e=[ϵ,\\"||- \\",϶]
-map.f=[ϵ,϶,Ϲ]
-map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",Ϻ]
-map.h=[Ϸ,\\"||-|| \\",Ϸ]
-map.i=[ϸ,ϸ,ϸ]
+map.c=[϶,Ϻ,Ϸ]
+map.d=[Ͻ,\\"|| // \\",\\"||//  \\"]
+map.e=[϶,\\"||- \\",Ϸ]
+map.f=[϶,Ϸ,Ϻ]
+map.g=[\\"||¯¯  \\",\\"|| \\\\\\\\ \\",ϻ]
+map.h=[ϸ,\\"||-|| \\",ϸ]
+map.i=[Ϲ,Ϲ,Ϲ]
 map.j=[\\" ¯||¯ \\",\\"  ||  \\",\\"|_||  \\"]
-map.k=[\\"||  / \\",\\"|| /  \\",ϼ]
-map.l=[Ϲ,Ϲ,϶]
+map.k=[\\"||  / \\",\\"|| /  \\",Ͻ]
+map.l=[Ϻ,Ϻ,Ϸ]
 map.m=[\\"||\\\\\\\\/|| \\",\\"||   || \\",\\"||   || \\"]
 map.n=[\\"||\\\\\\\\ || \\",\\"|| \\\\\\\\|| \\",\\"||  \\\\|| \\"]
-map.o=[ϻ,Ϸ,Ϻ]
-map.p=[ϻ,Ϻ,\\"||    \\"]
+map.o=[ϼ,ϸ,ϻ]
+map.p=[ϼ,ϻ,\\"||    \\"]
 map.q=[\\"||¯||  \\",\\"|| ||  \\",\\"||_||¬ \\"]
-map.r=[ϻ,ϼ,Ϸ]
+map.r=[ϼ,Ͻ,ϸ]
 map.s=[\\"||¯¯ \\",\\" \\\\\\\\  \\",\\"__|| \\"]
 map.t=[\\"¯||¯ \\",\\" ||  \\",\\" ||  \\"]
-map.u=[Ϸ,Ϸ,Ϻ]
+map.u=[ϸ,ϸ,ϻ]
 map.v=[\\"\\\\\\\\ || \\",\\" \\\\\\\\|| \\",\\"  \\\\\\\\| \\"]
 map.w=[\\"\\\\\\\\ |\\\\\\\\ | \\",\\" \\\\\\\\| \\\\\\\\| \\",\\"  \\\\\\\\  \\\\\\\\ \\"]
 map.x=[\\"\\\\\\\\  / \\",\\" \\\\\\\\/  \\",\\" //\\\\  \\"]
 map.y=[\\"\\\\\\\\  // \\",\\" \\\\\\\\//  \\",\\"  ||   \\"]
-map.z=[\\"¯// \\",\\"//  \\",϶]
-map[\\"0\\"]=[ϻ,\\"||x|| \\",Ϻ]
+map.z=[\\"¯// \\",\\"//  \\",Ϸ]
+map[\\"0\\"]=[ϼ,\\"||x|| \\",ϻ]
 map[\\"1\\"]=[\\"'|| \\",\\" || \\",\\" || \\"]
 map[\\"2\\"]=[\\"¯¯|| \\",\\"||¯  \\",\\"||_  \\"]
 map[\\"3\\"]=[\\"¯|| \\",\\"-|| \\",\\"_|| \\"]
 map[\\"4\\"]=[\\" /|| \\",\\"/_|| \\",\\"  || \\"]
 map[\\"5\\"]=[\\"||¯¯ \\",\\" ¯|| \\",\\" _|| \\"]
-map[\\"6\\"]=[\\"||¯¯  \\",ϻ,Ϻ]
+map[\\"6\\"]=[\\"||¯¯  \\",ϼ,ϻ]
 map[\\"7\\"]=[\\"¯¯// \\",\\" //  \\",\\"//   \\"]
-map[\\"8\\"]=[ϻ,\\"||-|| \\",Ϻ]
-map[\\"9\\"]=[ϻ,\\"  ¯|| \\",\\"  //  \\"]
-map[\\" \\"]=[Ͻ,Ͻ,Ͻ]
-I.MAP=map
-I.gen=function(str,ϲ)
-ϭ=[[],[],[]]
-ϳ=self.MAP
+map[\\"8\\"]=[ϼ,\\"||-|| \\",ϻ]
+map[\\"9\\"]=[ϼ,\\"  ¯|| \\",\\"  //  \\"]
+map[\\" \\"]=[Ͼ,Ͼ,Ͼ]
+J.MAP=map
+J.gen=function(str,ϳ)
+Ϩ=[[],[],[]]
+ϴ=self.MAP
 for char in str
 char=char.lower
-if (ϳ.hasIndex(char)) then
-ϭ[0].push(ϳ[char][0])
-ϭ[1].push(ϳ[char][1])
-ϭ[2].push(ϳ[char][2])
+if (ϴ.hasIndex(char)) then
+Ϩ[0].push(ϴ[char][0])
+Ϩ[1].push(ϴ[char][1])
+Ϩ[2].push(ϴ[char][2])
 end if
 end for
-if (ϴ(ϲ)==\\"string\\") then
-ϭ[0]=[Ͼ+ϲ+Ѐ]+ϭ[0]+[Ͽ]
-ϭ[1]=[Ͼ+ϲ+Ѐ]+ϭ[1]+[Ͽ]
-ϭ[2]=[Ͼ+ϲ+Ѐ]+ϭ[2]+[Ͽ]
-else if (ϴ(ϲ)==\\"list\\") then
-ϭ[0]=[Ͼ+ϲ[0]+Ѐ]+ϭ[0]+[Ͽ]
-ϭ[1]=[Ͼ+ϲ[1]+Ѐ]+ϭ[1]+[Ͽ]
-ϭ[2]=[Ͼ+ϲ[2]+Ѐ]+ϭ[2]+[Ͽ]
+if (ϵ(ϳ)==\\"string\\") then
+Ϩ[0]=[Ͽ+ϳ+Ё]+Ϩ[0]+[Ѐ]
+Ϩ[1]=[Ͽ+ϳ+Ё]+Ϩ[1]+[Ѐ]
+Ϩ[2]=[Ͽ+ϳ+Ё]+Ϩ[2]+[Ѐ]
+else if (ϵ(ϳ)==\\"list\\") then
+Ϩ[0]=[Ͽ+ϳ[0]+Ё]+Ϩ[0]+[Ѐ]
+Ϩ[1]=[Ͽ+ϳ[1]+Ё]+Ϩ[1]+[Ѐ]
+Ϩ[2]=[Ͽ+ϳ[2]+Ё]+Ϩ[2]+[Ѐ]
 end if
-return [ϭ[0].join(\\"\\"),ϭ[1].join(\\"\\"),ϭ[2].join(\\"\\")].join(\\"\\\\n\\")
+return [Ϩ[0].join(\\"\\"),Ϩ[1].join(\\"\\"),Ϩ[2].join(\\"\\")].join(\\"\\\\n\\")
 end function
-print(I.gen(\\"Hallo\\"))"
+print(J.gen(\\"Hallo\\"))"
 `;
 
 exports[`parse default scripts beautify-cases.src 1`] = `
@@ -1077,91 +1077,91 @@ IV += { \\"was\\": floor(rnd(byte)) } // Warning: rnd is not cryptographically s
 `;
 
 exports[`parse default scripts beautify-cases.src uglify 1`] = `
-"globals.H=globals
-H.X=\\"foo\\"
-H.V=123
-H.W=\\"was\\"
-H.Y=\\"wo\\"
-H.Z=\\"abc\\"
-H.a=234
-H.b=\\"test\\"
-H.c=\\"xd\\"
-I=1+2+3+4+5+6 and (2+3+4+5+6+(2+3+4+5+6+7))
-J(\\"dieFace[1] - dieFace[6]\\",[K[1],K[2],K[3],K[4],K[5],K[6],{X:V,W:Y}].join,V,V)
-J(1,2,3,4)
-I={}
-I={W:V}
-I={X:V,W:[Z,1,a],\\"xx\\":{X:V,\\"ooo\\":{X:V,W:Y},W:Y},\\"123\\":\\"3\\"}
-I=[]
-I=[W]
-I=[Z,1,[Z,1,a],[Z,[Z,1,a],1,a],a]
-I=I+5
-I=I+4+5
-I.abc=I.abc+5
-I.abc=I.abc+4+5
-if (1) then print(b)
-if (1) then print(b) else print(c)
-if (1) then I=[1,2,3,4,5]
-if (1) then I=[1,2,3,4,5] else I=[5,4,3,2,1]
+"globals.I=globals
+I.Y=\\"foo\\"
+I.W=123
+I.X=\\"was\\"
+I.Z=\\"wo\\"
+I.a=\\"abc\\"
+I.b=234
+I.c=\\"test\\"
+I.d=\\"xd\\"
+J=1+2+3+4+5+6 and (2+3+4+5+6+(2+3+4+5+6+7))
+K(\\"dieFace[1] - dieFace[6]\\",[L[1],L[2],L[3],L[4],L[5],L[6],{Y:W,X:Z}].join,W,W)
+K(1,2,3,4)
+J={}
+J={X:W}
+J={Y:W,X:[a,1,b],\\"xx\\":{Y:W,\\"ooo\\":{Y:W,X:Z},X:Z},\\"123\\":\\"3\\"}
+J=[]
+J=[X]
+J=[a,1,[a,1,b],[a,[a,1,b],1,b],b]
+J=J+5
+J=J+4+5
+J.abc=J.abc+5
+J.abc=J.abc+4+5
+if (1) then print(c)
+if (1) then print(c) else print(d)
+if (1) then J=[1,2,3,4,5]
+if (1) then J=[1,2,3,4,5] else J=[5,4,3,2,1]
 if (1) then
-print(b)
-else
 print(c)
+else
+print(d)
 end if
 if (1) then
-print(b)
+print(c)
 else if (0) then
 print(\\"xa\\")
 else
-print(c)
+print(d)
 end if
-I=function
+J=function
 return [1,2,3,4,5]
 end function
-I=I+5
-I=[1,2,3,4]
-I=function
-return V
+J=J+5
+J=[1,2,3,4]
+J=function
+return W
 end function
-for I in [V]
-print(b)
+for J in [W]
+print(c)
 end for
-I={W:V}
-I={W:V,X:13,\\"bar\\":45}
+J={X:W}
+J={X:W,Y:13,\\"bar\\":45}
 while 1
-if 1 then print(b) else print(c)
+if 1 then print(c) else print(d)
 end while
-if 1 then M=function
-print(b)
+if 1 then N=function
+print(c)
 end function
-if 0 then M=function
-print(Z)
+if 0 then N=function
+print(a)
 end function
-print(Z>[42])
-I[25]
-I[25]
-I[V][25]
-I[25](11)
-I(11)[25]
+print(a>[42])
+J[25]
+J[25]
+J[W][25]
+J[25](11)
+J(11)[25]
 while 1
 end while
-if N.remove(@O) then return \\"foo:\\"+@O+\\"!\\"
-P.bar=function(O=0,val=0,T=0,U=0)
+if O.remove(@P) then return \\"foo:\\"+@P+\\"!\\"
+Q.bar=function(P=0,val=0,U=0,V=0)
 if 1 then return function
-print(b)
+print(c)
 end function
 end function
-I=function
+J=function
 end function
-if I==null then
-print(X)
-else if I==null then
+if J==null then
+print(Y)
+else if J==null then
 print(\\"bar\\")
 else
 print(\\"nil\\")
 end if
-R=R+([floor(rnd(S)*256)])
-R=R+({W:floor(rnd(S))})"
+S=S+([floor(rnd(T)*256)])
+S=S+({X:floor(rnd(T))})"
 `;
 
 exports[`parse default scripts binary-expressions.src 1`] = `
@@ -1201,16 +1201,16 @@ a or b"
 `;
 
 exports[`parse default scripts binary-expressions.src uglify 1`] = `
-"globals.H=globals
-I=I/(J)
-I=I*(J)
-I=I-(J)
-I=I+(J)
-bitOr(I,J)
-bitAnd(I,J)
-I^J
-I and J
-I or J"
+"globals.I=globals
+J=J/(K)
+J=J*(K)
+J=J-(K)
+J=J+(K)
+bitOr(J,K)
+bitAnd(J,K)
+J^K
+J and K
+J or K"
 `;
 
 exports[`parse default scripts comments.src 1`] = `
@@ -1231,9 +1231,9 @@ test = 2 // comment3"
 `;
 
 exports[`parse default scripts comments.src uglify 1`] = `
-"globals.H=globals
-I
-J=2"
+"globals.I=globals
+J
+K=2"
 `;
 
 exports[`parse default scripts default-args.src 1`] = `
@@ -1277,17 +1277,17 @@ var3 = \\"test\\""
 `;
 
 exports[`parse default scripts default-args.src uglify 1`] = `
-"globals.H=globals
-H.O=\\"test\\"
-I=function(M=0,N=\\"test\\")
-print(M)
+"globals.I=globals
+I.P=\\"test\\"
+J=function(N=0,O=\\"test\\")
 print(N)
+print(O)
 end function
-I
-I(\\"foo\\",0)
-J=O
-K=O
-L=O"
+J
+J(\\"foo\\",0)
+K=P
+L=P
+M=P"
 `;
 
 exports[`parse default scripts envar.src 1`] = `
@@ -1311,9 +1311,9 @@ print(#envar test2)"
 `;
 
 exports[`parse default scripts envar.src uglify 1`] = `
-"globals.H=globals
+"globals.I=globals
 #include \\"../fixtures/envar-include.src\\";
-I=\\"\\"foo\\"\\"
+J=\\"\\"foo\\"\\"
 print(\\"0.2\\")"
 `;
 
@@ -1339,7 +1339,7 @@ print + 123"
 `;
 
 exports[`parse default scripts expressions.src uglify 1`] = `
-"globals.H=globals
+"globals.I=globals
 \\"as\\"+\\"wa\\"
 print(\\"was\\")-print(\\"hallo\\")
 print(-123)
@@ -1402,16 +1402,16 @@ end for"
 `;
 
 exports[`parse default scripts for-iteration.src uglify 1`] = `
-"globals.H=globals
-I=[1,2,3,4]
-for J in I
-print(__J_idx)
+"globals.I=globals
+J=[1,2,3,4]
+for K in J
+print(__K_idx)
 end for
-for J in I
-for J in I
-print(__J_idx)
+for K in J
+for K in J
+print(__K_idx)
 end for
-print(__J_idx)
+print(__K_idx)
 end for"
 `;
 
@@ -1422,8 +1422,8 @@ exports[`parse default scripts globals.src beautify 1`] = `"print globals"`;
 exports[`parse default scripts globals.src beautify with custom settings 1`] = `"print(globals)"`;
 
 exports[`parse default scripts globals.src uglify 1`] = `
-"globals.H=globals
-print(H)"
+"globals.I=globals
+print(I)"
 `;
 
 exports[`parse default scripts greybel-utils.src 1`] = `
@@ -1470,8 +1470,8 @@ print(#inject \\"../fixtures/inject.src\\";)"
 `;
 
 exports[`parse default scripts greybel-utils.src uglify 1`] = `
-"globals.H=globals
-#import I from \\"./ascii.src\\";
+"globals.I=globals
+#import J from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -1506,8 +1506,8 @@ debugger"
 `;
 
 exports[`parse default scripts greybel-utils-with-comments.src uglify 1`] = `
-"globals.H=globals
-#import I from \\"./ascii.src\\";
+"globals.I=globals
+#import J from \\"./ascii.src\\";
 #include \\"./ascii.src\\";
 #include \\"../fixtures/sub-import.src\\";
 \\"true\\"
@@ -1544,12 +1544,12 @@ print(locals.hasIndex(\\"doesNotExist\\"))"
 `;
 
 exports[`parse default scripts has-index.src uglify 1`] = `
-"globals.H=globals
-H.I=\\"was\\"
-locals.J=\\"moo\\"
-print(H.hasIndex(\\"I\\"))
-print(locals.hasIndex(\\"J\\"))
-print(H.hasIndex(\\"doesNotExist\\"))
+"globals.I=globals
+I.J=\\"was\\"
+locals.K=\\"moo\\"
+print(I.hasIndex(\\"J\\"))
+print(locals.hasIndex(\\"K\\"))
+print(I.hasIndex(\\"doesNotExist\\"))
 print(locals.hasIndex(\\"doesNotExist\\"))"
 `;
 
@@ -1654,16 +1654,16 @@ print({} isa funcRef)"
 `;
 
 exports[`parse default scripts isa.src uglify 1`] = `
-"globals.H=globals
-H.I=\\"abc\\"
+"globals.I=globals
+I.J=\\"abc\\"
 print(2 isa number)
 print(2 isa string)
 print(2 isa list)
 print(2 isa map)
-print(I isa number)
-print(I isa string)
-print(I isa list)
-print(I isa map)
+print(J isa number)
+print(J isa string)
+print(J isa list)
+print(J isa map)
 print([1,2,3] isa number)
 print([1,2,3] isa string)
 print([1,2,3] isa list)
@@ -1682,8 +1682,8 @@ exports[`parse default scripts literal-special-chars.src beautify 1`] = `"test =
 exports[`parse default scripts literal-special-chars.src beautify with custom settings 1`] = `"test = \\"$$1 $$$$'2   $\`$\`$\` $23\\""`;
 
 exports[`parse default scripts literal-special-chars.src uglify 1`] = `
-"globals.H=globals
-I=\\"$$1 $$$$'2   $\`$\`$\` $23\\""
+"globals.I=globals
+J=\\"$$1 $$$$'2   $\`$\`$\` $23\\""
 `;
 
 exports[`parse default scripts map.src 1`] = `
@@ -1723,12 +1723,12 @@ test5 = { 123: \\"bar\\" }"
 `;
 
 exports[`parse default scripts map.src uglify 1`] = `
-"globals.H=globals
-I={{\\"myTest\\":0,1:2}:1}
-J={[12,14]:1}
-K={I:234}
-L={1:\\"foo\\"}
-M={123:\\"bar\\"}"
+"globals.I=globals
+J={{\\"myTest\\":0,1:2}:1}
+K={[12,14]:1}
+L={J:234}
+M={1:\\"foo\\"}
+N={123:\\"bar\\"}"
 `;
 
 exports[`parse default scripts multiline-comment.src 1`] = `"print(\\"test\\")"`;
@@ -1760,7 +1760,7 @@ another comment
 `;
 
 exports[`parse default scripts multiline-comment.src uglify 1`] = `
-"globals.H=globals
+"globals.I=globals
 print(\\"test\\")"
 `;
 
@@ -1796,11 +1796,11 @@ print(foo)"
 `;
 
 exports[`parse default scripts negation.src uglify 1`] = `
-"globals.H=globals
-I=-1+2+-2+3
-J=[-1,-2+4,(-2)+-4+6]
-print(I)
-print(J)"
+"globals.I=globals
+J=-1+2+-2+3
+K=[-1,-2+4,(-2)+-4+6]
+print(J)
+print(K)"
 `;
 
 exports[`parse default scripts negative-numeric.src 1`] = `
@@ -1867,27 +1867,27 @@ test[ : -1] = \\"foo\\""
 `;
 
 exports[`parse default scripts negative-numeric.src uglify 1`] = `
-"globals.H=globals
-H.K=-1
-H.J=\\"foo\\"
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J
-I[:K]=J"
+"globals.I=globals
+I.L=-1
+I.K=\\"foo\\"
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K
+J[:L]=K"
 `;
 
 exports[`parse default scripts obj-init.src 1`] = `
@@ -1947,13 +1947,13 @@ print(myList)"
 `;
 
 exports[`parse default scripts obj-init.src uglify 1`] = `
-"globals.H=globals
-H.P=\\"123\\"
-I=\\"foo\\"
-J={\\"test\\":{\\"another\\":P},\\"value\\":P,\\"idtf\\":I}
-print([J.test.another,J.value,J.idtf])
-O=[{\\"another\\":P},P,I]
-print(O)"
+"globals.I=globals
+I.Q=\\"123\\"
+J=\\"foo\\"
+K={\\"test\\":{\\"another\\":Q},\\"value\\":Q,\\"idtf\\":J}
+print([K.test.another,K.value,K.idtf])
+P=[{\\"another\\":Q},Q,J]
+print(P)"
 `;
 
 exports[`parse default scripts optimize.src 1`] = `
@@ -2039,29 +2039,29 @@ superlangername3(\\"xxxxxxxxxx\\")"
 `;
 
 exports[`parse default scripts optimize.src uglify 1`] = `
-"globals.H=globals
-H.O=\\"xxxxxxxxxx\\"
-I=function(N)
-print(N)
+"globals.I=globals
+I.P=\\"xxxxxxxxxx\\"
+J=function(O)
+print(O)
 end function
-J=function(N)
-print(N)
+K=function(O)
+print(O)
 end function
-K=function(N)
-print(N)
+L=function(O)
+print(O)
 end function
-L=function(N)
-print(N)
+M=function(O)
+print(O)
 end function
-M=function(N)
-print(N)
+N=function(O)
+print(O)
 end function
-I(O)
-J(O)
-L(O)
-J(O)
-M(O)
-K(O)"
+J(P)
+K(P)
+M(P)
+K(P)
+N(P)
+L(P)"
 `;
 
 exports[`parse default scripts outer.src 1`] = `
@@ -2163,32 +2163,32 @@ main"
 `;
 
 exports[`parse default scripts outer.src uglify 1`] = `
-"globals.H=globals
-I=function
-J=0
-K=function
-L
-M=\\"<mark=green><color=black>\\"+outer.J
-print(outer.hasIndex(\\"J\\"))
-if (outer.J>20) then M=\\"<mark=yellow><color=green>\\"+outer.J
-if (outer.J>40) then M=\\"<mark=red><color=yellow>\\"+outer.J
-if (outer.J<-20) then M=\\"<mark=green><color=yellow>\\"+outer.J
-if (outer.J<-40) then M=\\"<mark=yellow><color=red>\\"+outer.J
-print(M)
-N=O(\\"test\\",0,1)
-if (N==\\"UpArrow\\") then
-outer.J=outer.J+(1)
-else if (N==\\"DownArrow\\") then
-outer.J=outer.J-(1)
+"globals.I=globals
+J=function
+K=0
+L=function
+M
+N=\\"<mark=green><color=black>\\"+outer.K
+print(outer.hasIndex(\\"K\\"))
+if (outer.K>20) then N=\\"<mark=yellow><color=green>\\"+outer.K
+if (outer.K>40) then N=\\"<mark=red><color=yellow>\\"+outer.K
+if (outer.K<-20) then N=\\"<mark=green><color=yellow>\\"+outer.K
+if (outer.K<-40) then N=\\"<mark=yellow><color=red>\\"+outer.K
+print(N)
+O=P(\\"test\\",0,1)
+if (O==\\"UpArrow\\") then
+outer.K=outer.K+(1)
+else if (O==\\"DownArrow\\") then
+outer.K=outer.K-(1)
 else
-P(\\"bye\\")
+Q(\\"bye\\")
 end if
 end function
 while (1)
-K
+L
 end while
 end function
-I"
+J"
 `;
 
 exports[`parse default scripts password-generator.src 1`] = `
@@ -2385,61 +2385,61 @@ print(result)"
 `;
 
 exports[`parse default scripts password-generator.src uglify 1`] = `
-"globals.H=globals
-I={}
-I.MAX_PASSWORD_LENGTH=15
-I.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
-I.NUMBER_CHARACTERS=\\"0123456789\\"
-I.ALPHA_NUMERIC=I.ALPHABETIC_CHARACTERS+I.ALPHABETIC_CHARACTERS.upper+I.NUMBER_CHARACTERS
-I.constructor=function
-U=self
-U.buffer=[0]
-U.characters=U.ALPHA_NUMERIC
-return U
+"globals.I=globals
+J={}
+J.MAX_PASSWORD_LENGTH=15
+J.ALPHABETIC_CHARACTERS=\\"qwertzuiopasdfghjklyxcvbnm\\"
+J.NUMBER_CHARACTERS=\\"0123456789\\"
+J.ALPHA_NUMERIC=J.ALPHABETIC_CHARACTERS+J.ALPHABETIC_CHARACTERS.upper+J.NUMBER_CHARACTERS
+J.constructor=function
+V=self
+V.buffer=[0]
+V.characters=V.ALPHA_NUMERIC
+return V
 end function
-I.increaseBuffer=function(X)
-U=self
-Y=U.buffer
-Z=U.characters.len
-if (X==null) then X=Y.len-1
-a=Y[X]
-a=a+1
-Y[X]=a
-if (a==Z) then
-Y[X]=0
-if (X==0) then
-Y.push(0)
+J.increaseBuffer=function(Y)
+V=self
+Z=V.buffer
+a=V.characters.len
+if (Y==null) then Y=Z.len-1
+b=Z[Y]
+b=b+1
+Z[Y]=b
+if (b==a) then
+Z[Y]=0
+if (Y==0) then
+Z.push(0)
 else
-U.increaseBuffer(X-1)
+V.increaseBuffer(Y-1)
 end if
 end if
 end function
-I.gen=function
-U=self
-Y=U.buffer
-b=U.characters
-c=\\"\\"
-R=0
-while R<Y.len
-d=Y[R]
-c=c+b[d]
-if (R==Y.len-1) then self.increaseBuffer
-R=R+1
+J.gen=function
+V=self
+Z=V.buffer
+c=V.characters
+d=\\"\\"
+S=0
+while S<Z.len
+e=Z[S]
+d=d+c[e]
+if (S==Z.len-1) then self.increaseBuffer
+S=S+1
 end while
-if (Y.len>U.MAX_PASSWORD_LENGTH) then
+if (Z.len>V.MAX_PASSWORD_LENGTH) then
 return null
 end if
-return c
+return d
 end function
-Q=(new I).constructor
-R=0
-S=10
-T=[]
-while (R<S)
-T.push(Q.gen)
-R=R+1
+R=(new J).constructor
+S=0
+T=10
+U=[]
+while (S<T)
+U.push(R.gen)
+S=S+1
 end while
-print(T)"
+print(U)"
 `;
 
 exports[`parse default scripts pseudo-crypto.src 1`] = `
@@ -3061,194 +3061,194 @@ print(decrypted)"
 `;
 
 exports[`parse default scripts pseudo-crypto.src uglify 1`] = `
-"globals.H=globals
-H.Ͼ=null
-H.Ͽ=63
-I={}
-I.constructor=function(str)
+"globals.I=globals
+I.Ͽ=null
+I.Ѐ=63
+J={}
+J.constructor=function(str)
 self.str=str
 return self
 end function
-I.parse=function(values)
-d=self.str
-e=0
-f=values.len
-while e<f
-d=d.replace(\\"$\\"+e,values[e])
-e=e+1
+J.parse=function(values)
+e=self.str
+f=0
+g=values.len
+while f<g
+e=e.replace(\\"$\\"+f,values[f])
+f=f+1
 end while
-return (new self).constructor(d)
+return (new self).constructor(e)
 end function
-I.startsWith=function(str)
+J.startsWith=function(str)
 return self.str.indexOf(str)==0
 end function
-I.substr=function(g,h)
-return (new self).constructor(slice(self.str,g,h))
+J.substr=function(h,i)
+return (new self).constructor(slice(self.str,h,i))
 end function
-I.indexOf=function(str)
+J.indexOf=function(str)
 return self.str.indexOf(str)
 end function
-I.replace=function(str,i)
-return (new self).constructor(self.str.replace(str,i))
+J.replace=function(str,j)
+return (new self).constructor(self.str.replace(str,j))
 end function
-I.remove=function(str)
+J.remove=function(str)
 return (new self).constructor(self.str.remove(str))
 end function
-I.toString=function
+J.toString=function
 return self.str
 end function
-I.length=function
+J.length=function
 return self.str.len
 end function
-I.split=function(j)
-return self.str.split(j)
+J.split=function(k)
+return self.str.split(k)
 end function
-I.trim=function(j)
+J.trim=function(k)
 return (new self).constructor(self.str.trim)
 end function
-Q={}
-Q.String=I
-Q.constructor=function(k,values)
-l=self
-l.message=k
-if (values!=Ͼ) then
-l.message=(new l.String).constructor(k).parse(values).toString
+R={}
+R.String=J
+R.constructor=function(l,values)
+n=self
+n.message=l
+if (values!=Ͽ) then
+n.message=(new n.String).constructor(l).parse(values).toString
 end if
-return l
+return n
 end function
-Q.throw=function
-n(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
+R.throw=function
+o(\\"<color=#ff0000>\\"+self.message+\\"</color>\\")
 end function
-S={}
-S.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
-S.defaultSecret=\\"test123\\"
-S.maxCharCode=55295
-S.Error=Q
-S.constructor=function(U,o,p)
-q=self
-q.defaultSecret=U
-q.table=p
-q.hashFn=@o
-if (@o==Ͼ) then q.hashFn=@s
-if p==Ͼ then q.table=q.defaultCharset
-if q.table.len!=64 then (new q.Error).constructor(\\"Invalid charset $0...\\",[q.table]).throw
-return q
+T={}
+T.defaultCharset=\\"QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm1234567890+-\\"
+T.defaultSecret=\\"test123\\"
+T.maxCharCode=55295
+T.Error=R
+T.constructor=function(V,p,q)
+r=self
+r.defaultSecret=V
+r.table=q
+r.hashFn=@p
+if (@p==Ͽ) then r.hashFn=@t
+if q==Ͽ then r.table=r.defaultCharset
+if r.table.len!=64 then (new r.Error).constructor(\\"Invalid charset $0...\\",[r.table]).throw
+return r
 end function
-S.getHash=function(t)
-q=self
+T.getHash=function(u)
+r=self
 hash=[]
-u=q.hashFn(t)
-for char in u
+϶=r.hashFn(u)
+for char in ϶
 hash.push(char.code)
 end for
 hash.reverse
 return hash
 end function
-S.encrypt=function(str,t)
-q=self
-if (t==Ͼ) then t=q.defaultSecret
-hash=q.getHash(t)
-w=0
-y=[]
-z=0
-_=str.len%3
-Ϩ=str.len-_
-ϩ=function(ϴ)
-if (not q.table.hasIndex(ϴ)) then
-(new q.Error).constructor(\\"Invalid index $0...\\",[ϴ]).throw
+T.encrypt=function(str,u)
+r=self
+if (u==Ͽ) then u=r.defaultSecret
+hash=r.getHash(u)
+y=0
+z=[]
+_=0
+Ϩ=str.len%3
+ϩ=str.len-Ϩ
+Ϫ=function(ϵ)
+if (not r.table.hasIndex(ϵ)) then
+(new r.Error).constructor(\\"Invalid index $0...\\",[ϵ]).throw
 end if
-return q.table[ϴ]
+return r.table[ϵ]
 end function
-Ϫ=function(ϭ,ϯ)
-return ϶(\\"&\\",ϭ,ϯ)
+ϫ=function(Ϯ,ϰ)
+return Ϸ(\\"&\\",Ϯ,ϰ)
 end function
-ϫ=function(ϭ,ϯ)
-return ϶(\\"<<\\",ϭ,ϯ)
+Ϭ=function(Ϯ,ϰ)
+return Ϸ(\\"<<\\",Ϯ,ϰ)
 end function
-Ϭ=function(ϭ,ϯ)
-return ϶(\\">>\\",ϭ,ϯ)
+ϭ=function(Ϯ,ϰ)
+return Ϸ(\\">>\\",Ϯ,ϰ)
 end function
-while z<Ϩ
-l=hash[z%hash.len-1]
-ϭ=ϫ(str[z].code+l,16)
-ϯ=ϫ(str[z+1].code+l,8)
-ϱ=str[z+2].code+l
-ϳ=ϭ+ϯ+ϱ
-y.push(ϩ(Ϫ(Ϭ(ϳ,18),Ͽ)))
-y.push(ϩ(Ϫ(Ϭ(ϳ,12),Ͽ)))
-y.push(ϩ(Ϫ(Ϭ(ϳ,6),Ͽ)))
-y.push(ϩ(Ϫ(ϳ,Ͽ)))
-z=z+3
+while _<ϩ
+n=hash[_%hash.len-1]
+Ϯ=Ϭ(str[_].code+n,16)
+ϰ=Ϭ(str[_+1].code+n,8)
+ϲ=str[_+2].code+n
+ϴ=Ϯ+ϰ+ϲ
+z.push(Ϫ(ϫ(ϭ(ϴ,18),Ѐ)))
+z.push(Ϫ(ϫ(ϭ(ϴ,12),Ѐ)))
+z.push(Ϫ(ϫ(ϭ(ϴ,6),Ѐ)))
+z.push(Ϫ(ϫ(ϴ,Ѐ)))
+_=_+3
 end while
-if (_==2) then
-l=hash[z%hash.len-1]
-ϭ=ϫ(str[z].code+l,8)
-ϯ=str[z+1].code+l
-ϳ=ϭ+ϯ
-y.push(ϩ(Ϭ(ϳ,10)))
-y.push(ϩ(Ϫ(Ϭ(ϳ,4),Ͽ)))
-y.push(ϩ(Ϫ(ϫ(ϳ,2),Ͽ)))
-y.push(\\"=\\")
-else if (_==1) then
-l=hash[z%hash.len-1]
-ϳ=str[z].code+l
-y.push(ϩ(Ϭ(ϳ,2)))
-y.push(ϩ(Ϫ(ϫ(ϳ,4),Ͽ)))
-y.push(\\"==\\")
+if (Ϩ==2) then
+n=hash[_%hash.len-1]
+Ϯ=Ϭ(str[_].code+n,8)
+ϰ=str[_+1].code+n
+ϴ=Ϯ+ϰ
+z.push(Ϫ(ϭ(ϴ,10)))
+z.push(Ϫ(ϫ(ϭ(ϴ,4),Ѐ)))
+z.push(Ϫ(ϫ(Ϭ(ϴ,2),Ѐ)))
+z.push(\\"=\\")
+else if (Ϩ==1) then
+n=hash[_%hash.len-1]
+ϴ=str[_].code+n
+z.push(Ϫ(ϭ(ϴ,2)))
+z.push(Ϫ(ϫ(Ϭ(ϴ,4),Ѐ)))
+z.push(\\"==\\")
 end if
-return y.join(\\"\\")
+return z.join(\\"\\")
 end function
-S.decrypt=function(str,t)
-q=self
-if (t==Ͼ) then t=q.defaultSecret
-hash=q.getHash(t)
-w=0
-Ϸ=hash.len
-y=[]
-ϸ=0
+T.decrypt=function(str,u)
+r=self
+if (u==Ͽ) then u=r.defaultSecret
+hash=r.getHash(u)
+y=0
+ϸ=hash.len
+z=[]
 Ϲ=0
-z=0
-w=0
-Ϩ=str.len
-Ϫ=function(ϭ,ϯ)
-return ϶(\\"&\\",ϭ,ϯ)
+Ϻ=0
+_=0
+y=0
+ϩ=str.len
+ϫ=function(Ϯ,ϰ)
+return Ϸ(\\"&\\",Ϯ,ϰ)
 end function
-Ϭ=function(ϭ,ϯ)
-return ϶(\\">>\\",ϭ,ϯ)
+ϭ=function(Ϯ,ϰ)
+return Ϸ(\\">>\\",Ϯ,ϰ)
 end function
-while z<Ϩ
-ϳ=q.table.indexOf(str[z])
-Ϻ=ϸ
-ϸ=ϸ+1
-if (Ϻ%4) then
-Ϲ=Ϲ*64+ϳ
+while _<ϩ
+ϴ=r.table.indexOf(str[_])
+ϻ=Ϲ
+Ϲ=Ϲ+1
+if (ϻ%4) then
+Ϻ=Ϻ*64+ϴ
 else
-Ϲ=ϳ
+Ϻ=ϴ
 end if
-if (Ϻ%4) then
-ϻ=(floor(w/3)*3)%Ϸ-1
-if (not hash.hasIndex(ϻ)) then break
-l=hash[ϻ]
-ϼ=Ϫ(-2*ϸ,6)
-ϼ=Ϭ(Ϲ,ϼ)
-ϼ=Ϫ(255,ϼ)
-if (ϼ!=0) then
-Ͻ=ϼ-l
-if (Ͻ>q.maxCharCode) then break
-y.push(char(Ͻ))
+if (ϻ%4) then
+ϼ=(floor(y/3)*3)%ϸ-1
+if (not hash.hasIndex(ϼ)) then break
+n=hash[ϼ]
+Ͻ=ϫ(-2*Ϲ,6)
+Ͻ=ϭ(Ϻ,Ͻ)
+Ͻ=ϫ(255,Ͻ)
+if (Ͻ!=0) then
+Ͼ=Ͻ-n
+if (Ͼ>r.maxCharCode) then break
+z.push(char(Ͼ))
 end if
-w=w+1
+y=y+1
 end if
-z=z+1
+_=_+1
 end while
-return y.join(\\"\\")
+return z.join(\\"\\")
 end function
-Z=(new S).constructor(\\"test\\")
-Ϯ=\\"abcde\\"
-ϰ=Z.encrypt(Ϯ)
-ϲ=Z.decrypt(ϰ)
-print(ϰ)
-print(ϲ)"
+ϯ=(new T).constructor(\\"test\\")
+ϱ=\\"abcde\\"
+ϳ=ϯ.encrypt(ϱ)
+d=ϯ.decrypt(ϳ)
+print(ϳ)
+print(d)"
 `;
 
 exports[`parse default scripts random.src 1`] = `
@@ -3451,57 +3451,57 @@ print(Random.seq(
 `;
 
 exports[`parse default scripts random.src uglify 1`] = `
-"globals.H=globals
-I={}
-I.pool={}
-I.defaultSeed=\\"random\\"
-I.createPool=function(Q,val)
-return {\\"seed\\":Q,\\"value\\":val,\\"generation\\":0}
+"globals.I=globals
+J={}
+J.pool={}
+J.defaultSeed=\\"random\\"
+J.createPool=function(R,val)
+return {\\"seed\\":R,\\"value\\":val,\\"generation\\":0}
 end function
-I.calcSeed=function(Q)
-R=0
-S=Q.len
-for char in Q
-R=R+char.code+S
-S=S-1
+J.calcSeed=function(R)
+S=0
+T=R.len
+for char in R
+S=S+char.code+T
+T=T-1
 end for
-return R
+return S
 end function
-I.gen=function(T,U,Q,V)
-W=self
-J=W.pool
-if (V==null) then V=1
-if (Q==null) then Q=W.defaultSeed
-if (J.hasIndex(Q)) then
-X=J[Q]
-if (not V) then return X.value
-X.generation=X.generation+1
-val=floor((rnd(X.value+X.generation)*(U-T))+T)
-X.value=val
+J.gen=function(U,V,R,W)
+X=self
+K=X.pool
+if (W==null) then W=1
+if (R==null) then R=X.defaultSeed
+if (K.hasIndex(R)) then
+Y=K[R]
+if (not W) then return Y.value
+Y.generation=Y.generation+1
+val=floor((rnd(Y.value+Y.generation)*(V-U))+U)
+Y.value=val
 return val
 end if
-R=W.calcSeed(Q)
-val=floor((rnd(R)*(U-T))+T)
-J[Q]=W.createPool(R,val)
+S=X.calcSeed(R)
+val=floor((rnd(S)*(V-U))+U)
+K[R]=X.createPool(S,val)
 return val
 end function
-I.seq=function(T,U,Q,a,b)
-W=self
-c=0
-d=[]
-while c<a
-e=W.gen(T,U,Q)
-d.push(e)
-c=c+1
+J.seq=function(U,V,R,b,c)
+X=self
+d=0
+e=[]
+while d<b
+f=X.gen(U,V,R)
+e.push(f)
+d=d+1
 end while
-if (b!=1) then W.pool.remove(Q)
-return d
+if (c!=1) then X.pool.remove(R)
+return e
 end function
-I.get=function(T,U)
-return self.gen(T,U)
+J.get=function(U,V)
+return self.gen(U,V)
 end function
-print(I.get(100,500))
-print(I.seq(100,500,\\"test\\",10))"
+print(J.get(100,500))
+print(J.seq(100,500,\\"test\\",10))"
 `;
 
 exports[`parse default scripts simple-object.src 1`] = `
@@ -3541,14 +3541,14 @@ print(test.was)"
 `;
 
 exports[`parse default scripts simple-object.src uglify 1`] = `
-"globals.H=globals
-I={}
-I.here=\\"was\\"
-I.was=function
+"globals.I=globals
+J={}
+J.here=\\"was\\"
+J.was=function
 super.here
 print(self.here)
 end function
-print(I.was)"
+print(J.was)"
 `;
 
 exports[`parse default scripts slice.src 1`] = `
@@ -3603,19 +3603,19 @@ print(divideString(\\"blahhblahhblahhblahhblahhblahhgad\\", 5))"
 `;
 
 exports[`parse default scripts slice.src uglify 1`] = `
-"globals.H=globals
-I=function(str,J)
-K=0
-L=str.len
-M=[]
-while K<L
-N=K+J
-M.push(str[K:N])
-K=N
+"globals.I=globals
+J=function(str,K)
+L=0
+M=str.len
+N=[]
+while L<M
+O=L+K
+N.push(str[L:O])
+L=O
 end while
-return M
+return N
 end function
-print(I(\\"blahhblahhblahhblahhblahhblahhgad\\",5))"
+print(J(\\"blahhblahhblahhblahhblahhblahhgad\\",5))"
 `;
 
 exports[`parse default scripts unary.src 1`] = `
@@ -3657,15 +3657,15 @@ print(-(1 + 2))"
 `;
 
 exports[`parse default scripts unary.src uglify 1`] = `
-"globals.H=globals
-H.J=\\"was\\"
-I=function
+"globals.I=globals
+I.K=\\"was\\"
+J=function
 return null
 end function
-print(@J.split and (0 or not 0))
-print(@(J.split and (0 or not 0)))
-print(not J.split and (0 or not 0))
-print(not (J.split and (0 or not 0)))
+print(@K.split and (0 or not 0))
+print(@(K.split and (0 or not 0)))
+print(not K.split and (0 or not 0))
+print(not (K.split and (0 or not 0)))
 print(-1+2)
 print(-(1+2))"
 `;
