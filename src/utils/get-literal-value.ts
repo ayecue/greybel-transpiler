@@ -5,7 +5,10 @@ import {
   ASTType
 } from 'miniscript-core';
 
-export const getLiteralRawValue = (literal: ASTLiteral, allowShortened: boolean = false): string => {
+export const getLiteralRawValue = (
+  literal: ASTLiteral,
+  allowShortened: boolean = false
+): string => {
   switch (literal.type) {
     case ASTType.NilLiteral:
       return 'null';
@@ -16,7 +19,9 @@ export const getLiteralRawValue = (literal: ASTLiteral, allowShortened: boolean 
     case ASTType.BooleanLiteral: {
       const booleanLiteral = literal as ASTBooleanLiteral;
       const value = allowShortened
-        ? (booleanLiteral.raw === 'true' ? '1' : '0')
+        ? booleanLiteral.raw === 'true'
+          ? '1'
+          : '0'
         : booleanLiteral.raw;
       return `${booleanLiteral.negated ? '-' : ''}${value}`;
     }

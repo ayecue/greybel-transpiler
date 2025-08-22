@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import { ASTChunkGreybel } from 'greybel-core';
-import { ASTBase, ASTRange } from 'miniscript-core'
+import { ASTBase, ASTRange } from 'miniscript-core';
 
 import { ChunkProviderLike } from '../types/chunk-provider';
 import { Resource, ResourceLoadState } from '../types/resource';
@@ -76,7 +76,10 @@ export class ResourceManager
     return relativePathMapping;
   }
 
-  protected async createInjection(target: string, resLoadOrigin: ResourceLoadOrigin): Promise<string> {
+  protected async createInjection(
+    target: string,
+    resLoadOrigin: ResourceLoadOrigin
+  ): Promise<string> {
     const cachedInjection = this.injections.get(target);
 
     if (cachedInjection !== undefined) {
@@ -86,7 +89,9 @@ export class ResourceManager
     if (!(await this.resourceHandler.has(target))) {
       throw new BuildError('Injection ' + target + ' does not exist...', {
         target: resLoadOrigin.target,
-        range: resLoadOrigin.ref ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end) : null
+        range: resLoadOrigin.ref
+          ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end)
+          : null
       });
     }
 
@@ -94,13 +99,18 @@ export class ResourceManager
     this.injections.set(target, content);
   }
 
-  protected async createResource(target: string, resLoadOrigin: ResourceLoadOrigin): Promise<Resource> {
+  protected async createResource(
+    target: string,
+    resLoadOrigin: ResourceLoadOrigin
+  ): Promise<Resource> {
     const fileExists = await this.resourceHandler.has(target);
 
     if (!fileExists) {
       throw new BuildError('Dependency ' + target + ' does not exist...', {
         target: resLoadOrigin.target,
-        range: resLoadOrigin.ref ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end) : null
+        range: resLoadOrigin.ref
+          ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end)
+          : null
       });
     }
 
@@ -119,20 +129,21 @@ export class ResourceManager
 
   protected async enrichResource(resource: Resource): Promise<void> {
     const { imports, includes, injects } = resource.chunk;
-    const resourcePaths: { ref: ASTBase, resolved: string }[] = await Promise.all([
-      ...imports.map(async (item) => {
-        return {
-          ref: item,
-          resolved: await this.createMapping(resource.target, item.path)
-        };
-      }),
-      ...includes.map(async (item) => {
-        return {
-          ref: item,
-          resolved: await this.createMapping(resource.target, item.path)
-        };
-      })
-    ]);
+    const resourcePaths: { ref: ASTBase; resolved: string }[] =
+      await Promise.all([
+        ...imports.map(async (item) => {
+          return {
+            ref: item,
+            resolved: await this.createMapping(resource.target, item.path)
+          };
+        }),
+        ...includes.map(async (item) => {
+          return {
+            ref: item,
+            resolved: await this.createMapping(resource.target, item.path)
+          };
+        })
+      ]);
 
     await Promise.all([
       ...resourcePaths.map(async (resourcePath) => {
@@ -151,7 +162,10 @@ export class ResourceManager
     ]);
   }
 
-  protected async loadResource(target: string, resLoadOrigin: ResourceLoadOrigin): Promise<Resource> {
+  protected async loadResource(
+    target: string,
+    resLoadOrigin: ResourceLoadOrigin
+  ): Promise<Resource> {
     const pendingRequest = this.loadRequests.get(target);
 
     if (pendingRequest !== undefined) {
