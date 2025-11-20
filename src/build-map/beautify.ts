@@ -138,9 +138,17 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         }
 
         const before = line.comments.filter((node) => node.isBefore);
-        const beforeOutput = before.map(commentToText).join('');
+        const beforeOutput = before
+          .map((it) =>
+            commentToText(it, this.transformer.buildOptions.isDevMode)
+          )
+          .join('');
         const after = line.comments.filter((node) => !node.isBefore);
-        const afterOutput = after.map(commentToText).join('');
+        const afterOutput = after
+          .map((it) =>
+            commentToText(it, this.transformer.buildOptions.isDevMode)
+          )
+          .join('');
 
         if (
           actualContent.length === 0 &&
@@ -150,7 +158,13 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
           return '';
         }
 
-        if (actualContent.length > 0 && before.length > 0) {
+        // if dev mode is off commentToText will include a line break for multiline comments
+        // at the end thus we don't need to add extra space
+        if (
+          actualContent.length > 0 &&
+          before.length > 0 &&
+          this.transformer.buildOptions.isDevMode
+        ) {
           output = ' ' + output;
         }
 

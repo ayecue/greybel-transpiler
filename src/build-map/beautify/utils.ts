@@ -83,18 +83,34 @@ export interface CommentNode {
   value: string;
 }
 
-export const commentToText = (node: CommentNode) => {
+export const commentToText = (node: CommentNode, isDevMode: boolean) => {
+  const value = node.value.trim();
+
   if (node.isMultiline) {
-    if (node.isStart && !node.isEnd) {
-      return '/* ' + node.value.trim();
-    } else if (!node.isStart && node.isEnd) {
-      return node.value.trim() + ' */';
-    } else if (node.isStart && node.isEnd) {
-      return '/* ' + node.value.trim() + ' */';
+    if (!isDevMode) {
+      const output = value.length > 0 ? '// ' + value : '//';
+
+      if (node.isStart && !node.isEnd) {
+        return output;
+      } else if (!node.isStart && node.isEnd) {
+        return output + '\n';
+      } else if (node.isStart && node.isEnd) {
+        return output + '\n';
+      }
+
+      return output;
     }
 
-    return node.value.trim();
+    if (node.isStart && !node.isEnd) {
+      return '/* ' + value;
+    } else if (!node.isStart && node.isEnd) {
+      return value + ' */';
+    } else if (node.isStart && node.isEnd) {
+      return '/* ' + value + ' */';
+    }
+
+    return value;
   }
 
-  return '// ' + node.value.trim();
+  return value.length > 0 ? '// ' + value : '//';
 };
