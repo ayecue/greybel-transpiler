@@ -4050,7 +4050,8 @@ my Test
 
 another comment
 
- */// one line comment",
+ */
+// one line comment",
 ]
 `;
 

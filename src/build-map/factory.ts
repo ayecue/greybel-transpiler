@@ -5,6 +5,7 @@ import type {
   TransformerDataObject,
   TransformerLike
 } from '../types/transformer';
+import { CommentNode } from './beautify/comment-attach';
 import { Stack } from '../utils/stack';
 
 export interface DefaultFactoryOptions {
@@ -76,8 +77,20 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
     this._activeLine.segments.push(segment);
   }
 
-  pushComment(lineNr: number) {
-    throw new Error('Not implemented');
+  /**
+   * Consume trailing comments for a source line number.
+   * Override in subclasses that support inline comments.
+   */
+  pushComment(_lineNr: number): void {
+    // No-op by default. Override in BeautifyFactory.
+  }
+
+  /**
+   * Emit comment lines as separate output lines (for leading/dangling comments).
+   * Override in subclasses that support comments.
+   */
+  emitCommentLines(comments: CommentNode[], indent: string): void {
+    // No-op by default. Override in BeautifyFactory.
   }
 
   createLine(): Line {

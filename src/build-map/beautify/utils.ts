@@ -11,6 +11,7 @@ import {
   ASTType,
   Operator
 } from 'miniscript-core';
+import type { CommentNode } from './comment-attach';
 
 export const SHORTHAND_OPERATORS = [
   Operator.Plus,
@@ -75,38 +76,22 @@ export const hasEmptyBody = (body: ASTBase[]) => {
   return !body.some((it) => !(it instanceof ASTComment));
 };
 
-export interface CommentNode {
-  isMultiline: boolean;
-  isStart: boolean;
-  isEnd: boolean;
-  isBefore: boolean;
-  value: string;
-}
-
 export const commentToText = (node: CommentNode, isDevMode: boolean) => {
   const value = node.value.trim();
 
   if (node.isMultiline) {
     if (!isDevMode) {
-      const output = value.length > 0 ? '// ' + value : '//';
-
-      if (node.isStart && !node.isEnd) {
-        return output;
-      } else if (!node.isStart && node.isEnd) {
-        return output + '\n';
-      } else if (node.isStart && node.isEnd) {
-        return output + '\n';
-      }
-
-      return output;
+      // Convert block comment segments to // style
+      return value.length > 0 ? '// ' + value : '//';
     }
 
-    if (node.isStart && !node.isEnd) {
-      return '/* ' + value;
-    } else if (!node.isStart && node.isEnd) {
-      return value + ' */';
-    } else if (node.isStart && node.isEnd) {
+    // Dev mode: preserve /* */ syntax
+    if (node.isStart && node.isEnd) {
       return '/* ' + value + ' */';
+    } else if (node.isStart) {
+      return '/* ' + value;
+    } else if (node.isEnd) {
+      return value + ' */';
     }
 
     return value;

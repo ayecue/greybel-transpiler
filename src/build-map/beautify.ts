@@ -47,14 +47,16 @@ import {
   getLiteralRawValue,
   getLiteralValue
 } from '../utils/get-literal-value';
-import { BeautifyBodyIterator, FILLER_TYPE } from './beautify/body-iterator';
+import { iterateBody, FILLER_TYPE } from './beautify/body-iterator';
+import {
+  CommentNode
+} from './beautify/comment-attach';
 import {
   BeautifyContext,
   BeautifyContextOptions,
   IndentationType
 } from './beautify/context';
 import {
-  CommentNode,
   commentToText,
   countRightBinaryExpressions,
   SHORTHAND_OPERATORS,
@@ -64,7 +66,13 @@ import { Factory, Line, LineRef } from './factory';
 
 export type BeautifyOptions = Partial<BeautifyContextOptions>;
 
+/**
+ * Output line with optional attached comment nodes for post-processing.
+ * - beforeComments: rendered before code (from isStatement=true multiline)
+ * - comments: rendered after code (trailing inline)
+ */
 export interface BeautifyLine extends Line {
+  beforeComments: CommentNode[];
   comments: CommentNode[];
 }
 
@@ -95,24 +103,50 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
   createLine(): BeautifyLine {
     return {
       segments: [],
+      beforeComments: [],
       comments: []
     };
   }
 
+  /**
+   * Push a text segment to the active output line.
+   * When a source-line reference is provided, also consumes:
+   * - "before" bucket (isStatement=true multiline segments before code)
+   * - trailing bucket (isStatement=false inline/multiline segments after code)
+   */
   pushSegment(segment: string, item?: LineRef): void {
     this._activeLine.segments.push(segment);
-    if (item == null) return;
-    this.pushComment(item.start.line);
+    if (item) {
+      // Consume "before-code" multiline segments for this line
+      const before = this.context.consumeBeforeBucket(item.start.line);
+      if (before && before.length > 0) {
+        this._activeLine.beforeComments.push(...before);
+      }
+      // Consume "after-code" trailing comments for this line
+      this.pushComment(item.start.line);
+    }
   }
 
+  /**
+   * Consume trailing-bucket comments for a source line number.
+   * Adds them to the active output line's comment array for inline rendering.
+   */
   pushComment(lineNr: number): void {
-    const chunk = this.context.getCurrentChunk();
-    const context = this.context.getChunkContext(chunk);
-    const comments = context.commentBuckets.get(lineNr);
-
-    if (comments) {
+    const comments = this.context.consumeTrailingBucket(lineNr);
+    if (comments && comments.length > 0) {
       this._activeLine.comments.push(...comments);
-      context.commentBuckets.delete(lineNr);
+    }
+  }
+
+  /**
+   * Emit leading or dangling comments as separate output lines.
+   * Each CommentNode becomes its own line with the given indentation.
+   */
+  emitCommentLines(comments: CommentNode[], indent: string): void {
+    const isDevMode = this.transformer.buildOptions.isDevMode;
+    for (const node of comments) {
+      this._activeLine.segments.push(indent + commentToText(node, isDevMode));
+      this.eol();
     }
   }
 
@@ -124,57 +158,77 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
     this.process(item);
 
-    return this._lines
-      .map((line) => {
-        let output = line.segments.join('');
-        const actualContent = output.trim();
+    const isDevMode = this.transformer.buildOptions.isDevMode;
+    const output: string[] = [];
 
-        if (line.comments.length === 0) {
-          if (actualContent.length === 0) {
-            return '';
+    for (const line of this._lines) {
+      const code = line.segments.join('');
+      const actualContent = code.trim();
+      const hasBefore = line.beforeComments.length > 0;
+      const hasAfter = line.comments.length > 0;
+
+      // No comments at all — just output code or empty line
+      if (!hasBefore && !hasAfter) {
+        output.push(actualContent.length === 0 ? '' : code);
+        continue;
+      }
+
+      // Handle "before-code" comments (from isStatement=true multiline)
+      if (hasBefore) {
+        if (isDevMode) {
+          // Dev mode: render before-comments inline BEFORE code on the same line.
+          // e.g., "** */ print("test") /* " where "** */" is a before-comment.
+          const beforeText = line.beforeComments
+            .map((c) => commentToText(c, isDevMode))
+            .join('');
+
+          const afterText = hasAfter
+            ? ' ' + line.comments.map((c) => commentToText(c, isDevMode)).join('')
+            : '';
+
+          if (actualContent.length > 0) {
+            output.push(beforeText + ' ' + code.trimStart() + afterText);
+          } else {
+            output.push(beforeText + afterText);
           }
-
-          return output;
+          continue;
         }
 
-        const before = line.comments.filter((node) => node.isBefore);
-        const beforeOutput = before
-          .map((it) =>
-            commentToText(it, this.transformer.buildOptions.isDevMode)
-          )
-          .join('');
-        const after = line.comments.filter((node) => !node.isBefore);
-        const afterOutput = after
-          .map((it) =>
-            commentToText(it, this.transformer.buildOptions.isDevMode)
-          )
-          .join('');
-
-        if (
-          actualContent.length === 0 &&
-          before.length === 0 &&
-          after.length === 0
-        ) {
-          return '';
+        // Non-dev mode: before-comments go on their own line(s) before code
+        for (const bc of line.beforeComments) {
+          output.push(commentToText(bc, isDevMode));
         }
+      }
 
-        // if dev mode is off commentToText will include a line break for multiline comments
-        // at the end thus we don't need to add extra space
-        if (
-          actualContent.length > 0 &&
-          before.length > 0 &&
-          this.transformer.buildOptions.isDevMode
-        ) {
-          output = ' ' + output;
+      // Handle "after-code" trailing comments
+      if (!hasAfter) {
+        output.push(actualContent.length === 0 ? '' : code);
+        continue;
+      }
+
+      // First trailing comment goes inline with code
+      const firstComment = commentToText(line.comments[0], isDevMode);
+
+      if (actualContent.length > 0) {
+        if (firstComment.length > 0) {
+          output.push(code + ' ' + firstComment);
+        } else {
+          output.push(code);
         }
+      } else if (firstComment.length > 0) {
+        output.push(code + firstComment);
+      } else {
+        output.push('');
+      }
 
-        if (actualContent.length > 0 && after.length > 0) {
-          output = output + ' ';
-        }
+      // Remaining trailing comments on their own lines
+      for (let i = 1; i < line.comments.length; i++) {
+        const text = commentToText(line.comments[i], isDevMode);
+        output.push(text);
+      }
+    }
 
-        return beforeOutput + output + afterOutput;
-      })
-      .join('\n');
+    return output.join('\n');
   }
 
   handlers: Record<
@@ -305,25 +359,20 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         });
         this.eol();
 
-        const iterator = new BeautifyBodyIterator(item, item.fields);
-        let next = iterator.next();
+        const iterator = iterateBody(item, item.fields);
 
-        while (!next.done) {
-          const current = next.value as ASTMapKeyString;
-
+        for (const current of iterator) {
           if (current.type === FILLER_TYPE) {
             this.pushSegment(this.context.getIndent());
             this.pushComment(current.start.line);
             this.eol();
-            next = iterator.next();
             continue;
           }
 
           this.pushSegment(this.context.getIndent(), current);
-          this.process(current);
+          this.process(current as ASTMapKeyString);
           this.pushSegment(',', current);
           this.eol();
-          next = iterator.next();
         }
 
         this.context.decIndent();
@@ -860,25 +909,20 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         });
         this.eol();
 
-        const iterator = new BeautifyBodyIterator(item, item.fields);
-        let next = iterator.next();
+        const iterator = iterateBody(item, item.fields);
 
-        while (!next.done) {
-          const current = next.value as ASTListValue;
-
+        for (const current of iterator) {
           if (current.type === FILLER_TYPE) {
             this.pushSegment(this.context.getIndent());
             this.pushComment(current.start.line);
             this.eol();
-            next = iterator.next();
             continue;
           }
 
           this.pushSegment(this.context.getIndent(), current);
-          this.process(current);
+          this.process(current as ASTListValue);
           this.pushSegment(',', current);
           this.eol();
-          next = iterator.next();
         }
 
         this.context.decIndent();

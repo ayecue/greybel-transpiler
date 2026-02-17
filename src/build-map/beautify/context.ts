@@ -1,18 +1,16 @@
 import {
   ASTBase,
   ASTBaseBlock,
-  ASTChunk,
-  ASTComment,
-  ASTForGenericStatement,
-  ASTIfClause,
-  ASTIfStatement,
-  ASTType,
-  ASTWhileStatement
+  ASTChunk
 } from 'miniscript-core';
 
 import { DefaultFactoryOptions, Factory } from '../factory';
-import { BeautifyBodyIterator, FILLER_TYPE } from './body-iterator';
-import { CommentNode } from './utils';
+import { iterateBody, FILLER_TYPE } from './body-iterator';
+import {
+  processComments,
+  CommentAttachmentResult,
+  CommentNode
+} from './comment-attach';
 
 export enum IndentationType {
   Tab,
@@ -27,7 +25,8 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
 }
 
 export interface ChunkContext {
-  commentBuckets: Map<number, CommentNode[]>;
+  /** The full result from processComments */
+  result: CommentAttachmentResult;
 }
 
 export class BeautifyContext {
@@ -66,66 +65,12 @@ export class BeautifyContext {
             ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
   }
 
+  /**
+   * Builds the chunk context by running the hybrid comment attachment algorithm.
+   */
   private buildChunkContext(chunk: ASTChunk): ChunkContext {
-    const commentBuckets: Map<number, CommentNode[]> = new Map();
-    const lineIdxs = Object.keys(chunk.lines);
-    const visited = new Set<ASTComment>();
-
-    for (let i = 0; i < lineIdxs.length; i++) {
-      const nr = Number(lineIdxs[i]);
-      const line = chunk.lines[nr];
-      const comments = line.filter(
-        (it) => it.type === ASTType.Comment
-      ) as ASTComment[];
-
-      for (let j = 0; j < comments.length; j++) {
-        const comment = comments[j];
-        if (visited.has(comment)) continue;
-        visited.add(comment);
-
-        if (comment.isMultiline) {
-          const commentLines = comment.value.split('\n');
-          commentLines.forEach((segment, offset) => {
-            const currentNr = nr + offset;
-
-            if (!commentBuckets.has(currentNr)) {
-              commentBuckets.set(currentNr, []);
-            }
-
-            const line = chunk.lines[currentNr];
-            const nodes = line
-              .filter((it) => it.type !== ASTType.Comment)
-              .map((it) => it.start.character);
-            const firstNode = nodes.length > 0 ? Math.min(...nodes) : -1;
-            const isStart = currentNr === nr;
-            const isEnd = currentNr === nr + commentLines.length - 1;
-            const isBefore = isEnd ? comment.end.character < firstNode : false;
-
-            commentBuckets.get(currentNr).push({
-              isMultiline: true,
-              isStart,
-              isEnd,
-              isBefore,
-              value: segment
-            });
-          });
-        } else {
-          if (!commentBuckets.has(nr)) {
-            commentBuckets.set(nr, []);
-          }
-          commentBuckets.get(nr).push({
-            isMultiline: false,
-            isStart: false,
-            isEnd: false,
-            isBefore: false,
-            value: comment.value
-          });
-        }
-      }
-    }
-
     return {
-      commentBuckets
+      result: processComments(chunk)
     };
   }
 
@@ -162,52 +107,137 @@ export class BeautifyContext {
     this._indent--;
   }
 
-  getBlockOpenerEndLine(block: ASTBaseBlock): number {
-    if (block instanceof ASTIfClause) {
-      return block.condition.end.line;
-    } else if (block instanceof ASTWhileStatement) {
-      return block.condition.end.line;
-    } else if (block instanceof ASTForGenericStatement) {
-      return block.iterator.end.line;
-    } else if (block instanceof ASTChunk) {
-      return block.start.line - 1;
-    }
-
-    return block.start.line;
+  /**
+   * Get leading comments structurally attached to a body item.
+   */
+  getLeadingComments(node: ASTBase): CommentNode[] {
+    const chunk = this.getCurrentChunk();
+    const ctx = this.getChunkContext(chunk);
+    if (!ctx) return [];
+    return ctx.result.leadingComments.get(node) || [];
   }
 
-  getPreviousEndLine(item: ASTBase): number {
-    if (item == null) {
-      return 0;
-    } else if (item.type === ASTType.IfShortcutStatement) {
-      const ifShortcut = item as ASTIfStatement;
-      return ifShortcut.clauses[ifShortcut.clauses.length - 1].body[0].end.line;
-    }
+  /**
+   * Get dangling comments for a block (empty blocks or after last body item).
+   */
+  getDanglingComments(block: ASTBaseBlock): CommentNode[] {
+    const chunk = this.getCurrentChunk();
+    const ctx = this.getChunkContext(chunk);
+    if (!ctx) return [];
+    return ctx.result.danglingComments.get(block) || [];
+  }
 
-    return item.end.line;
+  /**
+   * Consume trailing comments for a source line number.
+   * Returns the comments and removes them from the bucket (single-use).
+   */
+  consumeTrailingBucket(lineNr: number): CommentNode[] | undefined {
+    const chunk = this.getCurrentChunk();
+    const ctx = this.getChunkContext(chunk);
+    if (!ctx) return undefined;
+    const comments = ctx.result.trailingBuckets.get(lineNr);
+    if (comments) {
+      ctx.result.trailingBuckets.delete(lineNr);
+    }
+    return comments;
+  }
+
+  consumeBeforeBucket(lineNr: number): CommentNode[] | undefined {
+    const chunk = this.getCurrentChunk();
+    const ctx = this.getChunkContext(chunk);
+    if (!ctx) return undefined;
+    const comments = ctx.result.beforeBuckets.get(lineNr);
+    if (comments) {
+      ctx.result.beforeBuckets.delete(lineNr);
+    }
+    return comments;
   }
 
   buildBlock(block: ASTBaseBlock): void {
-    const iterator = new BeautifyBodyIterator(block, block.body);
-    let next = iterator.next();
+    const danglingComments = this.getDanglingComments(block);
 
-    while (!next.done) {
-      const current = next.value;
+    // Empty block with dangling comments
+    if (block.body.length === 0 && danglingComments.length > 0) {
+      this.factory.emitCommentLines(danglingComments, this.getIndent());
+      return;
+    }
 
+    let pendingFillers = 0;
+    let pendingFillerComments: CommentNode[] = [];
+
+    for (const current of iterateBody(block, block.body)) {
       if (current.type === FILLER_TYPE) {
-        this.factory.pushSegment(this.getIndent());
-        this.factory.pushComment(current.start.line);
-        this.factory.eol();
-        next = iterator.next();
+        pendingFillers++;
+
+        const beforeComments = this.consumeBeforeBucket(
+          current.start.line
+        );
+        if (beforeComments && beforeComments.length > 0) {
+          pendingFillerComments.push(...beforeComments);
+        }
+        const trailingComments = this.consumeTrailingBucket(
+          current.start.line
+        );
+        if (trailingComments && trailingComments.length > 0) {
+          pendingFillerComments.push(...trailingComments);
+        }
+
         continue;
       }
 
+      // Current is a real body item — flush pending fillers
+      const leadingComments = this.getLeadingComments(current);
+      const commentLineCount =
+        leadingComments.length + pendingFillerComments.length;
+      const blanks = Math.max(pendingFillers - commentLineCount, 0);
+
+      for (let i = 0; i < blanks; i++) {
+        this.factory.pushSegment(this.getIndent());
+        this.factory.eol();
+      }
+
+      // Emit filler-carried comments (multiline segments on blank lines)
+      if (pendingFillerComments.length > 0) {
+        this.factory.emitCommentLines(
+          pendingFillerComments,
+          this.getIndent()
+        );
+        pendingFillerComments = [];
+      }
+
+      // Emit structural leading comments
+      if (leadingComments.length > 0) {
+        this.factory.emitCommentLines(leadingComments, this.getIndent());
+      }
+
+      pendingFillers = 0;
+
+      // Process the body item itself
       this.factory.pushSegment(this.getIndent());
       this.factory.process(current, {
         isCommand: true
       });
       this.factory.eol();
-      next = iterator.next();
+    }
+
+    // Handle trailing fillers (blank lines before block-end keyword)
+    const danglingLineCount =
+      danglingComments.length + pendingFillerComments.length;
+    const trailingBlanks = Math.max(pendingFillers - danglingLineCount, 0);
+
+    for (let i = 0; i < trailingBlanks; i++) {
+      this.factory.pushSegment(this.getIndent());
+      this.factory.eol();
+    }
+
+    // Emit any filler-carried comments from trailing fillers
+    if (pendingFillerComments.length > 0) {
+      this.factory.emitCommentLines(pendingFillerComments, this.getIndent());
+    }
+
+    // Emit dangling comments at block end
+    if (danglingComments.length > 0) {
+      this.factory.emitCommentLines(danglingComments, this.getIndent());
     }
   }
 }

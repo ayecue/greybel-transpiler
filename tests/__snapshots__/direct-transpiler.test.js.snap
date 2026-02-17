@@ -1758,7 +1758,8 @@ my Test
 
 another comment
 
- */// one line comment"
+ */
+// one line comment"
 `;
 
 exports[`parse default scripts multiline-comment.src uglify 1`] = `
