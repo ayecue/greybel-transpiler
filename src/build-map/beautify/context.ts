@@ -1,18 +1,12 @@
 import {
+  ASTAssignmentStatement,
   ASTBase,
   ASTBaseBlock,
-  ASTChunk,
-  ASTComment,
-  ASTForGenericStatement,
-  ASTIfClause,
-  ASTIfStatement,
-  ASTType,
-  ASTWhileStatement
+  ASTType
 } from 'miniscript-core';
 
 import { DefaultFactoryOptions, Factory } from '../factory';
-import { BeautifyBodyIterator, FILLER_TYPE } from './body-iterator';
-import { CommentNode } from './utils';
+import { commentToText } from './utils';
 
 export enum IndentationType {
   Tab,
@@ -24,10 +18,7 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
   indentation: IndentationType;
   indentationSpaces: number;
   isDevMode: boolean;
-}
-
-export interface ChunkContext {
-  commentBuckets: Map<number, CommentNode[]>;
+  optimizeAssignment: boolean;
 }
 
 export class BeautifyContext {
@@ -36,8 +27,6 @@ export class BeautifyContext {
   private factory: Factory<Partial<BeautifyContextOptions>>;
   private _indent: number;
   private _isMultilineAllowed: boolean;
-  private _stack: ASTChunk[];
-  private _contexts: Map<ASTChunk, ChunkContext>;
 
   public getIndent: (offset?: number) => string;
 
@@ -56,94 +45,12 @@ export class BeautifyContext {
     this.factory = factory;
     this.options = options;
     this._indent = 0;
-    this._stack = [];
-    this._contexts = new Map();
     this._isMultilineAllowed = true;
     this.getIndent =
       options.indentation === IndentationType.Tab
         ? (offset: number = 0) => '\t'.repeat(this._indent + offset)
         : (offset: number = 0) =>
             ' '.repeat(options.indentationSpaces).repeat(this._indent + offset);
-  }
-
-  private buildChunkContext(chunk: ASTChunk): ChunkContext {
-    const commentBuckets: Map<number, CommentNode[]> = new Map();
-    const lineIdxs = Object.keys(chunk.lines);
-    const visited = new Set<ASTComment>();
-
-    for (let i = 0; i < lineIdxs.length; i++) {
-      const nr = Number(lineIdxs[i]);
-      const line = chunk.lines[nr];
-      const comments = line.filter(
-        (it) => it.type === ASTType.Comment
-      ) as ASTComment[];
-
-      for (let j = 0; j < comments.length; j++) {
-        const comment = comments[j];
-        if (visited.has(comment)) continue;
-        visited.add(comment);
-
-        if (comment.isMultiline) {
-          const commentLines = comment.value.split('\n');
-          commentLines.forEach((segment, offset) => {
-            const currentNr = nr + offset;
-
-            if (!commentBuckets.has(currentNr)) {
-              commentBuckets.set(currentNr, []);
-            }
-
-            const line = chunk.lines[currentNr];
-            const nodes = line
-              .filter((it) => it.type !== ASTType.Comment)
-              .map((it) => it.start.character);
-            const firstNode = nodes.length > 0 ? Math.min(...nodes) : -1;
-            const isStart = currentNr === nr;
-            const isEnd = currentNr === nr + commentLines.length - 1;
-            const isBefore = isEnd ? comment.end.character < firstNode : false;
-
-            commentBuckets.get(currentNr).push({
-              isMultiline: true,
-              isStart,
-              isEnd,
-              isBefore,
-              value: segment
-            });
-          });
-        } else {
-          if (!commentBuckets.has(nr)) {
-            commentBuckets.set(nr, []);
-          }
-          commentBuckets.get(nr).push({
-            isMultiline: false,
-            isStart: false,
-            isEnd: false,
-            isBefore: false,
-            value: comment.value
-          });
-        }
-      }
-    }
-
-    return {
-      commentBuckets
-    };
-  }
-
-  getChunkContext(chunk: ASTChunk): ChunkContext {
-    return this._contexts.get(chunk);
-  }
-
-  getCurrentChunk() {
-    return this._stack[this._stack.length - 1];
-  }
-
-  pushStack(chunk: ASTChunk) {
-    this._stack.push(chunk);
-    this._contexts.set(chunk, this.buildChunkContext(chunk));
-  }
-
-  popStack() {
-    this._stack.pop();
   }
 
   disableMultiline() {
@@ -162,52 +69,107 @@ export class BeautifyContext {
     this._indent--;
   }
 
-  getBlockOpenerEndLine(block: ASTBaseBlock): number {
-    if (block instanceof ASTIfClause) {
-      return block.condition.end.line;
-    } else if (block instanceof ASTWhileStatement) {
-      return block.condition.end.line;
-    } else if (block instanceof ASTForGenericStatement) {
-      return block.iterator.end.line;
-    } else if (block instanceof ASTChunk) {
-      return block.start.line - 1;
-    }
+  emitLeadingComments(node: ASTBase): void {
+    const comments = node.leadingComments;
+    if (!comments || comments.length === 0) return;
 
-    return block.start.line;
+    const indent = this.getIndent();
+    const isDevMode = this.options.isDevMode;
+    for (const value of comments) {
+      this.factory.pushSegment(indent + commentToText(value, isDevMode));
+      this.factory.eol();
+    }
   }
 
-  getPreviousEndLine(item: ASTBase): number {
-    if (item == null) {
-      return 0;
-    } else if (item.type === ASTType.IfShortcutStatement) {
-      const ifShortcut = item as ASTIfStatement;
-      return ifShortcut.clauses[ifShortcut.clauses.length - 1].body[0].end.line;
-    }
+  emitTrailingComments(node: ASTBase): void {
+    const comments = node.trailingComments;
+    if (!comments || comments.length === 0) return;
 
-    return item.end.line;
+    const isDevMode = this.options.isDevMode;
+    for (const value of comments) {
+      const text = commentToText(value, isDevMode);
+      if (text.length > 0) {
+        this.factory.appendTrailingComment(text);
+      }
+    }
+  }
+
+  emitEndTrailingComments(node: ASTBase): void {
+    const comments = node.endTrailingComments;
+    if (!comments || comments.length === 0) return;
+
+    const isDevMode = this.options.isDevMode;
+    for (const value of comments) {
+      const text = commentToText(value, isDevMode);
+      if (text.length > 0) {
+        this.factory.appendTrailingComment(text);
+      }
+    }
+  }
+
+  emitTrailingCommentsToLine(node: ASTBase, lineIndex: number): void {
+    const comments = node.trailingComments;
+    if (!comments || comments.length === 0) return;
+
+    const isDevMode = this.options.isDevMode;
+    for (const value of comments) {
+      const text = commentToText(value, isDevMode);
+      if (text.length > 0) {
+        this.factory.appendTrailingCommentToLine(lineIndex, text);
+      }
+    }
+  }
+
+  private isBlockStatement(node: ASTBase): boolean {
+    switch (node.type) {
+      case ASTType.ForGenericStatement:
+      case ASTType.WhileStatement:
+      case ASTType.IfStatement:
+        return true;
+      case ASTType.AssignmentStatement:
+        return (
+          (node as ASTAssignmentStatement).init?.type ===
+          ASTType.FunctionDeclaration
+        );
+      default:
+        return false;
+    }
   }
 
   buildBlock(block: ASTBaseBlock): void {
-    const iterator = new BeautifyBodyIterator(block, block.body);
-    let next = iterator.next();
-
-    while (!next.done) {
-      const current = next.value;
-
-      if (current.type === FILLER_TYPE) {
-        this.factory.pushSegment(this.getIndent());
-        this.factory.pushComment(current.start.line);
-        this.factory.eol();
-        next = iterator.next();
+    for (const current of block.body) {
+      if (current.type === ASTType.NoopStatement) {
+        // NoopStatement = blank line. Emit its leading comments if any.
+        if (current.leadingComments && current.leadingComments.length > 0) {
+          this.emitLeadingComments(current);
+        } else {
+          // Plain blank line
+          this.factory.pushSegment(this.getIndent());
+          this.factory.eol();
+        }
         continue;
       }
 
+      // Emit leading comments for this body item
+      this.emitLeadingComments(current);
+
+      // Process the body item itself
       this.factory.pushSegment(this.getIndent());
-      this.factory.process(current, {
-        isCommand: true
-      });
+
+      const lineCountBefore = this.factory.lines.length;
+      this.factory.process(current, { isCommand: true });
+      const lineCountAfter = this.factory.lines.length;
+
+      // For multi-line block statements (for/while/if/function), trailing
+      // comments belong on the opener line, not the closer (end X) line.
+      if (lineCountAfter > lineCountBefore && this.isBlockStatement(current)) {
+        this.emitTrailingCommentsToLine(current, lineCountBefore);
+        this.emitEndTrailingComments(current);
+      } else {
+        this.emitTrailingComments(current);
+      }
+
       this.factory.eol();
-      next = iterator.next();
     }
   }
 }

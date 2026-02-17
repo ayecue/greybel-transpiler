@@ -13,7 +13,6 @@ import {
   ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
-  ASTComment,
   ASTComparisonGroupExpression,
   ASTElseClause,
   ASTForGenericStatement,
@@ -34,6 +33,7 @@ import {
   ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
+  ASTType,
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
@@ -75,22 +75,12 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.process(item.expression);
       this.pushSegment(')');
     },
-    Comment: function (
+    NoopStatement: function (
       this: DefaultFactory,
-      item: ASTComment,
+      _item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      if (item.isMultiline) {
-        this.pushSegment(
-          item.value
-            .split('\n')
-            .map((line) => `//${line}`)
-            .join('\n')
-        );
-        return;
-      }
-
-      this.pushSegment('//' + item.value);
+      // Skip blank lines in default mode
     },
     AssignmentStatement: function (
       this: DefaultFactory,
@@ -137,6 +127,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -201,6 +192,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -359,6 +351,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -387,6 +380,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -402,6 +396,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -415,6 +410,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -537,7 +533,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment('#line');
         return;
       }
-      this.pushSegment(`${item.start.line}`);
+      this.pushSegment(`${item.startLine}`);
     },
     FeatureFileExpression: function (
       this: DefaultFactory,
@@ -663,6 +659,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }

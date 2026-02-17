@@ -90,7 +90,10 @@ export class ResourceManager
       throw new BuildError('Injection ' + target + ' does not exist...', {
         target: resLoadOrigin.target,
         range: resLoadOrigin.ref
-          ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end)
+          ? new ASTRange(
+              [resLoadOrigin.ref.startLine, resLoadOrigin.ref.startChar],
+              [resLoadOrigin.ref.endLine, resLoadOrigin.ref.endChar]
+            )
           : null
       });
     }
@@ -109,7 +112,10 @@ export class ResourceManager
       throw new BuildError('Dependency ' + target + ' does not exist...', {
         target: resLoadOrigin.target,
         range: resLoadOrigin.ref
-          ? new ASTRange(resLoadOrigin.ref.start, resLoadOrigin.ref.end)
+          ? new ASTRange(
+              [resLoadOrigin.ref.startLine, resLoadOrigin.ref.startChar],
+              [resLoadOrigin.ref.endLine, resLoadOrigin.ref.endChar]
+            )
           : null
       });
     }

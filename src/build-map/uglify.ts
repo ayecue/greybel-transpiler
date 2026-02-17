@@ -13,7 +13,6 @@ import {
   ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
-  ASTComment,
   ASTComparisonGroupExpression,
   ASTElseClause,
   ASTForGenericStatement,
@@ -34,6 +33,7 @@ import {
   ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
+  ASTType,
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
@@ -99,11 +99,13 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.process(item.expression);
       this.pushSegment(')');
     },
-    Comment: function (
+    NoopStatement: function (
       this: UglifyFactory,
-      _item: ASTComment,
+      _item: ASTBase,
       _data: TransformerDataObject
-    ): void {},
+    ): void {
+      // Skip blank lines/comments in uglify mode
+    },
     AssignmentStatement: function (
       this: UglifyFactory,
       item: ASTAssignmentStatement,
@@ -157,6 +159,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         if (this._activeLine.segments.length > 0) {
           this.eol();
@@ -264,6 +267,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         if (this._activeLine.segments.length > 0) {
           this.eol();
@@ -424,7 +428,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment('#line');
         return;
       }
-      this.pushSegment(`${item.start.line}`);
+      this.pushSegment(`${item.startLine}`);
     },
     FeatureFileExpression: function (
       this: UglifyFactory,
@@ -513,6 +517,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         if (this._activeLine.segments.length > 0) {
           this.eol();
@@ -543,6 +548,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         if (this._activeLine.segments.length > 0) {
           this.eol();
@@ -560,6 +566,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         if (this._activeLine.segments.length > 0) {
           this.eol();
@@ -575,6 +582,7 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         if (this._activeLine.segments.length > 0) {
           this.eol();
@@ -817,6 +825,8 @@ export class UglifyFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         if (this._activeLine.segments.length > 0) {
           this.eol();

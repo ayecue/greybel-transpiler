@@ -823,12 +823,12 @@ end function
 
 // comments
 test += 5 // test
-test = [ // :D
+test = [
 	1,
-	2,
-	3, // its a list
+	2, // :D
+	3,
 	4,
-]
+] // its a list
 test = function // its a function
 	return 123 // it a return
 end function // its function end
@@ -838,7 +838,6 @@ end for // end for loop
 
 test = { \\"was\\": 123 } // was
 test = {
-
 	\\"was\\": 123, // was
 	\\"foo\\": 13,
 	\\"bar\\": 45,
@@ -871,9 +870,9 @@ end while
 if x.remove(@key) then return \\"foo:\\" + @key + \\"!\\" // foo
 
 foo.bar = function(key = 0, val = 0, nil = 0, nul = 0)
-	if true then return function // bar
+	if true then return function
 		print \\"test\\"
-	end function
+	end function // bar
 end function
 
 test = function
@@ -1021,12 +1020,12 @@ end function
 
 // comments
 test += 5 // test
-test = [ // :D
+test = [
           1,
-          2,
-          3, // its a list
+          2, // :D
+          3,
           4,
-]
+] // its a list
 test = function // its a function
           return 123 // it a return
 end function // its function end
@@ -1036,7 +1035,6 @@ end for // end for loop
 
 test = { \\"was\\": 123 } // was
 test = {
-
           \\"was\\": 123, // was
           \\"foo\\": 13,
           \\"bar\\": 45,
@@ -1069,9 +1067,9 @@ end while
 if x.remove(@key) then return \\"foo:\\" + @key + \\"!\\" // foo
 
 foo.bar = function(key = 0, val = 0, nil = 0, nul = 0)
-          if true then return function // bar
+          if true then return function
                     print(\\"test\\")
-          end function
+          end function // bar
 end function
 
 test = function
@@ -1343,7 +1341,6 @@ exports[`parse default scripts envar.src beautify 1`] = `
 Array [
   "myvar2 = \\"\\"foo\\"\\"
 
-
 myvar = \\"\\"foo\\"\\"
 print \\"0.2\\"",
 ]
@@ -1352,7 +1349,6 @@ print \\"0.2\\"",
 exports[`parse default scripts envar.src beautify with custom settings 1`] = `
 Array [
   "#include \\"../fixtures/envar-include.src\\";
-
 myvar = #envar test
 print(#envar test2)",
 ]
@@ -4024,33 +4020,21 @@ Array [
 
 exports[`parse default scripts multiline-comment.src beautify 1`] = `
 Array [
-  "//
-//
-//
-// my Test
+  "// my Test
 //
 // **
-print \\"test\\" //
-//
-// another comment
-//
-//
+print \\"test\\" // another comment
 // one line comment",
 ]
 `;
 
 exports[`parse default scripts multiline-comment.src beautify with custom settings 1`] = `
 Array [
-  "/* 
+  "/* my Test
 
-
-my Test
-
-** */ print(\\"test\\") /* 
-
-another comment
-
- */// one line comment",
+  ** */
+print(\\"test\\") /* another comment */
+// one line comment",
 ]
 `;
 

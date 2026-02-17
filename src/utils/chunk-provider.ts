@@ -17,7 +17,8 @@ export class ChunkProvider implements ChunkProviderLike {
     }
 
     const parser = new Parser(content, {
-      filename: target
+      filename: target,
+      preserve: true
     });
     const chunk = parser.parseChunk() as ASTChunkGreybel;
     this.cache.set(target, chunk);
