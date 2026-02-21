@@ -89,14 +89,16 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       keepParentheses = false,
       indentation = IndentationType.Tab,
       indentationSpaces = 2,
-      isDevMode = false
+      isDevMode = false,
+      optimizeAssignment = true
     } = transformer.buildOptions as BeautifyOptions;
 
     this.context = new BeautifyContext(this, {
       keepParentheses,
       indentation,
       indentationSpaces,
-      isDevMode
+      isDevMode,
+      optimizeAssignment
     });
   }
 
@@ -263,6 +265,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
       // might can create shorthand for expression
       if (
+        this.transformer.buildOptions.optimizeAssignment &&
         (variable instanceof ASTIdentifier ||
           variable instanceof ASTMemberExpression) &&
         init instanceof ASTBinaryExpression &&

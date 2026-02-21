@@ -22,6 +22,7 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
   indentation: IndentationType;
   indentationSpaces: number;
   isDevMode: boolean;
+  optimizeAssignment: boolean;
 }
 
 export interface ChunkContext {
