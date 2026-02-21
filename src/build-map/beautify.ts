@@ -145,7 +145,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
    * Each CommentNode becomes its own line with the given indentation.
    */
   emitCommentLines(comments: CommentNode[], indent: string): void {
-    const isDevMode = this.transformer.buildOptions.isDevMode;
+    const isDevMode = this.context.options.isDevMode;
     for (const node of comments) {
       this._activeLine.segments.push(indent + commentToText(node, isDevMode));
       this.eol();
@@ -160,7 +160,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
     this.process(item);
 
-    const isDevMode = this.transformer.buildOptions.isDevMode;
+    const isDevMode = this.context.options.isDevMode;
     const output: string[] = [];
 
     for (const line of this._lines) {
@@ -265,7 +265,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
       // might can create shorthand for expression
       if (
-        this.transformer.buildOptions.optimizeAssignment &&
+        this.context.options.optimizeAssignment &&
         (variable instanceof ASTIdentifier ||
           variable instanceof ASTMemberExpression) &&
         init instanceof ASTBinaryExpression &&
@@ -505,7 +505,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         return;
       }
 
-      if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
+      if (data.isCommand && !this.context.options.keepParentheses) {
         this.pushSegment(' ', {
           start: item.start,
           end: item.start
@@ -526,7 +526,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
           this.pushSegment(', ', argItem);
       }
 
-      if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
+      if (data.isCommand && !this.context.options.keepParentheses) {
         return;
       }
 
@@ -593,7 +593,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureEnvarExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
+      if (this.context.options.isDevMode) {
         this.pushSegment(`#envar ${item.name}`, item);
         return;
       }
@@ -777,7 +777,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureInjectExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
+      if (this.context.options.isDevMode) {
         this.pushSegment(`#inject "${item.path}";`, item);
         return;
       }
@@ -800,7 +800,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
+      if (this.context.options.isDevMode) {
         this.pushSegment('#import ', item);
         this.process(item.name);
         this.pushSegment(` from "${item.path}";`, item);
@@ -830,7 +830,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureIncludeExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
+      if (this.context.options.isDevMode) {
         this.pushSegment(`#include "${item.path}";`, item);
         return;
       }
@@ -855,7 +855,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
+      if (this.context.options.isDevMode) {
         this.pushSegment('debugger', item);
         return;
       }
@@ -866,7 +866,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
+      if (this.context.options.isDevMode) {
         this.pushSegment('#line', item);
         return;
       }
@@ -877,7 +877,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureFileExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
+      if (this.context.options.isDevMode) {
         this.pushSegment('#filename', item);
         return;
       }
