@@ -125,6 +125,7 @@ export class BeautifyContext {
       case ASTType.ForGenericStatement:
       case ASTType.WhileStatement:
       case ASTType.IfStatement:
+      case ASTType.IfShortcutStatement:
         return true;
       case ASTType.AssignmentStatement:
         return (
@@ -160,8 +161,8 @@ export class BeautifyContext {
       this.factory.process(current, { isCommand: true });
       const lineCountAfter = this.factory.lines.length;
 
-      // For multi-line block statements (for/while/if/function), trailing
-      // comments belong on the opener line, not the closer (end X) line.
+      // For multi-line block statements (for/while/if/function/shortcut-if),
+      // trailing comments belong on the opener line, not the closer line.
       if (lineCountAfter > lineCountBefore && this.isBlockStatement(current)) {
         this.emitTrailingCommentsToLine(current, lineCountBefore);
         this.emitEndTrailingComments(current);
