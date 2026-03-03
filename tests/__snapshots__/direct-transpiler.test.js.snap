@@ -1,5 +1,157 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`parse default scripts anonymous-functions.src 1`] = `
+"Foo(function,\\"test\\")
+return 1
+end function
+Foo(\\"test\\",function)
+return 1
+end function
+Foo={\\"test\\":function}
+return 1
+end function
+Foo=[function]
+return 1
+end function
+foo=function
+return function
+return \\"faa\\"
+end function
+end function
+print(foo)
+Foo(function,\\"test\\",function)
+return 1
+end function
+return 2
+end function
+Foo(function,\\"test\\",function)
+Foo=[function]
+return 3
+end function
+return 1
+end function
+return 2
+end function"
+`;
+
+exports[`parse default scripts anonymous-functions.src beautify 1`] = `
+"Foo function, \\"test\\"
+	return 1
+end function
+
+Foo \\"test\\", function
+	return 1
+end function
+
+Foo = { \\"test\\": function }
+	return 1
+end function
+
+Foo = [ function ]
+	return 1
+end function
+
+foo = function
+	return function
+		return \\"faa\\"
+	end function
+end function
+
+print foo
+
+Foo function, \\"test\\", function
+	return 1
+end function
+	return 2
+end function
+
+Foo function, \\"test\\", function
+	Foo = [ function ]
+		return 3
+	end function
+	return 1
+end function
+	return 2
+end function"
+`;
+
+exports[`parse default scripts anonymous-functions.src beautify with custom settings 1`] = `
+"Foo(function, \\"test\\")
+          return 1
+end function
+
+Foo(\\"test\\", function)
+          return 1
+end function
+
+Foo = { \\"test\\": function }
+          return 1
+end function
+
+Foo = [ function ]
+          return 1
+end function
+
+foo = function
+          return function
+                    return \\"faa\\"
+          end function
+end function
+
+print(foo)
+
+Foo(function, \\"test\\", function)
+          return 1
+end function
+          return 2
+end function
+
+Foo(function, \\"test\\", function)
+          Foo = [ function ]
+                    return 3
+          end function
+          return 1
+end function
+          return 2
+end function"
+`;
+
+exports[`parse default scripts anonymous-functions.src uglify 1`] = `
+"globals.I=globals
+I.L=\\"test\\"
+J(function,L)
+return 1
+end function
+J(L,function)
+return 1
+end function
+J={L:function}
+return 1
+end function
+J=[function]
+return 1
+end function
+K=function
+return function
+return \\"faa\\"
+end function
+end function
+print(K)
+J(function,L,function)
+return 1
+end function
+return 2
+end function
+J(function,L,function)
+J=[function]
+return 3
+end function
+return 1
+end function
+return 2
+end function"
+`;
+
 exports[`parse default scripts ascii.src 1`] = `
 "AsciiGen={}
 map={}

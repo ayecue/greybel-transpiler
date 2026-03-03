@@ -6,6 +6,7 @@ import {
   ASTIsaExpression,
   ASTLogicalExpression,
   ASTParenthesisExpression,
+  ASTType,
   Operator
 } from 'miniscript-core';
 
@@ -61,15 +62,9 @@ export const containsMultilineItemInShortcutClauses = (
 };
 
 export const hasEmptyBody = (body: ASTBase[]) => {
-  return !body.some((it) => it.type !== 'NoopStatement');
+  return !body.some((it) => it.type !== ASTType.NoopStatement);
 };
 
-/**
- * Convert a raw comment string (from preserve mode) to output text.
- * Multiline comments (containing \n) are detected and formatted accordingly.
- * In dev mode, multiline comments preserve block-comment syntax.
- * In non-dev mode, all comments become // style.
- */
 export const commentToText = (value: string, isDevMode: boolean): string => {
   const isMultiline = value.indexOf('\n') !== -1;
   const trimmed = value.trim();

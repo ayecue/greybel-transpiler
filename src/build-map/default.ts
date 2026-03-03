@@ -47,6 +47,7 @@ import {
   getLiteralValue
 } from '../utils/get-literal-value';
 import { DefaultFactoryOptions, Factory } from './factory';
+import { getOverflowingFunction } from './utils';
 
 export class DefaultFactory extends Factory<DefaultFactoryOptions> {
   transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
@@ -106,7 +107,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     FunctionDeclaration: function (
       this: DefaultFactory,
       item: ASTFunctionStatement,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       if (item.parameters.length === 0) {
         this.pushSegment('function');
@@ -123,6 +124,8 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
 
         this.pushSegment(')');
       }
+
+      if (data.headerOnly) return;
 
       this.eol();
 
@@ -141,24 +144,44 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.pushSegment('{');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
-        this.process(fieldItem);
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
           this.pushSegment(',');
         }
       }
 
       this.pushSegment('}');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          for (const bodyItem of fn.body) {
+            if (bodyItem.type === ASTType.NoopStatement) continue;
+            this.process(bodyItem);
+            this.eol();
+          }
+          this.pushSegment('end function');
+        }
+      }
     },
     MapKeyString: function (
       this: DefaultFactory,
       item: ASTMapKeyString,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       this.process(item.key);
       this.pushSegment(':');
-      this.process(item.value);
+      this.process(item.value, data);
     },
     Identifier: function (
       this: DefaultFactory,
@@ -210,17 +233,37 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         return;
       }
 
+      const overflowFns: ASTFunctionStatement[] = [];
       this.pushSegment('(');
 
       for (let index = 0; index < item.arguments.length; index++) {
         const argItem = item.arguments[index];
-        this.process(argItem);
+        const fn = getOverflowingFunction(argItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(argItem, { headerOnly: true });
+        } else {
+          this.process(argItem);
+        }
         if (index !== item.arguments.length - 1) {
           this.pushSegment(',');
         }
       }
 
       this.pushSegment(')');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          for (const bodyItem of fn.body) {
+            if (bodyItem.type === ASTType.NoopStatement) continue;
+            this.process(bodyItem);
+            this.eol();
+          }
+          this.pushSegment('end function');
+        }
+      }
     },
     StringLiteral: function (
       this: DefaultFactory,
@@ -553,22 +596,42 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.pushSegment('[');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
-        this.process(fieldItem);
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
           this.pushSegment(',');
         }
       }
 
       this.pushSegment(']');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          for (const bodyItem of fn.body) {
+            if (bodyItem.type === ASTType.NoopStatement) continue;
+            this.process(bodyItem);
+            this.eol();
+          }
+          this.pushSegment('end function');
+        }
+      }
     },
     ListValue: function (
       this: DefaultFactory,
       item: ASTListValue,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
-      this.process(item.value);
+      this.process(item.value, data);
     },
     BooleanLiteral: function (
       this: DefaultFactory,

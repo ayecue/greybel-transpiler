@@ -58,6 +58,7 @@ import {
   unwrap
 } from './beautify/utils';
 import { Factory, Line } from './factory';
+import { getOverflowingFunction } from './utils';
 
 export type BeautifyOptions = Partial<BeautifyContextOptions>;
 
@@ -203,7 +204,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
     FunctionDeclaration: function (
       this: BeautifyFactory,
       item: ASTFunctionStatement,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       if (item.parameters.length === 0) {
         this.pushSegment('function');
@@ -225,6 +226,8 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.context.enableMultiline();
       }
 
+      if (data.headerOnly) return;
+
       this.eol();
 
       this.context.incIndent();
@@ -244,10 +247,20 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       }
 
       if (item.fields.length === 1) {
+        const overflowFn = getOverflowingFunction(item.fields[0], item.endLine);
         this.pushSegment('{ ');
-        this.process(item.fields[0]);
+        this.process(item.fields[0], overflowFn ? { headerOnly: true } : {});
         this.pushSegment(' }');
         this.context.emitTrailingComments(item.fields[0]);
+
+        if (overflowFn) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(overflowFn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(overflowFn);
+        }
         return;
       }
 
@@ -290,25 +303,43 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
       this.pushSegment('{ ');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
         if (fieldItem.type === ASTType.NoopStatement) continue;
-        this.process(fieldItem);
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
           this.pushSegment(', ');
         }
       }
 
       this.pushSegment(' }');
+
+      if (overflowFns.length > 0) {
+        for (const fn of overflowFns) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(fn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(fn);
+        }
+      }
     },
     MapKeyString: function (
       this: BeautifyFactory,
       item: ASTMapKeyString,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       this.process(item.key);
       this.pushSegment(': ');
-      this.process(item.value);
+      this.process(item.value, data);
     },
     Identifier: function (
       this: BeautifyFactory,
@@ -362,7 +393,18 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         return;
       }
 
-      if (item.arguments.length > 3 && this.context.isMultilineAllowed) {
+      // Detect overflowing anonymous functions in arguments
+      const overflowFns: ASTFunctionStatement[] = [];
+      for (const arg of item.arguments) {
+        const fn = getOverflowingFunction(arg, item.endLine);
+        if (fn) overflowFns.push(fn);
+      }
+
+      if (
+        item.arguments.length > 3 &&
+        this.context.isMultilineAllowed &&
+        overflowFns.length === 0
+      ) {
         this.context.incIndent();
 
         this.pushSegment('(');
@@ -393,15 +435,27 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
       for (let index = 0; index < item.arguments.length; index++) {
         const argItem = item.arguments[index];
-        this.process(argItem);
+        const isOverflow =
+          getOverflowingFunction(argItem, item.endLine) !== null;
+        this.process(argItem, isOverflow ? { headerOnly: true } : {});
         if (index !== item.arguments.length - 1) this.pushSegment(', ');
       }
 
-      if (data.isCommand && !this.context.options.keepParentheses) {
-        return;
+      if (!(data.isCommand && !this.context.options.keepParentheses)) {
+        this.pushSegment(')');
       }
 
-      this.pushSegment(')');
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(fn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(fn);
+        }
+      }
     },
     StringLiteral: function (
       this: BeautifyFactory,
@@ -734,10 +788,20 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       }
 
       if (item.fields.length === 1) {
+        const overflowFn = getOverflowingFunction(item.fields[0], item.endLine);
         this.pushSegment('[ ');
-        this.process(item.fields[0]);
+        this.process(item.fields[0], overflowFn ? { headerOnly: true } : {});
         this.pushSegment(' ]');
         this.context.emitTrailingComments(item.fields[0]);
+
+        if (overflowFn) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(overflowFn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(overflowFn);
+        }
         return;
       }
 
@@ -780,23 +844,42 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
       this.pushSegment('[ ');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
         if (fieldItem.type === ASTType.NoopStatement) continue;
-        this.process(fieldItem);
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
           this.pushSegment(', ');
         }
       }
 
       this.pushSegment(' ]');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(fn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(fn);
+        }
+      }
     },
     ListValue: function (
       this: BeautifyFactory,
       item: ASTListValue,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
-      this.process(item.value);
+      this.process(item.value, data);
     },
     BooleanLiteral: function (
       this: BeautifyFactory,
