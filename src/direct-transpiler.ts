@@ -58,7 +58,7 @@ export class DirectTranspiler extends EventEmitter {
     const me = this;
 
     const factoryConstructor = getFactory(me.buildType);
-    const chunkProvider = new ChunkProvider();
+    const chunkProvider = new ChunkProvider(me.environmentVariables);
     const chunk = chunkProvider.parse('unknown', me.code) as ASTChunkGreybel;
     const namespaces = fetchNamespaces(chunk);
     const literals = [].concat(chunk.literals);

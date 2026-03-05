@@ -3964,6 +3964,55 @@ print(locals.hasIndex(\\"doesNotExist\\"))",
 ]
 `;
 
+exports[`parse default scripts if-env.src 1`] = `
+Array [
+  "a=1
+b=2
+c=5
+d=6
+print(a+b+c+d)",
+]
+`;
+
+exports[`parse default scripts if-env.src beautify 1`] = `
+Array [
+  "a = 1
+
+b = 2
+
+c = 5
+
+d = 6
+
+print a + b + c + d",
+]
+`;
+
+exports[`parse default scripts if-env.src beautify with custom settings 1`] = `
+Array [
+  "a = 1
+
+b = 2
+
+c = 5
+
+d = 6
+
+print(a + b + c + d)",
+]
+`;
+
+exports[`parse default scripts if-env.src uglify 1`] = `
+Array [
+  "globals.I=globals
+J=1
+K=2
+L=5
+M=6
+print(J+K+L+M)",
+]
+`;
+
 exports[`parse default scripts isa.src 1`] = `
 Array [
   "print(2 isa number)

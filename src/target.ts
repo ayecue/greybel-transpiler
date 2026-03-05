@@ -13,6 +13,7 @@ export interface TargetOptions {
   target: string;
   resourceHandler: ResourceHandler;
   context: Context;
+  environmentVariables?: Map<string, string>;
 }
 
 export interface TargetParseResultItem {
@@ -28,6 +29,7 @@ export class Target extends EventEmitter {
   target: string;
   resourceHandler: ResourceHandler;
   context: Context;
+  environmentVariables: Map<string, string>;
 
   constructor(options: TargetOptions) {
     super();
@@ -37,6 +39,7 @@ export class Target extends EventEmitter {
     me.target = options.target;
     me.resourceHandler = options.resourceHandler;
     me.context = options.context;
+    me.environmentVariables = options.environmentVariables ?? new Map();
   }
 
   async parse(withMetadata: boolean): Promise<TargetParseResult> {
@@ -49,7 +52,7 @@ export class Target extends EventEmitter {
     }
 
     const context = me.context;
-    const chunkProvider = new ChunkProvider();
+    const chunkProvider = new ChunkProvider(me.environmentVariables);
     const resourceManager = new ResourceManager({
       resourceHandler,
       chunkProvider

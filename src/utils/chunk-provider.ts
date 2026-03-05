@@ -4,9 +4,11 @@ import { ChunkProviderLike } from '../types/chunk-provider';
 
 export class ChunkProvider implements ChunkProviderLike {
   private cache: Map<string, ASTChunkGreybel>;
+  environmentVariables: Map<string, string>;
 
-  constructor() {
+  constructor(environmentVariables?: Map<string, string>) {
     this.cache = new Map<string, ASTChunkGreybel>();
+    this.environmentVariables = environmentVariables ?? new Map();
   }
 
   parse(target: string, content: string): ASTChunkGreybel {
@@ -18,7 +20,8 @@ export class ChunkProvider implements ChunkProviderLike {
 
     const parser = new Parser(content, {
       filename: target,
-      preserve: true
+      preserve: true,
+      environmentVariables: this.environmentVariables
     });
     const chunk = parser.parseChunk() as ASTChunkGreybel;
     this.cache.set(target, chunk);
