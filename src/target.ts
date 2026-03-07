@@ -55,7 +55,10 @@ export class Target extends EventEmitter {
     }
 
     const context = me.context;
-    const chunkProvider = new ChunkProvider(me.environmentVariables);
+    const chunkProvider = new ChunkProvider(
+      me.environmentVariables,
+      me.strictMode
+    );
     const resourceManager = new ResourceManager({
       resourceHandler,
       chunkProvider
