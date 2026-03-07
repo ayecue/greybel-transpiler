@@ -725,9 +725,14 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.context.options.isDevMode) {
+        if (item.typeOnly) {
+          this.pushSegment(`#include type "${item.path}";`);
+          return;
+        }
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
+      if (item.typeOnly) return;
       const associatedDependency = this.activeDependency?.dependencies.get(
         Dependency.generateDependencyMappingKey(
           item.path,
