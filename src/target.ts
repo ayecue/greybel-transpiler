@@ -14,6 +14,7 @@ export interface TargetOptions {
   resourceHandler: ResourceHandler;
   context: Context;
   environmentVariables?: Map<string, string>;
+  strictMode?: boolean;
 }
 
 export interface TargetParseResultItem {
@@ -30,6 +31,7 @@ export class Target extends EventEmitter {
   resourceHandler: ResourceHandler;
   context: Context;
   environmentVariables: Map<string, string>;
+  strictMode: boolean;
 
   constructor(options: TargetOptions) {
     super();
@@ -40,6 +42,7 @@ export class Target extends EventEmitter {
     me.resourceHandler = options.resourceHandler;
     me.context = options.context;
     me.environmentVariables = options.environmentVariables ?? new Map();
+    me.strictMode = options.strictMode ?? false;
   }
 
   async parse(withMetadata: boolean): Promise<TargetParseResult> {

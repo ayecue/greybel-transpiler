@@ -25,6 +25,7 @@ export interface TranspilerOptions {
   installer?: boolean;
   excludedNamespaces?: string[];
   environmentVariables?: Map<string, string>;
+  strictMode?: boolean;
 }
 
 export interface TranspilerParseResult {
@@ -41,6 +42,7 @@ export class Transpiler {
   buildOptions: BeautifyOptions & UglifyOptions & DefaultFactoryOptions;
   installer: boolean;
   environmentVariables: Map<string, string>;
+  strictMode: boolean;
 
   constructor(options: TranspilerOptions) {
     const me = this;
@@ -64,6 +66,7 @@ export class Transpiler {
     me.buildOptions = options.buildOptions || { isDevMode: false };
     me.installer = options.installer || false;
     me.environmentVariables = options.environmentVariables || new Map();
+    me.strictMode = options.strictMode || false;
   }
 
   async parse(): Promise<TranspilerParseResult> {
@@ -74,7 +77,8 @@ export class Transpiler {
       target: me.target,
       resourceHandler: me.resourceHandler,
       context: me.context,
-      environmentVariables: me.environmentVariables
+      environmentVariables: me.environmentVariables,
+      strictMode: me.strictMode
     });
     const targetParseResult: TargetParseResult = await target.parse(
       me.buildType === BuildType.UGLIFY
@@ -86,6 +90,7 @@ export class Transpiler {
       factoryConstructor,
       context,
       environmentVariables: me.environmentVariables,
+      strictMode: me.strictMode,
       resourceHandler: me.resourceHandler
     });
     const mainModule = targetParseResult.main;

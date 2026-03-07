@@ -95,4 +95,31 @@ describe('parse', function () {
       }).rejects.toThrowError(/^Circular dependency/);
     });
   });
+
+  describe('strict mode', function () {
+    test('strict-mode.src beautify without strictMode', async () => {
+      const filepath = path.resolve(testFolder, 'strict-mode.src');
+      const result = await new Transpiler({
+        target: filepath,
+        buildType: BuildType.BEAUTIFY,
+        environmentVariables,
+        excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getTypeSignature('general').getDefinitions()))
+      }).parse();
+
+      expect(Object.values(result)).toMatchSnapshot();
+    });
+
+    test('strict-mode.src beautify with strictMode', async () => {
+      const filepath = path.resolve(testFolder, 'strict-mode.src');
+      const result = await new Transpiler({
+        target: filepath,
+        buildType: BuildType.BEAUTIFY,
+        strictMode: true,
+        environmentVariables,
+        excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getTypeSignature('general').getDefinitions()))
+      }).parse();
+
+      expect(Object.values(result)).toMatchSnapshot();
+    });
+  });
 });

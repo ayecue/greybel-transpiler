@@ -18,7 +18,7 @@ export interface BeautifyContextOptions extends DefaultFactoryOptions {
   indentation: IndentationType;
   indentationSpaces: number;
   isDevMode: boolean;
-  optimizeAssignment: boolean;
+  strictMode: boolean;
 }
 
 export class BeautifyContext {

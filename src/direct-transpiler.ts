@@ -22,6 +22,7 @@ export interface DirectTranspilerOptions {
   buildType?: BuildType;
   buildOptions?: UglifyOptions & BeautifyOptions & DefaultFactoryOptions;
   environmentVariables?: Map<string, string>;
+  strictMode?: boolean;
 
   excludedNamespaces?: string[];
 }
@@ -34,6 +35,7 @@ export class DirectTranspiler extends EventEmitter {
   buildOptions: UglifyOptions & BeautifyOptions & DefaultFactoryOptions;
   installer: boolean;
   environmentVariables: Map<string, string>;
+  strictMode: boolean;
 
   excludedNamespaces: string[];
 
@@ -50,6 +52,7 @@ export class DirectTranspiler extends EventEmitter {
     me.buildType = options.buildType || BuildType.DEFAULT;
     me.buildOptions = options.buildOptions || { isDevMode: false };
     me.environmentVariables = options.environmentVariables || new Map();
+    me.strictMode = options.strictMode || false;
 
     me.excludedNamespaces = options.excludedNamespaces || [];
   }
@@ -58,7 +61,7 @@ export class DirectTranspiler extends EventEmitter {
     const me = this;
 
     const factoryConstructor = getFactory(me.buildType);
-    const chunkProvider = new ChunkProvider(me.environmentVariables);
+    const chunkProvider = new ChunkProvider(this.environmentVariables);
     const chunk = chunkProvider.parse('unknown', me.code) as ASTChunkGreybel;
     const namespaces = fetchNamespaces(chunk);
     const literals = [].concat(chunk.literals);
@@ -79,7 +82,8 @@ export class DirectTranspiler extends EventEmitter {
       buildOptions: me.buildOptions,
       factoryConstructor,
       context,
-      environmentVariables: me.environmentVariables
+      environmentVariables: me.environmentVariables,
+      strictMode: me.strictMode
     });
     const output = new OutputProcessor(context, transformer);
 

@@ -65,4 +65,31 @@ describe('parse', function () {
       });
     });
   });
+
+  describe('strict mode', function () {
+    test('strict-mode.src beautify without strictMode', async () => {
+      const filepath = path.resolve(testFolder, 'strict-mode.src');
+      const result = new DirectTranspiler({
+        code: fs.readFileSync(filepath, 'utf-8'),
+        buildType: BuildType.BEAUTIFY,
+        environmentVariables,
+        excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getTypeSignature('general').getDefinitions()))
+      }).parse();
+
+      expect(result).toMatchSnapshot();
+    });
+
+    test('strict-mode.src beautify with strictMode', async () => {
+      const filepath = path.resolve(testFolder, 'strict-mode.src');
+      const result = new DirectTranspiler({
+        code: fs.readFileSync(filepath, 'utf-8'),
+        buildType: BuildType.BEAUTIFY,
+        strictMode: true,
+        environmentVariables,
+        excludedNamespaces: Array.from(Object.keys(miniscriptMeta.getTypeSignature('general').getDefinitions()))
+      }).parse();
+
+      expect(result).toMatchSnapshot();
+    });
+  });
 });

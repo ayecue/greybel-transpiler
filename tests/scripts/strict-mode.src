@@ -1,0 +1,9 @@
+a = 1
+a = a + 1
+b = 10
+b = b - 3
+c = "hello"
+c = c + " world"
+obj = {}
+obj.x = obj.x * 2
+print(a + b + c)

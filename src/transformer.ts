@@ -15,6 +15,7 @@ export interface TransformerOptions {
   factoryConstructor: FactoryConstructor<DefaultFactoryOptions>;
   context: Context;
   environmentVariables: Map<string, string>;
+  strictMode?: boolean;
   resourceHandler?: ResourceHandler;
 }
 
@@ -23,6 +24,7 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
   private _buildOptions: DefaultFactoryOptions;
   private _context: Context;
   private _environmentVariables: Map<string, string>;
+  private _strictMode: boolean;
   private _factory: Factory<DefaultFactoryOptions>;
   private _resourceHandler: ResourceHandler | null;
 
@@ -42,6 +44,10 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
     return this._environmentVariables;
   }
 
+  get strictMode() {
+    return this._strictMode;
+  }
+
   get resourceHandler() {
     return this._resourceHandler;
   }
@@ -51,6 +57,7 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
     factoryConstructor,
     context,
     environmentVariables,
+    strictMode,
     resourceHandler
   }: TransformerOptions) {
     const me = this;
@@ -58,6 +65,7 @@ export class Transformer implements TransformerLike<DefaultFactoryOptions> {
     me._buildOptions = buildOptions;
     me._context = context;
     me._environmentVariables = environmentVariables;
+    me._strictMode = strictMode ?? false;
     me._factory = new factoryConstructor(me);
     me._resourceHandler = resourceHandler ?? null;
   }

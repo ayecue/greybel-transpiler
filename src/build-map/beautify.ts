@@ -80,7 +80,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       indentation = IndentationType.Tab,
       indentationSpaces = 2,
       isDevMode = false,
-      optimizeAssignment = true
+      strictMode = transformer.strictMode
     } = transformer.buildOptions as BeautifyOptions;
 
     this.context = new BeautifyContext(this, {
@@ -88,7 +88,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       indentation,
       indentationSpaces,
       isDevMode,
-      optimizeAssignment
+      strictMode
     });
   }
 
@@ -175,7 +175,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
       // might can create shorthand for expression
       if (
-        this.context.options.optimizeAssignment &&
+        !this.context.options.strictMode &&
         (variable instanceof ASTIdentifier ||
           variable instanceof ASTMemberExpression) &&
         init instanceof ASTBinaryExpression &&

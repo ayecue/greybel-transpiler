@@ -6188,6 +6188,63 @@ print(J(\\"blahhblahhblahhblahhblahhblahhgad\\",5))",
 ]
 `;
 
+exports[`parse default scripts strict-mode.src 1`] = `
+Array [
+  "a=1
+a=a+1
+b=10
+b=b-3
+c=\\"hello\\"
+c=c+\\" world\\"
+obj={}
+obj.x=obj.x*2
+print(a+b+c)",
+]
+`;
+
+exports[`parse default scripts strict-mode.src beautify 1`] = `
+Array [
+  "a = 1
+a += 1
+b = 10
+b -= 3
+c = \\"hello\\"
+c += \\" world\\"
+obj = {}
+obj.x *= 2
+print a + b + c",
+]
+`;
+
+exports[`parse default scripts strict-mode.src beautify with custom settings 1`] = `
+Array [
+  "a = 1
+a += 1
+b = 10
+b -= 3
+c = \\"hello\\"
+c += \\" world\\"
+obj = {}
+obj.x *= 2
+print(a + b + c)",
+]
+`;
+
+exports[`parse default scripts strict-mode.src uglify 1`] = `
+Array [
+  "globals.I=globals
+J=1
+J=J+1
+K=10
+K=K-3
+L=\\"hello\\"
+L=L+\\" world\\"
+M={}
+M.x=M.x*2
+print(J+K+L)",
+]
+`;
+
 exports[`parse default scripts unary.src 1`] = `
 Array [
   "test=function
@@ -6245,5 +6302,33 @@ print(not K.split and (0 or not 0))
 print(not (K.split and (0 or not 0)))
 print(-1+2)
 print(-(1+2))",
+]
+`;
+
+exports[`parse strict mode strict-mode.src beautify with strictMode 1`] = `
+Array [
+  "a = 1
+a = a + 1
+b = 10
+b = b - 3
+c = \\"hello\\"
+c = c + \\" world\\"
+obj = {}
+obj.x = obj.x * 2
+print a + b + c",
+]
+`;
+
+exports[`parse strict mode strict-mode.src beautify without strictMode 1`] = `
+Array [
+  "a = 1
+a += 1
+b = 10
+b -= 3
+c = \\"hello\\"
+c += \\" world\\"
+obj = {}
+obj.x *= 2
+print a + b + c",
 ]
 `;
