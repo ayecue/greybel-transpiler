@@ -13,7 +13,6 @@ import {
   ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
-  ASTComment,
   ASTComparisonGroupExpression,
   ASTElseClause,
   ASTForGenericStatement,
@@ -34,6 +33,7 @@ import {
   ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
+  ASTType,
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
@@ -47,25 +47,23 @@ import {
   getLiteralRawValue,
   getLiteralValue
 } from '../utils/get-literal-value';
-import { BeautifyBodyIterator, FILLER_TYPE } from './beautify/body-iterator';
 import {
   BeautifyContext,
   BeautifyContextOptions,
   IndentationType
 } from './beautify/context';
 import {
-  CommentNode,
-  commentToText,
   countRightBinaryExpressions,
   SHORTHAND_OPERATORS,
   unwrap
 } from './beautify/utils';
-import { Factory, Line, LineRef } from './factory';
+import { Factory, Line } from './factory';
+import { getOverflowingFunction } from './utils';
 
 export type BeautifyOptions = Partial<BeautifyContextOptions>;
 
 export interface BeautifyLine extends Line {
-  comments: CommentNode[];
+  trailingComment: string;
 }
 
 export class BeautifyFactory extends Factory<BeautifyOptions> {
@@ -81,38 +79,41 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       keepParentheses = false,
       indentation = IndentationType.Tab,
       indentationSpaces = 2,
-      isDevMode = false
+      isDevMode = false,
+      strictMode = transformer.strictMode
     } = transformer.buildOptions as BeautifyOptions;
 
     this.context = new BeautifyContext(this, {
       keepParentheses,
       indentation,
       indentationSpaces,
-      isDevMode
+      isDevMode,
+      strictMode
     });
   }
 
   createLine(): BeautifyLine {
     return {
       segments: [],
-      comments: []
+      trailingComment: ''
     };
   }
 
-  pushSegment(segment: string, item?: LineRef): void {
-    this._activeLine.segments.push(segment);
-    if (item == null) return;
-    this.pushComment(item.start.line);
+  appendTrailingComment(text: string): void {
+    if (this._activeLine.trailingComment.length > 0) {
+      this._activeLine.trailingComment += ' ' + text;
+    } else {
+      this._activeLine.trailingComment = text;
+    }
   }
 
-  pushComment(lineNr: number): void {
-    const chunk = this.context.getCurrentChunk();
-    const context = this.context.getChunkContext(chunk);
-    const comments = context.commentBuckets.get(lineNr);
-
-    if (comments) {
-      this._activeLine.comments.push(...comments);
-      context.commentBuckets.delete(lineNr);
+  appendTrailingCommentToLine(lineIndex: number, text: string): void {
+    const line = this._lines[lineIndex] as BeautifyLine;
+    if (!line) return;
+    if (line.trailingComment.length > 0) {
+      line.trailingComment += ' ' + text;
+    } else {
+      line.trailingComment = text;
     }
   }
 
@@ -124,57 +125,27 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
     this.process(item);
 
-    return this._lines
-      .map((line) => {
-        let output = line.segments.join('');
-        const actualContent = output.trim();
+    const output: string[] = [];
 
-        if (line.comments.length === 0) {
-          if (actualContent.length === 0) {
-            return '';
-          }
+    for (const line of this._lines) {
+      const code = line.segments.join('');
+      const actualContent = code.trim();
+      const hasTrailing = line.trailingComment.length > 0;
 
-          return output;
-        }
+      if (!hasTrailing) {
+        output.push(actualContent.length === 0 ? '' : code);
+        continue;
+      }
 
-        const before = line.comments.filter((node) => node.isBefore);
-        const beforeOutput = before
-          .map((it) =>
-            commentToText(it, this.transformer.buildOptions.isDevMode)
-          )
-          .join('');
-        const after = line.comments.filter((node) => !node.isBefore);
-        const afterOutput = after
-          .map((it) =>
-            commentToText(it, this.transformer.buildOptions.isDevMode)
-          )
-          .join('');
+      // Append trailing comment inline after code
+      if (actualContent.length > 0) {
+        output.push(code + ' ' + line.trailingComment);
+      } else {
+        output.push(line.trailingComment);
+      }
+    }
 
-        if (
-          actualContent.length === 0 &&
-          before.length === 0 &&
-          after.length === 0
-        ) {
-          return '';
-        }
-
-        // if dev mode is off commentToText will include a line break for multiline comments
-        // at the end thus we don't need to add extra space
-        if (
-          actualContent.length > 0 &&
-          before.length > 0 &&
-          this.transformer.buildOptions.isDevMode
-        ) {
-          output = ' ' + output;
-        }
-
-        if (actualContent.length > 0 && after.length > 0) {
-          output = output + ' ';
-        }
-
-        return beforeOutput + output + afterOutput;
-      })
-      .join('\n');
+    return output.join('\n');
   }
 
   handlers: Record<
@@ -186,17 +157,12 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTParenthesisExpression,
       data: TransformerDataObject
     ): void {
-      this.pushSegment('(', item);
+      this.pushSegment('(');
       this.process(item.expression, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
-      this.pushSegment(')', item);
+      this.pushSegment(')');
     },
-    Comment: function (
-      this: BeautifyFactory,
-      _item: ASTComment,
-      _data: TransformerDataObject
-    ): void {},
     AssignmentStatement: function (
       this: BeautifyFactory,
       item: ASTAssignmentStatement,
@@ -209,6 +175,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
 
       // might can create shorthand for expression
       if (
+        !this.context.options.strictMode &&
         (variable instanceof ASTIdentifier ||
           variable instanceof ASTMemberExpression) &&
         init instanceof ASTBinaryExpression &&
@@ -217,12 +184,12 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         SHORTHAND_OPERATORS.includes(init.operator) &&
         createExpressionHash(variable) === createExpressionHash(init.left)
       ) {
-        this.pushSegment(' ' + init.operator + '= ', item);
+        this.pushSegment(' ' + init.operator + '= ');
         this.process(unwrap(init.right));
         return;
       }
 
-      this.pushSegment(' = ', item);
+      this.pushSegment(' = ');
       this.process(init);
     },
     MemberExpression: function (
@@ -231,42 +198,35 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.pushSegment(item.indexer, item);
+      this.pushSegment(item.indexer);
       this.process(item.identifier);
     },
     FunctionDeclaration: function (
       this: BeautifyFactory,
       item: ASTFunctionStatement,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       if (item.parameters.length === 0) {
-        this.pushSegment('function', {
-          start: item.start,
-          end: item.start
-        });
+        this.pushSegment('function');
       } else {
         this.context.disableMultiline();
 
-        this.pushSegment('function(', {
-          start: item.start,
-          end: item.start
-        });
+        this.pushSegment('function(');
 
         for (let index = 0; index < item.parameters.length; index++) {
           const arg = item.parameters[index];
           this.process(arg);
           if (index !== item.parameters.length - 1) {
-            this.pushSegment(', ', arg);
+            this.pushSegment(', ');
           }
         }
 
-        this.pushSegment(')', {
-          start: item.start,
-          end: item.start
-        });
+        this.pushSegment(')');
 
         this.context.enableMultiline();
       }
+
+      if (data.headerOnly) return;
 
       this.eol();
 
@@ -274,10 +234,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.context.buildBlock(item);
       this.context.decIndent();
 
-      this.pushSegment(this.context.getIndent() + 'end function', {
-        start: item.end,
-        end: item.end
-      });
+      this.pushSegment(this.context.getIndent() + 'end function');
     },
     MapConstructorExpression: function (
       this: BeautifyFactory,
@@ -285,98 +242,118 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.fields.length === 0) {
-        this.pushSegment('{}', item);
+        this.pushSegment('{}');
         return;
       }
 
       if (item.fields.length === 1) {
-        this.pushSegment('{ ', item);
-        this.process(item.fields[0]);
-        this.pushSegment(' }', item);
+        const overflowFn = getOverflowingFunction(item.fields[0], item.endLine);
+        this.pushSegment('{ ');
+        this.process(item.fields[0], overflowFn ? { headerOnly: true } : {});
+        this.pushSegment(' }');
+        this.context.emitTrailingComments(item.fields[0]);
+
+        if (overflowFn) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(overflowFn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(overflowFn);
+        }
         return;
       }
 
       if (this.context.isMultilineAllowed) {
         this.context.incIndent();
 
-        this.pushSegment('{', {
-          start: item.start,
-          end: item.start
-        });
+        this.pushSegment('{');
         this.eol();
 
-        const iterator = new BeautifyBodyIterator(item, item.fields);
-        let next = iterator.next();
+        for (let index = 0; index < item.fields.length; index++) {
+          const fieldItem = item.fields[index];
 
-        while (!next.done) {
-          const current = next.value as ASTMapKeyString;
-
-          if (current.type === FILLER_TYPE) {
-            this.pushSegment(this.context.getIndent());
-            this.pushComment(current.start.line);
-            this.eol();
-            next = iterator.next();
+          if (fieldItem.type === ASTType.NoopStatement) {
+            // Blank line in map
+            if (
+              fieldItem.leadingComments &&
+              fieldItem.leadingComments.length > 0
+            ) {
+              this.context.emitLeadingComments(fieldItem);
+            } else {
+              this.pushSegment(this.context.getIndent());
+              this.eol();
+            }
             continue;
           }
 
-          this.pushSegment(this.context.getIndent(), current);
-          this.process(current);
-          this.pushSegment(',', current);
+          this.context.emitLeadingComments(fieldItem);
+          this.pushSegment(this.context.getIndent());
+          this.process(fieldItem as ASTMapKeyString);
+          this.pushSegment(',');
+          this.context.emitTrailingComments(fieldItem);
           this.eol();
-          next = iterator.next();
         }
 
         this.context.decIndent();
 
-        this.pushSegment(this.context.getIndent() + '}', {
-          start: item.end,
-          end: item.end
-        });
+        this.pushSegment(this.context.getIndent() + '}');
         return;
       }
 
-      this.pushSegment('{ ', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment('{ ');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
-        this.process(fieldItem);
+        if (fieldItem.type === ASTType.NoopStatement) continue;
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
-          this.pushSegment(', ', fieldItem);
+          this.pushSegment(', ');
         }
       }
 
-      this.context.decIndent();
+      this.pushSegment(' }');
 
-      this.pushSegment(' }', {
-        start: item.end,
-        end: item.end
-      });
+      if (overflowFns.length > 0) {
+        for (const fn of overflowFns) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(fn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(fn);
+        }
+      }
     },
     MapKeyString: function (
       this: BeautifyFactory,
       item: ASTMapKeyString,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       this.process(item.key);
-      this.pushSegment(': ', item);
-      this.process(item.value);
+      this.pushSegment(': ');
+      this.process(item.value, data);
     },
     Identifier: function (
       this: BeautifyFactory,
       item: ASTIdentifier,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(item.name, item);
+      this.pushSegment(item.name);
     },
     ReturnStatement: function (
       this: BeautifyFactory,
       item: ASTReturnStatement,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('return ', item);
+      this.pushSegment('return ');
       if (item.argument) this.process(item.argument);
     },
     NumericLiteral: function (
@@ -384,17 +361,14 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTNumericLiteral,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(getLiteralValue(item), item);
+      this.pushSegment(getLiteralValue(item));
     },
     WhileStatement: function (
       this: BeautifyFactory,
       item: ASTWhileStatement,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('while ', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment('while ');
 
       this.context.disableMultiline();
       this.process(item.condition);
@@ -406,92 +380,89 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.context.buildBlock(item);
       this.context.decIndent();
 
-      this.pushSegment(this.context.getIndent() + 'end while', {
-        start: item.end,
-        end: item.end
-      });
+      this.pushSegment(this.context.getIndent() + 'end while');
     },
     CallExpression: function (
       this: BeautifyFactory,
       item: ASTCallExpression,
       data: TransformerDataObject
     ): void {
-      const startIndex = this.lines.length - 1;
-
       this.process(item.base);
 
       if (item.arguments.length === 0) {
         return;
       }
 
-      if (item.arguments.length > 3 && this.context.isMultilineAllowed) {
+      // Detect overflowing anonymous functions in arguments
+      const overflowFns: ASTFunctionStatement[] = [];
+      for (const arg of item.arguments) {
+        const fn = getOverflowingFunction(arg, item.endLine);
+        if (fn) overflowFns.push(fn);
+      }
+
+      if (
+        item.arguments.length > 3 &&
+        this.context.isMultilineAllowed &&
+        overflowFns.length === 0
+      ) {
         this.context.incIndent();
 
-        this.pushSegment('(', {
-          start: item.start,
-          end: item.start
-        });
+        this.pushSegment('(');
         this.eol();
 
         for (let index = 0; index < item.arguments.length; index++) {
           const argItem = item.arguments[index];
-          this.pushSegment(this.context.getIndent(), argItem);
+          this.pushSegment(this.context.getIndent());
           this.process(argItem);
           if (index !== item.arguments.length - 1) {
-            this.pushSegment(',', argItem);
+            this.pushSegment(',');
             this.eol();
           }
         }
 
         this.context.decIndent();
 
-        this.pushSegment(')', {
-          start: item.end,
-          end: item.end
-        });
+        this.pushSegment(')');
 
         return;
       }
 
-      if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
-        this.pushSegment(' ', {
-          start: item.start,
-          end: item.start
-        });
+      if (data.isCommand && !this.context.options.keepParentheses) {
+        this.pushSegment(' ');
       } else {
-        this.pushSegment('(', {
-          start: item.start,
-          end: item.start
-        });
+        this.pushSegment('(');
       }
-
-      const argIndex = this.lines.length;
 
       for (let index = 0; index < item.arguments.length; index++) {
         const argItem = item.arguments[index];
-        this.process(argItem);
-        if (index !== item.arguments.length - 1)
-          this.pushSegment(', ', argItem);
+        const isOverflow =
+          getOverflowingFunction(argItem, item.endLine) !== null;
+        this.process(argItem, isOverflow ? { headerOnly: true } : {});
+        if (index !== item.arguments.length - 1) this.pushSegment(', ');
       }
 
-      if (data.isCommand && !this.transformer.buildOptions.keepParentheses) {
-        return;
+      if (!(data.isCommand && !this.context.options.keepParentheses)) {
+        this.pushSegment(')');
       }
 
-      this.pushSegment(')', {
-        start: item.end,
-        end: item.end
-      });
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(fn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(fn);
+        }
+      }
     },
     StringLiteral: function (
       this: BeautifyFactory,
       item: ASTLiteral,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(getLiteralRawValue(item), {
-        start: item.end,
-        end: item.end
-      });
+      this.pushSegment(getLiteralRawValue(item));
     },
     SliceExpression: function (
       this: BeautifyFactory,
@@ -499,11 +470,11 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.pushSegment('[', item);
+      this.pushSegment('[');
       this.process(item.left);
-      this.pushSegment(' : ', item);
+      this.pushSegment(' : ');
       this.process(item.right);
-      this.pushSegment(']', item);
+      this.pushSegment(']');
     },
     IndexExpression: function (
       this: BeautifyFactory,
@@ -511,9 +482,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       this.process(item.base);
-      this.pushSegment('[', item);
+      this.pushSegment('[');
       this.process(item.index);
-      this.pushSegment(']', item);
+      this.pushSegment(']');
     },
     UnaryExpression: function (
       this: BeautifyFactory,
@@ -521,9 +492,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.operator === 'new') {
-        this.pushSegment(item.operator + ' ', item);
+        this.pushSegment(item.operator + ' ');
       } else {
-        this.pushSegment(item.operator, item);
+        this.pushSegment(item.operator);
       }
 
       this.process(item.argument);
@@ -533,7 +504,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('not ', item);
+      this.pushSegment('not ');
       this.process(item.argument);
     },
     FeatureEnvarExpression: function (
@@ -541,19 +512,19 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureEnvarExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment(`#envar ${item.name}`, item);
+      if (this.context.options.isDevMode) {
+        this.pushSegment(`#envar ${item.name}`);
         return;
       }
 
       const value = this.transformer.environmentVariables.get(item.name);
 
       if (!value) {
-        this.pushSegment('null', item);
+        this.pushSegment('null');
         return;
       }
 
-      this.pushSegment(`"${value}"`, item);
+      this.pushSegment(`"${value}"`);
     },
     IfShortcutStatement: function (
       this: BeautifyFactory,
@@ -564,7 +535,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         const clausesItem = item.clauses[index];
         this.process(clausesItem);
         if (index !== item.clauses.length - 1) {
-          this.pushSegment(' ', item);
+          this.pushSegment(' ');
         }
       }
     },
@@ -573,9 +544,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('if ', item);
+      this.pushSegment('if ');
       this.process(unwrap(item.condition));
-      this.pushSegment(' then ', item);
+      this.pushSegment(' then ');
       this.process(item.body[0]);
     },
     ElseifShortcutClause: function (
@@ -583,9 +554,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('else if ', item);
+      this.pushSegment('else if ');
       this.process(unwrap(item.condition));
-      this.pushSegment(' then ', item);
+      this.pushSegment(' then ');
       this.process(item.body[0]);
     },
     ElseShortcutClause: function (
@@ -593,7 +564,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('else ', item);
+      this.pushSegment('else ');
       this.process(item.body[0]);
     },
     NilLiteral: function (
@@ -601,22 +572,16 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTLiteral,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(getLiteralRawValue(item), item);
+      this.pushSegment(getLiteralRawValue(item));
     },
     ForGenericStatement: function (
       this: BeautifyFactory,
       item: ASTForGenericStatement,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('for ', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment('for ');
       this.process(unwrap(item.variable));
-      this.pushSegment(' in ', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment(' in ');
       this.process(unwrap(item.iterator));
 
       this.eol();
@@ -625,10 +590,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.context.buildBlock(item);
       this.context.decIndent();
 
-      this.pushSegment(this.context.getIndent() + 'end for', {
-        start: item.end,
-        end: item.end
-      });
+      this.pushSegment(this.context.getIndent() + 'end for');
     },
     IfStatement: function (
       this: BeautifyFactory,
@@ -639,25 +601,17 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         this.process(clausesItem);
       }
 
-      this.pushSegment(this.context.getIndent() + 'end if', {
-        start: item.end,
-        end: item.end
-      });
+      this.pushSegment(this.context.getIndent() + 'end if');
     },
     IfClause: function (
       this: BeautifyFactory,
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('if ', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment('if ');
       this.process(unwrap(item.condition));
-      this.pushSegment(' then', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment(' then');
+      this.context.emitTrailingComments(item);
       this.eol();
 
       this.context.incIndent();
@@ -669,15 +623,10 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTIfClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(this.context.getIndent() + 'else if ', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment(this.context.getIndent() + 'else if ');
       this.process(unwrap(item.condition));
-      this.pushSegment(' then', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment(' then');
+      this.context.emitTrailingComments(item);
       this.eol();
 
       this.context.incIndent();
@@ -689,10 +638,8 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTElseClause,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(this.context.getIndent() + 'else', {
-        start: item.start,
-        end: item.start
-      });
+      this.pushSegment(this.context.getIndent() + 'else');
+      this.context.emitTrailingComments(item);
       this.eol();
 
       this.context.incIndent();
@@ -704,14 +651,14 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('continue', item);
+      this.pushSegment('continue');
     },
     BreakStatement: function (
       this: BeautifyFactory,
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('break', item);
+      this.pushSegment('break');
     },
     CallStatement: function (
       this: BeautifyFactory,
@@ -725,33 +672,33 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureInjectExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment(`#inject "${item.path}";`, item);
+      if (this.context.options.isDevMode) {
+        this.pushSegment(`#inject "${item.path}";`);
         return;
       }
       if (this.activeDependency === null) {
-        this.pushSegment(`#inject "${item.path}";`, item);
+        this.pushSegment(`#inject "${item.path}";`);
         return;
       }
 
       const content = this.activeDependency.injections.get(item.path);
 
       if (content == null) {
-        this.pushSegment('null', item);
+        this.pushSegment('null');
         return;
       }
 
-      this.pushSegment(`"${content.replace(/"/g, () => '""')}"`, item);
+      this.pushSegment(`"${content.replace(/"/g, () => '""')}"`);
     },
     FeatureImportExpression: function (
       this: BeautifyFactory,
       item: ASTFeatureImportExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment('#import ', item);
+      if (this.context.options.isDevMode) {
+        this.pushSegment('#import ');
         this.process(item.name);
-        this.pushSegment(` from "${item.path}";`, item);
+        this.pushSegment(` from "${item.path}";`);
         return;
       }
       const associatedDependency = this.activeDependency?.dependencies.get(
@@ -761,16 +708,15 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         )
       );
       if (!associatedDependency) {
-        this.pushSegment('#import ', item);
+        this.pushSegment('#import ');
         this.process(item.name);
-        this.pushSegment(` from "${item.path}";`, item);
+        this.pushSegment(` from "${item.path}";`);
         return;
       }
 
       this.process(item.name);
       this.pushSegment(
-        ' = __REQUIRE("' + associatedDependency.getNamespace() + '")',
-        item
+        ' = __REQUIRE("' + associatedDependency.getNamespace() + '")'
       );
     },
     FeatureIncludeExpression: function (
@@ -778,10 +724,15 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTFeatureIncludeExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment(`#include "${item.path}";`, item);
+      if (this.context.options.isDevMode) {
+        if (item.typeOnly) {
+          this.pushSegment(`#include type "${item.path}";`);
+          return;
+        }
+        this.pushSegment(`#include "${item.path}";`);
         return;
       }
+      if (item.typeOnly) return;
       const associatedDependency = this.activeDependency?.dependencies.get(
         Dependency.generateDependencyMappingKey(
           item.path,
@@ -789,7 +740,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         )
       );
       if (!associatedDependency) {
-        this.pushSegment(`#include "${item.path}";`, item);
+        this.pushSegment(`#include "${item.path}";`);
         return;
       }
 
@@ -803,36 +754,33 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment('debugger', item);
+      if (this.context.options.isDevMode) {
+        this.pushSegment('debugger');
         return;
       }
-      this.pushSegment('//debugger', item);
+      this.pushSegment('//debugger');
     },
     FeatureLineExpression: function (
       this: BeautifyFactory,
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment('#line', item);
+      if (this.context.options.isDevMode) {
+        this.pushSegment('#line');
         return;
       }
-      this.pushSegment(`${item.start.line}`, item);
+      this.pushSegment(`${item.startLine}`);
     },
     FeatureFileExpression: function (
       this: BeautifyFactory,
       item: ASTFeatureFileExpression,
       _data: TransformerDataObject
     ): void {
-      if (this.transformer.buildOptions.isDevMode) {
-        this.pushSegment('#filename', item);
+      if (this.context.options.isDevMode) {
+        this.pushSegment('#filename');
         return;
       }
-      this.pushSegment(
-        `"${basename(item.filename).replace(/"/g, () => '"')}"`,
-        item
-      );
+      this.pushSegment(`"${basename(item.filename).replace(/"/g, () => '"')}"`);
     },
     ListConstructorExpression: function (
       this: BeautifyFactory,
@@ -840,89 +788,117 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.fields.length === 0) {
-        this.pushSegment('[]', item);
+        this.pushSegment('[]');
         return;
       }
 
       if (item.fields.length === 1) {
-        this.pushSegment('[ ', item);
-        this.process(item.fields[0]);
-        this.pushSegment(' ]', item);
+        const overflowFn = getOverflowingFunction(item.fields[0], item.endLine);
+        this.pushSegment('[ ');
+        this.process(item.fields[0], overflowFn ? { headerOnly: true } : {});
+        this.pushSegment(' ]');
+        this.context.emitTrailingComments(item.fields[0]);
+
+        if (overflowFn) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(overflowFn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(overflowFn);
+        }
         return;
       }
 
       if (this.context.isMultilineAllowed) {
         this.context.incIndent();
 
-        this.pushSegment('[', {
-          start: item.start,
-          end: item.start
-        });
+        this.pushSegment('[');
         this.eol();
 
-        const iterator = new BeautifyBodyIterator(item, item.fields);
-        let next = iterator.next();
+        for (let index = 0; index < item.fields.length; index++) {
+          const fieldItem = item.fields[index];
 
-        while (!next.done) {
-          const current = next.value as ASTListValue;
-
-          if (current.type === FILLER_TYPE) {
-            this.pushSegment(this.context.getIndent());
-            this.pushComment(current.start.line);
-            this.eol();
-            next = iterator.next();
+          if (fieldItem.type === ASTType.NoopStatement) {
+            if (
+              fieldItem.leadingComments &&
+              fieldItem.leadingComments.length > 0
+            ) {
+              this.context.emitLeadingComments(fieldItem);
+            } else {
+              this.pushSegment(this.context.getIndent());
+              this.eol();
+            }
             continue;
           }
 
-          this.pushSegment(this.context.getIndent(), current);
-          this.process(current);
-          this.pushSegment(',', current);
+          this.context.emitLeadingComments(fieldItem);
+          this.pushSegment(this.context.getIndent());
+          this.process(fieldItem as ASTListValue);
+          this.pushSegment(',');
+          this.context.emitTrailingComments(fieldItem);
           this.eol();
-          next = iterator.next();
         }
 
         this.context.decIndent();
 
-        this.pushSegment(this.context.getIndent() + ']', {
-          start: item.end,
-          end: item.end
-        });
+        this.pushSegment(this.context.getIndent() + ']');
 
         return;
       }
 
-      this.pushSegment('[ ', item);
+      this.pushSegment('[ ');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
-        this.process(fieldItem);
+        if (fieldItem.type === ASTType.NoopStatement) continue;
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
-          this.pushSegment(', ', fieldItem);
+          this.pushSegment(', ');
         }
       }
 
-      this.pushSegment(' ]', item);
+      this.pushSegment(' ]');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          this.context.incIndent();
+          this.context.buildBlock(fn);
+          this.context.decIndent();
+          this.pushSegment(this.context.getIndent() + 'end function');
+          this.context.emitEndTrailingComments(fn);
+        }
+      }
     },
     ListValue: function (
       this: BeautifyFactory,
       item: ASTListValue,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
-      this.process(item.value);
+      this.process(item.value, data);
     },
     BooleanLiteral: function (
       this: BeautifyFactory,
       item: ASTBooleanLiteral,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(getLiteralRawValue(item), item);
+      this.pushSegment(getLiteralRawValue(item));
     },
     EmptyExpression: function (
       this: BeautifyFactory,
       item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment('', item);
+      this.pushSegment('');
     },
     IsaExpression: function (
       this: BeautifyFactory,
@@ -932,7 +908,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.process(item.left, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
-      this.pushSegment(' ' + item.operator + ' ', item);
+      this.pushSegment(' ' + item.operator + ' ');
       this.process(item.right, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
@@ -951,9 +927,9 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
           hasLogicalIndentActive: true
         });
 
-        this.pushSegment(' ' + item.operator + ' ', item);
+        this.pushSegment(' ' + item.operator + ' ');
         this.eol();
-        this.pushSegment(this.context.getIndent(), item);
+        this.pushSegment(this.context.getIndent());
 
         this.process(item.right, {
           hasLogicalIndentActive: true
@@ -968,7 +944,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
         hasLogicalIndentActive: data.hasLogicalIndentActive
       });
 
-      this.pushSegment(' ' + item.operator + ' ', item);
+      this.pushSegment(' ' + item.operator + ' ');
 
       this.process(item.right, {
         hasLogicalIndentActive: data.hasLogicalIndentActive
@@ -980,18 +956,18 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       _data: TransformerDataObject
     ): void {
       if (item.operator === '|') {
-        this.pushSegment('bitOr(', item);
+        this.pushSegment('bitOr(');
         this.process(item.left);
-        this.pushSegment(', ', item);
+        this.pushSegment(', ');
         this.process(item.right);
-        this.pushSegment(')', item);
+        this.pushSegment(')');
         return;
       } else if (item.operator === '&') {
-        this.pushSegment('bitAnd(', item);
+        this.pushSegment('bitAnd(');
         this.process(item.left);
-        this.pushSegment(', ', item);
+        this.pushSegment(', ');
         this.process(item.right);
-        this.pushSegment(')', item);
+        this.pushSegment(')');
         return;
       } else if (
         item.operator === '<<' ||
@@ -1002,7 +978,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       }
 
       this.process(item.left);
-      this.pushSegment(' ' + item.operator + ' ', item);
+      this.pushSegment(' ' + item.operator + ' ');
       this.process(item.right);
     },
     BinaryNegatedExpression: function (
@@ -1010,7 +986,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTUnaryExpression,
       _data: TransformerDataObject
     ): void {
-      this.pushSegment(item.operator, item);
+      this.pushSegment(item.operator);
       this.process(item.argument);
     },
     ComparisonGroupExpression: function (
@@ -1021,7 +997,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       this.process(item.expressions[0]);
 
       for (let index = 0; index < item.operators.length; index++) {
-        this.pushSegment(' ' + item.operators[index] + ' ', item);
+        this.pushSegment(' ' + item.operators[index] + ' ');
         this.process(item.expressions[index + 1]);
       }
     },
@@ -1030,9 +1006,7 @@ export class BeautifyFactory extends Factory<BeautifyOptions> {
       item: ASTChunkGreybel,
       _data: TransformerDataObject
     ): void {
-      this.context.pushStack(item);
       this.context.buildBlock(item);
-      this.context.popStack();
     }
   };
 

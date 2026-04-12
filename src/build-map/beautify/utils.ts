@@ -2,12 +2,10 @@ import {
   ASTBase,
   ASTBinaryExpression,
   ASTClause,
-  ASTComment,
   ASTComparisonGroupExpression,
   ASTIsaExpression,
   ASTLogicalExpression,
   ASTParenthesisExpression,
-  ASTPosition,
   ASTType,
   Operator
 } from 'miniscript-core';
@@ -15,7 +13,7 @@ import {
 export const SHORTHAND_OPERATORS = [
   Operator.Plus,
   Operator.Minus,
-  Operator.Asterik,
+  Operator.Asterisk,
   Operator.Slash,
   Operator.Modulo,
   Operator.Power
@@ -56,61 +54,36 @@ export const unwrap = (node: ASTBase): ASTBase => {
   return node;
 };
 
-export const getLastComment = (nodes: ASTBase[]): ASTComment | null => {
-  for (let i = nodes.length - 1; i >= 0; i--) {
-    const node = nodes[i];
-    if (node.type === ASTType.Comment) return node as ASTComment;
-  }
-  return null;
-};
-
 export const containsMultilineItemInShortcutClauses = (
-  position: ASTPosition,
+  startLine: number,
   clauses: ASTClause[]
 ) => {
-  return clauses.some((it) => position.line < it.body[0].end.line);
+  return clauses.some((it) => startLine < it.body[0].endLine);
 };
 
 export const hasEmptyBody = (body: ASTBase[]) => {
-  return !body.some((it) => !(it instanceof ASTComment));
+  return !body.some((it) => it.type !== ASTType.NoopStatement);
 };
 
-export interface CommentNode {
-  isMultiline: boolean;
-  isStart: boolean;
-  isEnd: boolean;
-  isBefore: boolean;
-  value: string;
-}
+export const commentToText = (value: string, isDevMode: boolean): string => {
+  const isMultiline = value.indexOf('\n') !== -1;
+  const trimmed = value.trim();
 
-export const commentToText = (node: CommentNode, isDevMode: boolean) => {
-  const value = node.value.trim();
-
-  if (node.isMultiline) {
+  if (isMultiline) {
     if (!isDevMode) {
-      const output = value.length > 0 ? '// ' + value : '//';
-
-      if (node.isStart && !node.isEnd) {
-        return output;
-      } else if (!node.isStart && node.isEnd) {
-        return output + '\n';
-      } else if (node.isStart && node.isEnd) {
-        return output + '\n';
-      }
-
-      return output;
+      // Convert block comment to multiple // lines
+      const lines = trimmed.split('\n');
+      return lines
+        .map((line) => {
+          const l = line.trim();
+          return l.length > 0 ? '// ' + l : '//';
+        })
+        .join('\n');
     }
 
-    if (node.isStart && !node.isEnd) {
-      return '/* ' + value;
-    } else if (!node.isStart && node.isEnd) {
-      return value + ' */';
-    } else if (node.isStart && node.isEnd) {
-      return '/* ' + value + ' */';
-    }
-
-    return value;
+    // Dev mode: preserve /* */ syntax
+    return '/* ' + trimmed + ' */';
   }
 
-  return value.length > 0 ? '// ' + value : '//';
+  return trimmed.length > 0 ? '// ' + trimmed : '//';
 };

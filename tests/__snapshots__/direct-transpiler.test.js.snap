@@ -1,5 +1,157 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`parse default scripts anonymous-functions.src 1`] = `
+"Foo(function,\\"test\\")
+return 1
+end function
+Foo(\\"test\\",function)
+return 1
+end function
+Foo={\\"test\\":function}
+return 1
+end function
+Foo=[function]
+return 1
+end function
+foo=function
+return function
+return \\"faa\\"
+end function
+end function
+print(foo)
+Foo(function,\\"test\\",function)
+return 1
+end function
+return 2
+end function
+Foo(function,\\"test\\",function)
+Foo=[function]
+return 3
+end function
+return 1
+end function
+return 2
+end function"
+`;
+
+exports[`parse default scripts anonymous-functions.src beautify 1`] = `
+"Foo function, \\"test\\"
+	return 1
+end function
+
+Foo \\"test\\", function
+	return 1
+end function
+
+Foo = { \\"test\\": function }
+	return 1
+end function
+
+Foo = [ function ]
+	return 1
+end function
+
+foo = function
+	return function
+		return \\"faa\\"
+	end function
+end function
+
+print foo
+
+Foo function, \\"test\\", function
+	return 1
+end function
+	return 2
+end function
+
+Foo function, \\"test\\", function
+	Foo = [ function ]
+		return 3
+	end function
+	return 1
+end function
+	return 2
+end function"
+`;
+
+exports[`parse default scripts anonymous-functions.src beautify with custom settings 1`] = `
+"Foo(function, \\"test\\")
+          return 1
+end function
+
+Foo(\\"test\\", function)
+          return 1
+end function
+
+Foo = { \\"test\\": function }
+          return 1
+end function
+
+Foo = [ function ]
+          return 1
+end function
+
+foo = function
+          return function
+                    return \\"faa\\"
+          end function
+end function
+
+print(foo)
+
+Foo(function, \\"test\\", function)
+          return 1
+end function
+          return 2
+end function
+
+Foo(function, \\"test\\", function)
+          Foo = [ function ]
+                    return 3
+          end function
+          return 1
+end function
+          return 2
+end function"
+`;
+
+exports[`parse default scripts anonymous-functions.src uglify 1`] = `
+"globals.I=globals
+I.L=\\"test\\"
+J(function,L)
+return 1
+end function
+J(L,function)
+return 1
+end function
+J={L:function}
+return 1
+end function
+J=[function]
+return 1
+end function
+K=function
+return function
+return \\"faa\\"
+end function
+end function
+print(K)
+J(function,L,function)
+return 1
+end function
+return 2
+end function
+J(function,L,function)
+J=[function]
+return 3
+end function
+return 1
+end function
+return 2
+end function"
+`;
+
 exports[`parse default scripts ascii.src 1`] = `
 "AsciiGen={}
 map={}
@@ -812,12 +964,12 @@ end function
 
 // comments
 test += 5 // test
-test = [ // :D
+test = [
 	1,
-	2,
-	3, // its a list
+	2, // :D
+	3,
 	4,
-]
+] // its a list
 test = function // its a function
 	return 123 // it a return
 end function // its function end
@@ -827,7 +979,6 @@ end for // end for loop
 
 test = { \\"was\\": 123 } // was
 test = {
-
 	\\"was\\": 123, // was
 	\\"foo\\": 13,
 	\\"bar\\": 45,
@@ -1008,12 +1159,12 @@ end function
 
 // comments
 test += 5 // test
-test = [ // :D
+test = [
           1,
-          2,
-          3, // its a list
+          2, // :D
+          3,
           4,
-]
+] // its a list
 test = function // its a function
           return 123 // it a return
 end function // its function end
@@ -1023,7 +1174,6 @@ end for // end for loop
 
 test = { \\"was\\": 123 } // was
 test = {
-
           \\"was\\": 123, // was
           \\"foo\\": 13,
           \\"bar\\": 45,
@@ -1298,14 +1448,12 @@ print(\\"0.2\\")"
 
 exports[`parse default scripts envar.src beautify 1`] = `
 "#include \\"../fixtures/envar-include.src\\";
-
 myvar = \\"\\"foo\\"\\"
 print \\"0.2\\""
 `;
 
 exports[`parse default scripts envar.src beautify with custom settings 1`] = `
 "#include \\"../fixtures/envar-include.src\\";
-
 myvar = #envar test
 print(#envar test2)"
 `;
@@ -1553,6 +1701,47 @@ print(I.hasIndex(\\"doesNotExist\\"))
 print(locals.hasIndex(\\"doesNotExist\\"))"
 `;
 
+exports[`parse default scripts if-env.src 1`] = `
+"a=1
+b=2
+c=5
+d=6
+print(a+b+c+d)"
+`;
+
+exports[`parse default scripts if-env.src beautify 1`] = `
+"a = 1
+
+b = 2
+
+c = 5
+
+d = 6
+
+print a + b + c + d"
+`;
+
+exports[`parse default scripts if-env.src beautify with custom settings 1`] = `
+"a = 1
+
+b = 2
+
+c = 5
+
+d = 6
+
+print(a + b + c + d)"
+`;
+
+exports[`parse default scripts if-env.src uglify 1`] = `
+"globals.I=globals
+J=1
+K=2
+L=5
+M=6
+print(J+K+L+M)"
+`;
+
 exports[`parse default scripts isa.src 1`] = `
 "print(2 isa number)
 print(2 isa string)
@@ -1734,31 +1923,19 @@ N={123:\\"bar\\"}"
 exports[`parse default scripts multiline-comment.src 1`] = `"print(\\"test\\")"`;
 
 exports[`parse default scripts multiline-comment.src beautify 1`] = `
-"//
-//
-//
-// my Test
+"// my Test
 //
 // **
-print \\"test\\" //
-//
-// another comment
-//
-//
+print \\"test\\" // another comment
 // one line comment"
 `;
 
 exports[`parse default scripts multiline-comment.src beautify with custom settings 1`] = `
-"/* 
+"/* my Test
 
-
-my Test
-
-** */ print(\\"test\\") /* 
-
-another comment
-
- */// one line comment"
+  ** */
+print(\\"test\\") /* another comment */
+// one line comment"
 `;
 
 exports[`parse default scripts multiline-comment.src uglify 1`] = `
@@ -3620,6 +3797,55 @@ end function
 print(J(\\"blahhblahhblahhblahhblahhblahhgad\\",5))"
 `;
 
+exports[`parse default scripts strict-mode.src 1`] = `
+"a=1
+a=a+1
+b=10
+b=b-3
+c=\\"hello\\"
+c=c+\\" world\\"
+obj={}
+obj.x=obj.x*2
+print(a+b+c)"
+`;
+
+exports[`parse default scripts strict-mode.src beautify 1`] = `
+"a = 1
+a += 1
+b = 10
+b -= 3
+c = \\"hello\\"
+c += \\" world\\"
+obj = {}
+obj.x *= 2
+print a + b + c"
+`;
+
+exports[`parse default scripts strict-mode.src beautify with custom settings 1`] = `
+"a = 1
+a += 1
+b = 10
+b -= 3
+c = \\"hello\\"
+c += \\" world\\"
+obj = {}
+obj.x *= 2
+print(a + b + c)"
+`;
+
+exports[`parse default scripts strict-mode.src uglify 1`] = `
+"globals.I=globals
+J=1
+J=J+1
+K=10
+K=K-3
+L=\\"hello\\"
+L=L+\\" world\\"
+M={}
+M.x=M.x*2
+print(J+K+L)"
+`;
+
 exports[`parse default scripts unary.src 1`] = `
 "test=function
 return null
@@ -3670,4 +3896,28 @@ print(not K.split and (0 or not 0))
 print(not (K.split and (0 or not 0)))
 print(-1+2)
 print(-(1+2))"
+`;
+
+exports[`parse strict mode strict-mode.src beautify with strictMode 1`] = `
+"a = 1
+a = a + 1
+b = 10
+b = b - 3
+c = \\"hello\\"
+c = c + \\" world\\"
+obj = {}
+obj.x = obj.x * 2
+print a + b + c"
+`;
+
+exports[`parse strict mode strict-mode.src beautify without strictMode 1`] = `
+"a = 1
+a += 1
+b = 10
+b -= 3
+c = \\"hello\\"
+c += \\" world\\"
+obj = {}
+obj.x *= 2
+print a + b + c"
 `;

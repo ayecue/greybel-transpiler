@@ -1,0 +1,19 @@
+a = 1
+
+#if TEST_ENV
+b = 2
+#else
+b = 3
+#endif
+
+#if MISSING_ENV
+c = 4
+#else
+c = 5
+#endif
+
+#if test
+d = 6
+#endif
+
+print a + b + c + d

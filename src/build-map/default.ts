@@ -13,7 +13,6 @@ import {
   ASTBooleanLiteral,
   ASTCallExpression,
   ASTCallStatement,
-  ASTComment,
   ASTComparisonGroupExpression,
   ASTElseClause,
   ASTForGenericStatement,
@@ -34,6 +33,7 @@ import {
   ASTParenthesisExpression,
   ASTReturnStatement,
   ASTSliceExpression,
+  ASTType,
   ASTUnaryExpression,
   ASTWhileStatement
 } from 'miniscript-core';
@@ -47,6 +47,7 @@ import {
   getLiteralValue
 } from '../utils/get-literal-value';
 import { DefaultFactoryOptions, Factory } from './factory';
+import { getOverflowingFunction } from './utils';
 
 export class DefaultFactory extends Factory<DefaultFactoryOptions> {
   transform(item: ASTChunkGreybel, dependency: DependencyLike): string {
@@ -75,22 +76,12 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.process(item.expression);
       this.pushSegment(')');
     },
-    Comment: function (
+    NoopStatement: function (
       this: DefaultFactory,
-      item: ASTComment,
+      _item: ASTBase,
       _data: TransformerDataObject
     ): void {
-      if (item.isMultiline) {
-        this.pushSegment(
-          item.value
-            .split('\n')
-            .map((line) => `//${line}`)
-            .join('\n')
-        );
-        return;
-      }
-
-      this.pushSegment('//' + item.value);
+      // Skip blank lines in default mode
     },
     AssignmentStatement: function (
       this: DefaultFactory,
@@ -116,7 +107,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     FunctionDeclaration: function (
       this: DefaultFactory,
       item: ASTFunctionStatement,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       if (item.parameters.length === 0) {
         this.pushSegment('function');
@@ -134,9 +125,12 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment(')');
       }
 
+      if (data.headerOnly) return;
+
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -150,24 +144,44 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.pushSegment('{');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
-        this.process(fieldItem);
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
           this.pushSegment(',');
         }
       }
 
       this.pushSegment('}');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          for (const bodyItem of fn.body) {
+            if (bodyItem.type === ASTType.NoopStatement) continue;
+            this.process(bodyItem);
+            this.eol();
+          }
+          this.pushSegment('end function');
+        }
+      }
     },
     MapKeyString: function (
       this: DefaultFactory,
       item: ASTMapKeyString,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
       this.process(item.key);
       this.pushSegment(':');
-      this.process(item.value);
+      this.process(item.value, data);
     },
     Identifier: function (
       this: DefaultFactory,
@@ -201,6 +215,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -218,17 +233,37 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         return;
       }
 
+      const overflowFns: ASTFunctionStatement[] = [];
       this.pushSegment('(');
 
       for (let index = 0; index < item.arguments.length; index++) {
         const argItem = item.arguments[index];
-        this.process(argItem);
+        const fn = getOverflowingFunction(argItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(argItem, { headerOnly: true });
+        } else {
+          this.process(argItem);
+        }
         if (index !== item.arguments.length - 1) {
           this.pushSegment(',');
         }
       }
 
       this.pushSegment(')');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          for (const bodyItem of fn.body) {
+            if (bodyItem.type === ASTType.NoopStatement) continue;
+            this.process(bodyItem);
+            this.eol();
+          }
+          this.pushSegment('end function');
+        }
+      }
     },
     StringLiteral: function (
       this: DefaultFactory,
@@ -359,6 +394,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -387,6 +423,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -402,6 +439,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -415,6 +453,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       this.eol();
 
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }
@@ -498,9 +537,14 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       if (this.transformer.buildOptions.isDevMode) {
+        if (item.typeOnly) {
+          this.pushSegment(`#include type "${item.path}";`);
+          return;
+        }
         this.pushSegment(`#include "${item.path}";`);
         return;
       }
+      if (item.typeOnly) return;
       const associatedDependency = this.activeDependency?.dependencies.get(
         Dependency.generateDependencyMappingKey(
           item.path,
@@ -537,7 +581,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
         this.pushSegment('#line');
         return;
       }
-      this.pushSegment(`${item.start.line}`);
+      this.pushSegment(`${item.startLine}`);
     },
     FeatureFileExpression: function (
       this: DefaultFactory,
@@ -557,22 +601,42 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
     ): void {
       this.pushSegment('[');
 
+      const overflowFns: ASTFunctionStatement[] = [];
       for (let index = 0; index < item.fields.length; index++) {
         const fieldItem = item.fields[index];
-        this.process(fieldItem);
+        const fn = getOverflowingFunction(fieldItem, item.endLine);
+        if (fn) {
+          overflowFns.push(fn);
+          this.process(fieldItem, { headerOnly: true });
+        } else {
+          this.process(fieldItem);
+        }
         if (index !== item.fields.length - 1) {
           this.pushSegment(',');
         }
       }
 
       this.pushSegment(']');
+
+      if (overflowFns.length > 0) {
+        overflowFns.sort((a, b) => a.endLine - b.endLine);
+        for (const fn of overflowFns) {
+          this.eol();
+          for (const bodyItem of fn.body) {
+            if (bodyItem.type === ASTType.NoopStatement) continue;
+            this.process(bodyItem);
+            this.eol();
+          }
+          this.pushSegment('end function');
+        }
+      }
     },
     ListValue: function (
       this: DefaultFactory,
       item: ASTListValue,
-      _data: TransformerDataObject
+      data: TransformerDataObject
     ): void {
-      this.process(item.value);
+      this.process(item.value, data);
     },
     BooleanLiteral: function (
       this: DefaultFactory,
@@ -663,6 +727,7 @@ export class DefaultFactory extends Factory<DefaultFactoryOptions> {
       _data: TransformerDataObject
     ): void {
       for (const bodyItem of item.body) {
+        if (bodyItem.type === ASTType.NoopStatement) continue;
         this.process(bodyItem);
         this.eol();
       }

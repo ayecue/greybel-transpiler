@@ -1,0 +1,38 @@
+Foo function(), "test"
+  return 1
+end function
+
+Foo "test", function()
+  return 1
+end function
+
+Foo = {"test": function()}
+	return 1
+end function
+
+Foo = [function()]
+	return 1
+end function
+
+foo = function()
+    return function()
+        return "faa"
+    end function
+end function
+
+print foo()()
+
+Foo function(), "test", function()
+  return 1
+end function
+  return 2
+end function
+
+Foo function(), "test", function()
+  Foo = [function()]
+    return 3
+  end function
+  return 1
+end function
+  return 2
+end function

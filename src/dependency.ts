@@ -154,8 +154,8 @@ export class Dependency implements DependencyLike {
 
     dependencyCallStack.push(sourceNamespace);
 
-    // handle internal includes/imports
-    const items = [...imports, ...includes];
+    // handle internal includes/imports (skip typeOnly includes)
+    const items = [...imports, ...includes.filter((item) => !item.typeOnly)];
 
     for (const item of items) {
       const type =
@@ -203,8 +203,7 @@ export class Dependency implements DependencyLike {
 
     dependencyCallStack.push(sourceNamespace);
 
-    // handle internal includes/imports
-    const items = [...imports, ...includes];
+    const items = [...imports, ...includes.filter((item) => !item.typeOnly)];
 
     for (const item of items) {
       const type =

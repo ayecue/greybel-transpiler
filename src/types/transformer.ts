@@ -13,6 +13,7 @@ export interface TransformerLike<T extends DefaultFactoryOptions> {
   buildOptions: T;
   context: Context;
   environmentVariables: Map<string, string>;
+  strictMode: boolean;
   resourceHandler: ResourceHandler | null;
   factory: Factory<T> | null;
 

@@ -1,4 +1,4 @@
-import { ASTBase, ASTChunk, ASTPosition } from 'miniscript-core';
+import { ASTBase, ASTChunk } from 'miniscript-core';
 
 import { DependencyLike } from '../types/dependency';
 import type {
@@ -18,11 +18,6 @@ export type FactoryMake = (
 
 export interface Line {
   segments: string[];
-}
-
-export interface LineRef {
-  start: ASTPosition;
-  end: ASTPosition;
 }
 
 export abstract class Factory<T extends DefaultFactoryOptions> {
@@ -72,19 +67,23 @@ export abstract class Factory<T extends DefaultFactoryOptions> {
     this._currentStack = new Stack();
   }
 
-  pushSegment(segment: string, item?: LineRef) {
+  pushSegment(segment: string) {
     this._activeLine.segments.push(segment);
   }
 
-  pushComment(lineNr: number) {
-    throw new Error('Not implemented');
+  appendTrailingComment(_text: string): void {
+    // No-op by default. Override in BeautifyFactory.
+  }
+
+  appendTrailingCommentToLine(_lineIndex: number, _text: string): void {
+    // No-op by default. Override in BeautifyFactory.
   }
 
   createLine(): Line {
     return { segments: [] };
   }
 
-  eol(item?: LineRef) {
+  eol() {
     this._lines.push(this._activeLine);
     this._activeLine = this.createLine();
   }
